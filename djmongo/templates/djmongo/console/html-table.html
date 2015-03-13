@@ -1,0 +1,21 @@
+{% extends "djmongo/console/base.html" %}
+{% block pretitle %}Results as HTML Table{% endblock %}
+{% block extra_head %}
+
+{% endblock %}
+{% block Content %}
+    
+    <h1>Seach Results  @ {{ timestamp }}</h1>
+    <table border="1">
+        {% for row in rows %}
+        <tr>
+            {% for field in row%}
+            <td>{{field}}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+
+
+  
+{% endblock %}

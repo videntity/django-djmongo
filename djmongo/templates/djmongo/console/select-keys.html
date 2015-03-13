@@ -1,0 +1,47 @@
+{% extends "djmongo/console/base.html" %}
+{% load i18n %}
+
+{% block Content %}
+<section id="register">
+  <div class="page-header">
+    <h1>Custom Report</h1>
+  </div>
+
+    <div class="alert alert-block">
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    <h4>{%trans "Important" %}</h4>
+    Choose the output format (Excel, CSV, XML, or JSON), the query ({} by default
+    which returns everything), and the fields you want to return. If you select no
+    fields, then all fields will be included in the results.
+    </div>
+
+
+{% if form.errors %}
+<div id="form-error">
+	<p>The operation could not be performed because one or more error(s) occurred.<br />Please resubmit the form after making the following changes:</p>
+	<ul>
+	{% for field in form %}
+	<li>{{ field.errors|striptags }}</li>
+	{% endfor %}
+	</ul>
+</div>
+{% endif %}
+
+
+<div class="row">
+    <div class="span8">
+      <form class="well" method="post" action="">
+        {% csrf_token %}
+        <table>
+	{% load bootstrap %}
+	{{ form|bootstrap }}
+        </table>
+	<input type="submit" class="btn btn-primary btn-large"  value="{% trans 'Generate Report' %}" /><br>
+	<a href="javascript:history.go(-1)">{% trans "Go Back" %}</a>
+      
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}
+

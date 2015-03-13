@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+{% load static %}
+{% get_static_prefix as STATIC_PREFIX %}
+<html lang="en">
+<head>
+
+
+	{% load i18n %}
+        <title>
+        {% block pretitle %}djmongo|Console{%  endblock %}
+        {% block title %} {% endblock %}
+        </title>
+	
+    {% block head %}
+        {% include "djmongo/console/include/head.html" %}
+    {% endblock %}
+
+    {% block extra_head %}
+    {% endblock %}
+    
+
+</head>
+<body>
+      
+        {% include "djmongo/console/include/top-nav.html" %}
+     
+
+      {% block Content %}
+        {% if template %}{% include template %}{% endif %}
+        {{ content|safe }}
+      {% endblock %}
+    
+                        
+        {% include "djmongo/console/include/footer.html" %}
+    <!-- JavaScript -->
+    <script src="{{ STATIC_URL }}djmongo/console/modern-business/js/jquery-1.11.0.js"></script>
+    <script src="{{ STATIC_URL }}djmongo/console/modern-business/js/bootstrap.js"></script>
+    {% block ExtraJSFoot %}
+	
+	{% endblock %}
+	
+    
+</body>
+
+</html>

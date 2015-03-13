@@ -1,0 +1,64 @@
+{% extends "djmongo/console/base.html" %}
+{% block Content %}
+
+{% load i18n %}
+
+
+<div class="container">
+      <div class="row">
+              <a class="btn pull-right btn-primary btn-large" href="{% url 'djmongo_create_saved_search' %}">
+                <i class="icon-plus-sign icon-white"></i> {% trans "New Saved Search" %}
+                    </a>
+              <h1>{% trans "Saved Searches" %}</h1>
+      </div>
+
+
+<div class="row">
+<table class="table">
+   
+
+<thead>
+<tr>
+<th>Title</th>
+<th>Slug</th>
+<th>Created By</th>
+<th>Database/Collection</th>
+<th>Query</th>
+<th>Actions</th>
+
+</tr>
+</thead>
+ 
+<tbody>
+
+
+{% for s in  savedsearches %}
+
+<tr class="success">
+<td>{{s.title}}</td>
+<td>{{s.slug}}</td>
+<td>{{s.user.first_name}}  {{s.user.last_name}}  ({{s.user}})</td>
+<td>{{s.database_name}}/{{s.collection_name}}</td>
+<td><pre>{{s.query}}</pre></td>
+<td>
+            <a class="btn pull-left btn-success btn-large" target=_blank href="/search/run-saved-search/{{s.slug}}">
+            <i class="icon-search  icon-white"></i> Run</a><br>
+      
+            <a class="btn pull-left btn-primary btn-large" href="/search/edit-saved-search/{{s.slug}}">
+            <i class="icon-edit  icon-white"></i> Edit</a><br>
+            
+            <a class="btn pull-left btn-danger btn-large" href="/search/delete-saved-search/{{s.slug}}">
+            <i class="icon-remove-sign  icon-white"></i> Delete</a>
+</td>
+
+</tr>
+{% endfor %}
+
+</tbody>
+
+    </table>
+
+   </div>
+</div>
+
+{% endblock %}

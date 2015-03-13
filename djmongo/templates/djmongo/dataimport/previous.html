@@ -1,0 +1,60 @@
+{% extends "djmongo/console/base.html" %}
+{% block Content %}
+
+{% load i18n %}
+
+
+<div class="container">
+      <div class="row">
+              <a class="btn pull-right btn-primary btn-large" href="">
+                <i class="icon-plus-sign icon-white"></i> {% trans "New Import" %}
+                    </a>
+              <h1>{% trans "Data Imports" %}</h1>
+      </div>
+</div>
+
+
+<table class="table">
+   
+
+<thead>
+<tr>
+<th>Title</th>
+<th>Status</th>
+<th>Database/Collection</th>
+<th>Date</th>
+<th>Response</th>
+<th>Actions</th>
+
+</tr>
+</thead>
+ 
+<tbody>
+
+
+{% for d in  dataimports %}
+
+<tr class="success">
+<td>{{d.title}}</td>
+<td>{{d.status }} </td>
+<td>{{d.database_name}}/{{d.collection_name}}</td>
+
+<td>{{d.creation_date}}</td>
+<td><pre>{{d.response}}</pre></td>
+<td>
+      
+             <a class="btn pull-left btn-danger btn-large" href="/import/delete/{{d.slug}}">
+            <i class="icon-remove-sign icon-white"></i> Delete</a>
+      
+      
+</td>
+</tr>
+{% endfor %}
+
+</tbody>
+
+    </table>
+
+
+
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "djmongo/console/base.html" %}
+{% load i18n %}
+
+{% block Content %}
+<section id="register">
+  <div class="page-header">
+    <h1>Create the Latest Data Dictionary</h1>
+  </div>
+
+  
+{% if form.errors %}
+<div id="form-error">
+	<p>The operation could not be performed because one or more error(s) occurred.<br />Please resubmit the form after making the following changes:</p>
+	<ul>
+	{% for field in form %}
+	<li>{{ field.errors|striptags }}</li>
+	{% endfor %}
+	</ul>
+</div>
+{% endif %}
+
+
+<div class="row">
+    <div class="span8">
+      <form class="well" method="post" action="">
+        {% csrf_token %}
+        <table>
+	{% load bootstrap %}
+	{{ form|bootstrap }}
+        </table>
+	<input type="submit" class="btn btn-primary btn-large"  value="{% trans 'Generate Data Dictionary' %}" /><br>
+	<a href="javascript:history.go(-1)">{% trans "Go Back" %}</a>
+      
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
