@@ -26,7 +26,7 @@ def build_keys(request):
     """Perform the map/reduce to refresh the keys form. The display the custom report screen"""
     x = build_keys_with_mapreduce()
     messages.success(request, "Successfully completed MapReduce operation. Key rebuild for custom report complete.")
-    return HttpResponseRedirect(reverse("home_index"))
+    return HttpResponseRedirect(reverse("djmongo_home"))
 
 
 
@@ -134,8 +134,6 @@ def search_json(request, database_name=settings.MONGO_DB_NAME,
     else:
         jsonresults=to_json(normalize_results(result))
         return HttpResponse(jsonresults, status=int(result['code']),content_type="application/json")
-
-
 
 
 
@@ -287,26 +285,50 @@ def load_labels(request):
 
 
 
-
 def run_saved_search_by_slug(request, slug, output_format=None, skip=0,
-                             sort=None,limit = settings.MONGO_LIMIT):
+                             sort=None, limit = settings.MONGO_LIMIT):
     
-
     error = False
     response_dict = {}
     
+    
     ss = get_object_or_404(SavedSearch,  slug=slug)
+    #Don't run the search unless its public.
+    if not request.user.is_authenticated() and not ss.is_public:
+        response_dict = {}
+        response_dict['num_results']=0
+        response_dict['code']=401
+        response_dict['type']="Error"
+        response_dict['results']=[]
+        response_dict['message']="Not Found. Perhaps you need to log in?"
+        response = json.dumps(response_dict, indent =4)
+        return HttpResponse(response, status=int(response_dict['code']),
+                content_type="application/json")
+    else:
+        #So user is authenticated, check if user is in the right group/ 
+        if not request.user.groups.filter(name__in=[ss.group,]).exists():
+            response_dict = {}
+            response_dict['num_results']=0
+            response_dict['code']=401
+            response_dict['type']="Error"
+            response_dict['results']=[]
+            response_dict['message']="You do not have permission to run this search."
+            response = json.dumps(response_dict, indent =4)
+            return HttpResponse(response, status=int(response_dict['code']),
+                content_type="application/json") 
+    
+    
+    
+    
+    
     
     query = ss.query
     #if a GET param matches, then replace it
     
     for k,v in request.GET.items():
        if k in query:
-            if v.isdigit() and settings.CAST_STRINGS_TO_INTEGERS:
-                query = query.replace(k,v)
-            else:
-                quoted_value = '"%s"' % (v)
-                query = query.replace(k,quoted_value)
+        quoted_value = '"%s"' % (v)
+        query = query.replace(k, quoted_value)
     
     try:
         query = json.loads(query)
@@ -323,14 +345,13 @@ def run_saved_search_by_slug(request, slug, output_format=None, skip=0,
         response_dict['results']=[]
         response_dict['message']="Your query was not valid JSON."
         response = json.dumps(response_dict, indent =4)
-        return HttpResponse(response, status=int(response_dict['code']),
+        return HttpResponse(response, status=200,
                 content_type="application/json")
-    
-    
+
 
     if output_format:
         if output_format not in ("json", "csv", "html"):
-            response_dict['message']="The putput format must be json, csv, or html."
+            response_dict['message']="The output format must be json, csv, or html."
             error = True
         else:
             ss.output_format=output_format
@@ -343,7 +364,7 @@ def run_saved_search_by_slug(request, slug, output_format=None, skip=0,
         limit = int(limit)
         
     except ValueError:
-        response_dict['message']="Limit must be an integer."
+        response_dict['message']= "Limit must be an integer."
         error = True
     if error:
         response_dict['num_results']=0
@@ -388,20 +409,20 @@ def run_saved_search_by_slug(request, slug, output_format=None, skip=0,
     
     #these next line "should" never execute.
     response_dict = {}
-    response_dict['num_results']=0
-    response_dict['code']=500
-    response_dict['type']="Error"
-    response_dict['results']=[]
-    response_dict['message']="Oops something has gone wrong.  Please contact a systems administrator."
+    response_dict['num_results'] = 0
+    response_dict['code']        = 500
+    response_dict['type']        = "Error"
+    response_dict['results']     = []
+    response_dict['message']     = "Oops. Somethingwent wrong." + response_dict['message']
     response = json.dumps(response_dict, indent =4)
     return HttpResponse(response, status=int(response_dict['code']),
                             content_type="application/json")
 
 
 
-def create_saved_search(request, database_name=settings.MONGO_DB_NAME,
-                collection_name=settings.MONGO_MASTER_COLLECTION,
-                        skip=0, limit=200, return_keys=()):
+def create_saved_search(request, database_name=None,
+                collection_name=None,
+                        skip=0, limit=settings.MONGO_LIMIT, return_keys=()):
     name = _("Create a Saved Search")
     if request.method == 'POST':
         form = SavedSearchForm(request.POST)
@@ -410,7 +431,8 @@ def create_saved_search(request, database_name=settings.MONGO_DB_NAME,
             ss.user = request.user
             ss.save()
                 
-            return HttpResponseRedirect(reverse('saved_searches'))
+            return HttpResponseRedirect(reverse('djmongo_browse_saved_searches_w_params',
+                                                args = (database_name, collection_name)))
         else:
             #The form is invalid
              messages.error(request,_("Please correct the errors in the form."))
@@ -438,7 +460,7 @@ def delete_saved_search_by_slug(request, slug):
     ss = get_object_or_404(SavedSearch,  slug=slug, user=request.user)
     ss.delete()
     messages.success(request,_("Saved search deleted."))
-    return HttpResponseRedirect(reverse('saved_searches'))
+    return HttpResponseRedirect(reverse('djmongo_show_dbs'))
 
 
 def edit_saved_search_by_slug(request, slug):
@@ -452,7 +474,7 @@ def edit_saved_search_by_slug(request, slug):
             ss.user = request.user
             ss.save()
             messages.success(request,_("Saved search edit saved."))    
-            return HttpResponseRedirect(reverse('saved_searches'))
+            return HttpResponseRedirect(reverse('djmongo_show_dbs'))
         else:
             #The form is invalid
              messages.error(request,_("Please correct the errors in the form."))
@@ -549,9 +571,12 @@ def complex_search(request, database_name=settings.MONGO_DB_NAME,
     return render_to_response('djmongo/console/generic/bootstrapform.html',
                              RequestContext(request, context,))
 
-def display_saved_searches(request):
+def display_saved_searches(request, database_name=settings.MONGO_DB_NAME,
+                collection_name=settings.MONGO_MASTER_COLLECTION):
      
-    savedsearches = SavedSearch.objects.all()
-    context = {"savedsearches": savedsearches }
+    savedsearches = SavedSearch.objects.filter(database_name=database_name, collection_name=collection_name)
+    context = {"savedsearches": savedsearches,
+               'database_name': database_name,
+               'collection_name': collection_name}
     return render_to_response('djmongo/console/display-saved-searches.html',
                               RequestContext(request, context,))

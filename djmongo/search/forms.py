@@ -12,7 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 class SavedSearchForm(forms.ModelForm):
     class Meta:
         model = SavedSearch
-        fields = ('title', 'query','return_keys', 'sort', 'default_limit',
+        fields = ('group', 'title', 'query','return_keys', 'is_public', 'sort', 'default_limit',
                   'database_name', 'collection_name', 'output_format')
 
     required_css_class = 'required'

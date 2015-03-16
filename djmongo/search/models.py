@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.template.defaultfilters import slugify
-
+from django.contrib.auth.models import User, Group
 
 
 OUTPUT_CHOICES = (("json","JSON"),
@@ -12,12 +12,20 @@ OUTPUT_CHOICES = (("json","JSON"),
 class SavedSearch(models.Model):
 
     user            = models.ForeignKey(settings.AUTH_USER_MODEL)
+    group           = models.ForeignKey(Group, blank=True, null=True)
     output_format   = models.CharField(max_length=4, choices=OUTPUT_CHOICES,
                                         default="json")
     title           = models.CharField(max_length=100, unique=True)
     slug            = models.SlugField(max_length=100, unique=True)
-    query           =  models.TextField(max_length=2048, default="{}",            
+    query           = models.TextField(max_length=2048, default="{}",            
                                         verbose_name="JSON Query Dict")
+    
+    is_public       =  models.BooleanField(default=False, blank=True,
+                            help_text = "If checked, the search can be run without authentication")
+    
+    
+    
+    
     
     sort            =  models.TextField(max_length=2048, default="", blank=True,
                                         verbose_name="Sort Dict",

@@ -27,7 +27,7 @@ def showdbs(request):
 
 
 
-def delete_collection(request, database_name, collection_name):
+def drop_collection(request, database_name, collection_name):
     response = mongodb_drop_collection(database_name, collection_name)
     #print response
     if response:
