@@ -10,28 +10,28 @@ from views import *
 
 urlpatterns = patterns('',
     url(r'^previous$', login_required(previous_data_imports),
-        name="previous_data_imports"),
+        name="djmongo_previous_data_imports"),
     
-    url(r'^database/(?P<database_name>[^/]+)/collection/(?P<collection_name>[^/]+)/previous$',
+    url(r'^(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
          login_required(previous_data_imports),
-         name="previous_data_imports_w_params"),
+         name="djmongo_previous_data_imports_w_params"),
     
     url(r'^delete/(?P<slug>\S+)$',
                     login_required(delete_import),
-                    name="delete_import_by_slug"),
+                    name="djmongo_delete_import_by_slug"),
     
-    url(r'^file$', login_required(import_data_file), name="import_data_file"),
+    url(r'^csv$', login_required(import_data_file), name="djmongo_import_csv"),
     
     
-    url(r'^database/(?P<database_name>[^/]+)/collection/(?P<collection_name>[^/]+)/file$',
-         login_required(import_data_file), name="import_file_w_params"),
+    url(r'^csv/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
+         login_required(import_data_file), name="djmongo_import_csv_w_params"),
       
     #API calls ----------------------------------------------------------
-    url(r'^api/file$', json_login_required(csrf_exempt(import_data_file)),
-        name="api_import_data_file"),
+    url(r'^api/csv$', json_login_required(csrf_exempt(import_data_file)),
+        name="djmongo_api_import_data_file"),
     
-    url(r'^api/database/(?P<database_name>[^/]+)/collection/(?P<collection_name>[^/]+)/file$',
+    url(r'^api/csv/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
          json_login_required(csrf_exempt(import_data_file)),
-         name="api_import_file_w_params"),
+         name="djmongo_api_import_file_w_params"),
     
     )
