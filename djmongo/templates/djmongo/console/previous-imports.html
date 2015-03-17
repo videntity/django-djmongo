@@ -6,14 +6,25 @@
 
 <div class="container">
       <div class="row">
-              <a class="btn pull-right btn-primary btn-large" href="">
-                <i class="icon-plus-sign icon-white"></i> {% trans "New Import" %}
-                    </a>
-              <h1>{% trans "Data Imports" %}</h1>
+              <div class="col-lg-12">
+              
+                  
+                  <h1>{% trans "Data Imports" %}</h1>
+             </div>
+      </div>
+      
+      
+      
+      <div class="row">
+              <div class="col-lg-12">
+      <a class="btn pull-left btn-primary btn-large" href="{% url 'djmongo_import_csv_w_params' database_name collection_name %}">
+                    <i class="icon-plus-sign icon-white"></i> {% trans "New Import into " %} {{database_name}} / {{collection_name}}
+                        </a>
+                   </div>
       </div>
 
-
 <div class="row">
+      <div class="col-lg-12">
 <table class="table">
    
 
@@ -43,7 +54,7 @@
 <td><pre>{{d.response}}</pre></td>
 <td>
       
-             <a class="btn pull-left btn-danger btn-large" href="/import/delete/{{d.slug}}">
+             <a class="btn pull-left btn-danger btn-xs" href="{% url 'djmongo_delete_import_by_slug' d.slug %}">
             <i class="icon-remove-sign icon-white"></i> Delete</a>
       
       
@@ -54,6 +65,7 @@
 </tbody>
 
     </table>
+</div>
 </div>
 </div>
 

@@ -19,7 +19,7 @@ setup(
     author='Alan Viars',
     author_email='alan.viars@cms.hhs.gov',
     install_requires=[
-        'pymongo', ],
+        'django==1.6.1', 'pymongo', 'django-widget-tweaks', 'django-bootstrap-form', 'django-cors-headers' ],
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',

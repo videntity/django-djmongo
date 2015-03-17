@@ -46,7 +46,7 @@ def normalize_list(results_list):
 
 def query_mongo(query={}, database_name=settings.MONGO_DB_NAME,
                 collection_name=settings.MONGO_MASTER_COLLECTION,
-                skip=0, sort=None, limit=settings.MONGO_LIMIT, return_keys=()):
+                skip=0, sort=None, limit=settings.MONGO_LIMIT, cast_strings_to_integers=False, return_keys=()):
     """return a response_dict  with a list of search results"""
     
     
@@ -62,7 +62,7 @@ def query_mongo(query={}, database_name=settings.MONGO_DB_NAME,
         
         
         #Cast the query to integers 
-        if settings.CAST_STRINGS_TO_INTEGERS: 
+        if cast_strings_to_integers: 
             query = cast_number_strings_to_integers(query)
         
         #print query

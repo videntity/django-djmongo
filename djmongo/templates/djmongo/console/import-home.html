@@ -1,0 +1,21 @@
+{% extends "djmongo/console/base.html" %}
+{% block Content %}
+
+{% load i18n %}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="jumbotron">
+              <h1>Import Data</h1>
+              <p>Importing data through the browser or HTTP works well with small to medium sized data.
+              However, for larger data and more options it is reccomended to use the djmongo command-line toolset.
+              The API URL {% url 'djmongo_api_import_data_file'%} is also available to use.</p>
+
+              <p><a class="btn btn-primary btn-lg" href="{% url 'djmongo_import_csv'%}" role="button">New Import</a></p>
+            </div>
+        </div>  
+    </div>
+</div>
+    {% endblock %}

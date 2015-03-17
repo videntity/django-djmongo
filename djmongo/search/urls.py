@@ -11,25 +11,24 @@ from views import *
 urlpatterns = patterns('',
 
     #return JSON
+
     url(r'^(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/search.json$',
-         search_json, name="djmongo_search_json_w_params"),
+            search_json, name="djmongo_search_json_w_params"),
     
     #return CSV
-    url(r'^database/(?P<database_name>[^/]+)/collection/(?P<collection_name>[^/]+)/search.csv$',
-         search_csv, name="djmongo_search_csv_w_params"),
+    url(r'^(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/search.csv$',
+            search_csv, name="djmongo_search_csv_w_params"),
     
     #return HTML Table
     url(r'^(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/search.html$',
-         search_html, name="djmongo_search_html_w_params"),
+            search_html, name="djmongo_search_html_w_params"),
 
-
-
-    url(r'^run/(?P<slug>\S+)/(?P<skip>[^/]+)/(?P<limit>[^/]+)$',
+    url(r'^run-private-saved-search/(?P<slug>\S+)/(?P<skip>[^/]+)/(?P<limit>[^/]+)$',
                     login_required(run_saved_search_by_slug),
                     name="djmongo_run_saved_search_by_slug"),
 
 
-    url(r'^run-public/(?P<slug>\S+)/(?P<skip>[^/]+)/(?P<limit>[^/]+)$',
+    url(r'^run-public-saved-search/(?P<slug>\S+)/(?P<skip>[^/]+)/(?P<limit>[^/]+)$',
                     run_saved_search_by_slug,
                     name="djmongo_run_saved_search_by_slug"),
     
@@ -62,7 +61,8 @@ urlpatterns = patterns('',
     url(r'^browse-saved-searches$', login_required(display_saved_searches),
                     name="djmongo_browse_saved_searches"),
     
-    url(r'^browse-saved-searches/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$', login_required(display_saved_searches),
+    url(r'^browse-saved-searches/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
+                login_required(display_saved_searches),
                     name="djmongo_browse_saved_searches_w_params"),
     
     url(r'^build-keys', login_required(build_keys),
@@ -83,6 +83,7 @@ urlpatterns = patterns('',
     #return JSON
     url(r'^api/search.json$', search_json,
         name="api_search_json"),
+    
     url(r'^api/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/search.json$',
          search_json, name="api_search_json_w_params"),
     
@@ -93,17 +94,23 @@ urlpatterns = patterns('',
     url(r'^api/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/search.csv$',
          search_csv, name="api_search_csv_w_params"),
  
-    #return HTML Table
+    #return HTML Table ------
     url(r'^api/search.html$',  search_html,
         name="api_search_html"),
     
     url(r'^api/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/search.html$',
          search_html, name="api_search_html_w_params"),
     
-    url(r'^api/run-saved-search/(?P<slug>\S+)$',
+    #Saved Searches 
+    url(r'^api/run-public-saved-search/(?P<slug>\S+)$',
         run_saved_search_by_slug,
         name="run_saved_search_by_slug"),
     
+    url(r'^api/run-private-saved-search/(?P<slug>\S+)$',
+        json_login_required(run_saved_search_by_slug),
+        name="run_saved_search_by_slug"),
+    
+    #Complex Searches
     url(r'^api/complex-search$',
         json_login_required(csrf_exempt(complex_search)),
         name="api_complex_search"),

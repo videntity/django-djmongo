@@ -14,7 +14,7 @@
  <div class="row">
       <div class="col-lg-12">
            <a class="btn pull-left btn-primary btn-large" href="{% url 'djmongo_create_saved_search_w_params' database_name collection_name   %}">
-            <i class="icon-plus-sign icon-white"></i> {% trans "New Saved Search in " %} {{database_name}} {{collection_name}}
+            <i class="icon-plus-sign icon-white"></i> {% trans "New Saved Search in " %} {{database_name}}/{{collection_name}}
             </a>
            <a class="btn pull-left btn-primary btn-large" href="{% url 'djmongo_create_saved_search' %}">
             <i class="icon-plus-sign icon-white"></i> {% trans "New Saved Search in Another Database/Collection" %}
@@ -46,7 +46,7 @@
 <tbody>
 
 
-{% for s in  savedsearches %}
+{% for s in savedsearches %}
 
 <tr class="success">
 <td>{{s.title}}</td>

@@ -19,7 +19,7 @@ def delete_import(request, slug):
 
 
 def import_data_file(request, database_name=None, collection_name=None):
-    name = _("Import a Data File into a Mongo Database")
+    name = _("Import CSV File")
     
     
     if request.method == 'POST':
@@ -69,6 +69,11 @@ def previous_data_imports(request, database_name=None, collection_name=None):
     else:
         dataimports = DataImport.objects.all()
             
-    context = {"dataimports": dataimports }
-    return render_to_response('djmongo/console/dataimport/previous-imports.html',
+    context = {"dataimports": dataimports,
+               "database_name": database_name,
+               "collection_name": collection_name,
+               
+               
+               }
+    return render_to_response('djmongo/console/previous-imports.html',
                               RequestContext(request, context,))

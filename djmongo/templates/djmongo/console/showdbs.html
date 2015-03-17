@@ -77,8 +77,8 @@ $('.dropdown-toggle').dropdown();
             <li><a  href="{% url 'djmongo_update_document_in_collection_w_params' d.name c %}">
                    <i class="icon-refresh"></i> {% trans "Update a Document..." %}</a></li>
             
-            <li> <a href="{% url 'djmongo_import_csv_w_params' d.name c %}">
-                   <i class="icon-upload"></i> {% trans "Import CSV..." %}</a></li>
+            <li> <a href="{% url 'djmongo_previous_data_imports_w_params' d.name c %}">
+                   <i class="icon-upload"></i> {% trans "Import Data..." %}</a></li>
        
             <li><a  href="{% url 'djmongo_ensure_index' d.name c %}">
                    <i class="icon-fire"></i> {% trans "Create an Index..." %}</a></li>
@@ -95,11 +95,13 @@ $('.dropdown-toggle').dropdown();
                    <i class="icon-search"></i> {% trans "Simple CSV Search" %}</a></li>
              
              <li> <a  href="{% url 'djmongo_browse_saved_searches_w_params' d.name c %}">
-                   <i class="icon-eye-open"></i> {% trans "Browse Saved Searches..." %}</a></li>
+                   <i class="icon-eye-open"></i> {% trans "Browse Saved Searches..." %}</a>
+             </li>
             
             <li role="presentation" class="divider"></li>
             <li> <a  href="{% url 'djmongo_clear_collection' d.name c %}">
-                   <i class="icon-step-backward"></i> {% trans "Clear Collection..." %} </a></li>
+                   <i class="icon-step-backward"></i> {% trans "Clear Collection..." %} </a>
+            </li>
        
             <li> <a  href="{% url 'djmongo_drop_collection' d.name c %}"">
                    <i class="icon-warning-sign"></i> {% trans "Drop Collection" %} </a></li>

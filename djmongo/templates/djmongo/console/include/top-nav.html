@@ -18,43 +18,19 @@
             <li class="dropdown">
              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Actions <b class="caret"></b></a>
               <ul class="dropdown-menu">
-                <li><a href="new-database">
+                <li><a href="{% url 'djmongo_create_new_database' %}">
                         <i class="icon-plus-sign"></i> Create Database</a>
                 </li>
         
-                <li><a href="/import/previous">
-                        <i class="icon-eye-open"></i> View Previous Imports</a>
+                <li><a href="{% url 'djmongo_import_home' %}">
+                        <i class="icon-eye-open"></i> Import Data</a>
                 </li>
                     
-                <li><a href="/search/saved-searches">
+                <li><a href="{% url 'djmongo_browse_saved_searches' %}">
                         <i class="icon-filter"></i> View Saved Searches</a>
                 </li>
               </ul>
             </li>
-            
-            
-             <li class="dropdown">
-              
-              
-             
-              
-              
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Data <b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                <li><a target="_blank" href="http://nppes.viva-it.com/NPI_Files.html">Public Data Disemination</a></li>
-                <li><a target="_blank" href="http://help.npi.io/read-api.html">API Documentation</a></li>
-                {% if user.is_authenticated %}
-                    <li><a href="accounts/logout">{% trans "Logout" %}</a></li>
-                {% else %}
-                    <li><a href="accounts/login">{% trans "Login" %}</a></li>
-                {% endif %} 
-              </ul>
-            </li>
-            
-            
-            
-            
-            
             
             
            <li><a target="_blank" href="https://github.com/hhsidealab/djmongo">Help</a></li>

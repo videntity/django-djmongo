@@ -16,7 +16,6 @@ from forms import SavedSearchForm, ComplexSearchForm
 from ..mongoutils import query_mongo, to_json, normalize_results
 from models import SavedSearch
 from xls_utils import convert_to_xls, convert_to_csv, convert_labels_to_xls, convert_to_rows
-from dict2xml import dict2xml
 from django.db import IntegrityError
 from django.utils.translation import ugettext_lazy as _
 import shlex
@@ -119,21 +118,8 @@ def search_json(request, database_name=settings.MONGO_DB_NAME,
         return HttpResponse(response, status=int(result['code']),
                             content_type="application/json")
 
-    if settings.RESPECT_SOCIAL_GRAPH:
-        listresults=filter_social_graph(request, listresults)
-
-
-        len_results=len(listresults)
-        if len_results < result['num_results']:
-            result['ommitted-results']= result['num_results'] - len_results
-            result['results']=listresults
-
-        jsonresults=to_json(result)
-        return HttpResponse(jsonresults, status=int(result['code']),
-                            content_type="application/json")
-    else:
-        jsonresults=to_json(normalize_results(result))
-        return HttpResponse(jsonresults, status=int(result['code']),content_type="application/json")
+    jsonresults=to_json(normalize_results(result))
+    return HttpResponse(jsonresults, status=int(result['code']),content_type="application/json")
 
 
 
@@ -294,6 +280,8 @@ def run_saved_search_by_slug(request, slug, output_format=None, skip=0,
     
     ss = get_object_or_404(SavedSearch,  slug=slug)
     #Don't run the search unless its public.
+    print "AUTH", request.user.is_authenticated()
+    
     if not request.user.is_authenticated() and not ss.is_public:
         response_dict = {}
         response_dict['num_results']=0
@@ -302,11 +290,8 @@ def run_saved_search_by_slug(request, slug, output_format=None, skip=0,
         response_dict['results']=[]
         response_dict['message']="Not Found. Perhaps you need to log in?"
         response = json.dumps(response_dict, indent =4)
-        return HttpResponse(response, status=int(response_dict['code']),
-                content_type="application/json")
-    else:
-        #So user is authenticated, check if user is in the right group/ 
-        if not request.user.groups.filter(name__in=[ss.group,]).exists():
+        return HttpResponse(response, content_type="application/json")
+    elif not request.user.groups.filter(name__in=[ss.group,]).exists() and not ss.is_public:
             response_dict = {}
             response_dict['num_results']=0
             response_dict['code']=401
@@ -314,13 +299,8 @@ def run_saved_search_by_slug(request, slug, output_format=None, skip=0,
             response_dict['results']=[]
             response_dict['message']="You do not have permission to run this search."
             response = json.dumps(response_dict, indent =4)
-            return HttpResponse(response, status=int(response_dict['code']),
-                content_type="application/json") 
-    
-    
-    
-    
-    
+            return HttpResponse(response, content_type="application/json")
+        
     
     query = ss.query
     #if a GET param matches, then replace it
@@ -345,8 +325,7 @@ def run_saved_search_by_slug(request, slug, output_format=None, skip=0,
         response_dict['results']=[]
         response_dict['message']="Your query was not valid JSON."
         response = json.dumps(response_dict, indent =4)
-        return HttpResponse(response, status=200,
-                content_type="application/json")
+        return HttpResponse(response, content_type="application/json")
 
 
     if output_format:
@@ -372,7 +351,7 @@ def run_saved_search_by_slug(request, slug, output_format=None, skip=0,
         response_dict['type']="Error"
         response_dict['results']=[]
         response = json.dumps(response_dict, indent =4)
-        return HttpResponse(response, status=int(response_dict['code']),
+        return HttpResponse(response,
                 content_type="application/json")
     
     
@@ -415,8 +394,7 @@ def run_saved_search_by_slug(request, slug, output_format=None, skip=0,
     response_dict['results']     = []
     response_dict['message']     = "Oops. Somethingwent wrong." + response_dict['message']
     response = json.dumps(response_dict, indent =4)
-    return HttpResponse(response, status=int(response_dict['code']),
-                            content_type="application/json")
+    return HttpResponse(response, content_type="application/json")
 
 
 
