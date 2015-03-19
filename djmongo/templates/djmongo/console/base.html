@@ -24,9 +24,11 @@
 <body>
       
         {% include "djmongo/console/include/top-nav.html" %}
-     
+        {% include "djmongo/console/include/messages.html" %}
 
       {% block Content %}
+         
+      
         {% if template %}{% include template %}{% endif %}
         {{ content|safe }}
       {% endblock %}
