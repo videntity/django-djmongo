@@ -65,10 +65,9 @@ def check_database_access(func):
     
         if not default_to_open:
             
-            if not database_name or not colelction_name:
+            if not database_name or not collection_name:
                 return HttpResponse(unauthorized_json_response(),
                                 content_type="application/json")
-            
             
             try:
                 #Check to see if we have a matching record in DB access.
