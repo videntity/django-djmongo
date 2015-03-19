@@ -78,30 +78,21 @@ urlpatterns = patterns('',
                     name="djmongo_load_labels"),
 
     
-    #API CALLS -------------------------------------------------------------    
+    #API CALLS ------------------------------------------------------------------   
     
-    #return JSON
-    url(r'^api/search.json$', search_json,
-        name="api_search_json"),
-    
+    #return JSON ----------------------------------------------
     url(r'^api/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/search.json$',
          search_json, name="api_search_json_w_params"),
     
-    #return CSV
-    url(r'^api/search.csv$',  search_csv,
-        name="api_search_csv"),
-    
+    #return CSV ------------------------------------------------
     url(r'^api/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/search.csv$',
          search_csv, name="api_search_csv_w_params"),
  
-    #return HTML Table ------
-    url(r'^api/search.html$',  search_html,
-        name="api_search_html"),
-    
+    #return HTML Table ----------------------------------------------------------  
     url(r'^api/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/search.html$',
          search_html, name="api_search_html_w_params"),
     
-    #Saved Searches 
+    #Saved Search API Calls ------------------------------------------------------- 
     url(r'^api/run-public-saved-search/(?P<slug>\S+)$',
         run_saved_search_by_slug,
         name="run_saved_search_by_slug"),

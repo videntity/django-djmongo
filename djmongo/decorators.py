@@ -17,6 +17,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.conf import settings
 from django.contrib.auth import authenticate, login
 from utils import authorize, unauthorized_json_response
+from search.models import DatabaseAccessControl
 
 
 def json_login_required(func):
@@ -40,12 +41,66 @@ def json_login_required(func):
             user = authenticate(username=username, password=password)
         
         if not user or not user.is_active:
-            return HttpResponse(unauthorized_json_response(), status=401,
+            return HttpResponse(unauthorized_json_response(),
                     mimetype="application/json")          
         login(request, user)
         return func(request, *args, **kwargs)
 
     return update_wrapper(wrapper, func)
 
+
+def check_database_access(func):
+    """
+        Put this decorator before your view to check if the database/colelction
+        can be accessed by this user, Return a JSON 401 error if he/she is not.
+        Call after login decorator.
+    """
     
+    def wrapper(request, *args, **kwargs):
+        default_to_open = getattr(settings, 'DEFAULT_TO_OPEN_READ', False)
+        
+        database_name   = kwargs.get('database_name', "")
+        collection_name = kwargs.get('collection_name', "")
+        
+    
+        if not default_to_open:
+            
+            if not database_name or not colelction_name:
+                return HttpResponse(unauthorized_json_response(),
+                                content_type="application/json")
+            
+            
+            try:
+                #Check to see if we have a matching record in DB access.
+                dac = DatabaseAccessControl.objects.get(database_name=database_name,
+                                                    collection_name=collection_name)      
+            except DatabaseAccessControl.DoesNotExist:
+                return HttpResponse(unauthorized_json_response(),
+                                content_type="application/json")
+            
+            if not dac.is_public:
+                dac_groups = dac.groups.all()
+                user_groups = request.user.groups.all()
+                
+                print request.user, dac_groups, user_groups
+                 #for g in dac.groups.all():
+                    #if equest.user.groups.
+                
+               #allowedgroups
+                in_group=False
+                group= None
+                for dg in  dac_groups:
+                    if dg in user_groups:
+                        in_group =True
+                        group = dg
+  
+                if not in_group:
+                    return HttpResponse(unauthorized_json_response(),
+                                content_type="application/json")
+        
+        return func(request, *args, **kwargs)
+
+    return update_wrapper(wrapper, func)
+
+
 

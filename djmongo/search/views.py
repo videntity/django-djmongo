@@ -3,6 +3,7 @@
 # vim: ai ts=4 sts=4 et sw=4
 import os, uuid, json
 from django.conf import settings
+from ..decorators import check_database_access
 from django.shortcuts import render_to_response,  get_object_or_404
 from django.contrib import messages
 from django.http import HttpResponse, Http404, HttpResponseRedirect
@@ -99,7 +100,7 @@ def custom_report(request, database_name=settings.MONGO_DB_NAME,
 
 
 
-
+@check_database_access
 def search_json(request, database_name=settings.MONGO_DB_NAME,
                 collection_name=settings.MONGO_MASTER_COLLECTION,
                 skip=0, limit=settings.MONGO_LIMIT, sort=None, return_keys=(),
@@ -122,7 +123,7 @@ def search_json(request, database_name=settings.MONGO_DB_NAME,
     return HttpResponse(jsonresults, status=int(result['code']),content_type="application/json")
 
 
-
+@check_database_access
 def search_csv(request, database_name=settings.MONGO_DB_NAME,
                 collection_name=settings.MONGO_MASTER_COLLECTION,
                 skip=0, sort=None, limit=settings.MONGO_LIMIT, return_keys=(), query={}):
@@ -135,12 +136,6 @@ def search_csv(request, database_name=settings.MONGO_DB_NAME,
 
     if int(result['code']) == 200:
         listresults=result['results']
-        if settings.RESPECT_SOCIAL_GRAPH:
-            listresults = filter_social_graph(request, listresults)
-            len_results = len(listresults)
-            if len_results < result['num_results']:
-                result['ommitted-results']= result['num_results'] - len_results
-
         keylist = []
         for i in listresults:
             for j in i.keys():
@@ -156,7 +151,7 @@ def search_csv(request, database_name=settings.MONGO_DB_NAME,
                             content_type="application/json")
 
 
-
+@check_database_access
 def search_html(request, database_name=settings.MONGO_DB_NAME,
                 collection_name=settings.MONGO_MASTER_COLLECTION,
                 sort=None, skip=0, limit=settings.MONGO_LIMIT, return_keys=(),
@@ -172,11 +167,6 @@ def search_html(request, database_name=settings.MONGO_DB_NAME,
 
     if int(result['code']) == 200:
         listresults=result['results']
-        if settings.RESPECT_SOCIAL_GRAPH:
-            listresults = filter_social_graph(request, listresults)
-            len_results = len(listresults)
-            if len_results < result['num_results']:
-                result['ommitted-results']= result['num_results'] - len_results
 
         keylist = []
         for i in listresults:
@@ -186,9 +176,8 @@ def search_html(request, database_name=settings.MONGO_DB_NAME,
         context ={"rows": convert_to_rows(keylist, listresults),
                   "timestamp": timestamp}
         
-        return render_to_response('search/html-table.html',
+        return render_to_response('djmongo/search/html-table.html',
                               RequestContext(request, context,))   
-
 
     else:
         jsonresults=to_json(result)
@@ -280,7 +269,6 @@ def run_saved_search_by_slug(request, slug, output_format=None, skip=0,
     
     ss = get_object_or_404(SavedSearch,  slug=slug)
     #Don't run the search unless its public.
-    print "AUTH", request.user.is_authenticated()
     
     if not request.user.is_authenticated() and not ss.is_public:
         response_dict = {}
