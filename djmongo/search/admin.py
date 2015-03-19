@@ -1,5 +1,5 @@
 from django.contrib import admin
-from models import SavedSearch
+from models import SavedSearch, DatabaseAccessControl
 
 
 
@@ -11,3 +11,6 @@ class SavedSearchAdmin(admin.ModelAdmin):
 
 admin.site.register(SavedSearch, SavedSearchAdmin)
 
+class DatabaseAccessControlAdmin(admin.ModelAdmin):
+    list_display = ('database_name', 'collection_name', 'is_public')
+admin.site.register(DatabaseAccessControl, DatabaseAccessControlAdmin)

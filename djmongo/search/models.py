@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.template.defaultfilters import slugify
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
 
 
 OUTPUT_CHOICES = (("json","JSON"),
@@ -59,4 +59,26 @@ class SavedSearch(models.Model):
         if not self.id and not self.slug:
             self.slug = slugify(self.title)
         super(SavedSearch, self).save(**kwargs)
+        
+        
+        
+class DatabaseAccessControl(models.Model):
+
+    database_name   = models.CharField(max_length=100, unique=True)
+    collection_name = models.CharField(max_length=100, unique=True)
+    is_public       = models.BooleanField(default=False, blank=True)
+    groups          = models.ManyToManyField(Group,
+                                null=True,
+                                blank=True,
+                                related_name = "djmongo_database_access_control")
+    
+    class Meta:
+        #get_latest_by = "creation_date"
+        #ordering = ('-creation_date',)
+        verbose_name_plural = "Database Access Controls"
+        unique_together =  (('database_name','collection_name'), )
+
+    def __unicode__(self):
+        return "%s/%s" % (self.database_name, self.collection_name )
+        
 
