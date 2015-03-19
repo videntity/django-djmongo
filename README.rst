@@ -70,13 +70,22 @@ In the simple configuration above, we allow all GET requests from all origins ho
 
     #Djmongo Settings --------------
     
-    #The MongoDB host
+    #Pretty Bootstrap3 messages.
+    from django.contrib.messages import constants as messages
+    MESSAGE_TAGS ={ messages.DEBUG: 'debug',
+                messages.INFO: 'info',
+                messages.SUCCESS: 'success',
+                messages.WARNING: 'warning',
+                messages.ERROR: 'danger',}
+
+
+    #Set the MongoDB host
     MONGO_HOST = "127.0.0.1"
     
-    #The MongoDB port
+    #Set the MongoDB port
     MONGO_PORT = 27017
     
-    #The default limit on searches (unless specified otherwise).
+    #Set the default limit on searches (unless specified otherwise).
     MONGO_LIMIT = 200
     
     #The default database name when none is provided.
@@ -88,9 +97,11 @@ In the simple configuration above, we allow all GET requests from all origins ho
     #Instruct Django to accept standard httpauth. (Optional)
     AUTHENTICATION_BACKENDS = (#'djmongo.auth.HTTPAuthBackend',
                            'django.contrib.auth.backends.ModelBackend',)
+                           
+                           
 
 
-5. Include the "djmongo" URLconf in your project's urls.py like this::
+7. Include the "djmongo" URLconf in your project's urls.py like this::
 
     
     ...
@@ -102,19 +113,26 @@ In the simple configuration above, we allow all GET requests from all origins ho
 
 
 
-6. Create the models that contain information to help with seacrching and imports.::
+8. Create the models that contain information to help with seacrching and imports.
+
+On Django 1.6::
 
     python manage.py syncdb
 
-7. Collect static content::
+On django 1.7+::
+
+    python manage.py migrate
+
+
+9. Collect static content::
 
     python manage.py collectstatic
 
-8. Start the development server::
+10. Start the development server::
 
     python manage.py runserver
 
-9. Point your browser to http://127.0.0.1:8000/console
+11. Point your browser to http://127.0.0.1:8000
 
 
 

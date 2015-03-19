@@ -9,7 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-djmongo',
-    version='0.1',
+    version='0.2',
     packages=['djmongo', 'djmongo.console', 'djmongo.search','djmongo.dataimport' ],
     include_package_data=True,
     license='Public Domain',  
@@ -19,7 +19,7 @@ setup(
     author='Alan Viars',
     author_email='alan.viars@cms.hhs.gov',
     install_requires=[
-        'django==1.6.1', 'pymongo', 'django-widget-tweaks', 'django-bootstrap-form', 'django-cors-headers' ],
+        'django>=1.6.1', 'pymongo', 'django-widget-tweaks', 'django-bootstrap-form', 'django-cors-headers' ],
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',

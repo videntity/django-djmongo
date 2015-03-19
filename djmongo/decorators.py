@@ -4,7 +4,8 @@
 
 
 """
-    Decorator to check for credentials before responding on json requests.
+    Decorator to check for credentials before responding on API requests.
+    REsponse with JSON instead of standard login redirect.
 """
 
 import urlparse

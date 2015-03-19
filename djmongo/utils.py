@@ -4,7 +4,6 @@
 
 import json, string, random
 from django.contrib.auth import login, authenticate
-from httpauth import HttpBasicAuthentication
 from django.http import HttpResponse
 from datetime import date
 
