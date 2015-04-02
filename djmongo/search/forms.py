@@ -4,7 +4,7 @@
 
 import datetime
 from django import forms
-from models import SavedSearch, OUTPUT_CHOICES
+from models import SavedSearch, OUTPUT_CHOICES, Aggregation
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -17,7 +17,17 @@ class SavedSearchForm(forms.ModelForm):
 
     required_css_class = 'required'
     
+
+
+class AggregationForm(forms.ModelForm):
+    class Meta:
+        model = Aggregation
+        fields = ( 'title', 'pipeline',  'database_name', 'collection_name', 'execute_now')
+
+    required_css_class = 'required'
     
+    
+
 class ComplexSearchForm(forms.Form):
     query = forms.CharField(widget=forms.Textarea, initial="{}")
     skip = forms.IntegerField(initial=0)

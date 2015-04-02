@@ -13,9 +13,10 @@ from django.utils.translation import ugettext_lazy as _
 from utils import (show_dbs, mongodb_drop_collection, mongodb_drop_database,
                 mongodb_clear_collection, mongodb_ensure_index)
 
-from forms import EnsureIndexForm, DeleteForm, DocumentForm, CreateDatabaseForm
+from forms import EnsureIndexForm, DeleteForm, DocumentForm, CreateDatabaseForm, LoginForm
 from utils import mongo_delete_json_util, mongo_create_json_util
 from bson.objectid import ObjectId
+from django.contrib.auth import authenticate, login, logout
 
 def showdbs(request):
     dbs = show_dbs()
@@ -24,6 +25,55 @@ def showdbs(request):
     context = { "dbs": dbs }
     return render_to_response('djmongo/console/showdbs.html',
                               RequestContext(request, context,))
+
+
+
+def simple_logout(request):
+    logout(request)
+    messages.success(request, _("Logged out successfully."))
+    return HttpResponseRedirect(reverse('djmongo_login'))
+
+
+def simple_login(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user=authenticate(username=username, password=password)
+            
+            if user is not None:
+                if user.is_active:
+                    login(request,user)
+                    
+                    next = request.GET.get('next','')
+                    if next:
+                        #If a next is in the URL, then go there
+                        return HttpResponseRedirect(next)
+                    #otherwise just go to home.
+                    return HttpResponseRedirect(reverse('djmongo_show_dbs'))
+                else:
+                   #The user exists but is_active=False
+                   messages.error(request,
+                        _("Your account is inactive so you may not log in."))
+                   
+                   return render_to_response('djmongo/console/login2.html',
+                                            {'form': form},
+                                            RequestContext(request))
+            else:
+                messages.error(request, _("Invalid username or password."))
+                   
+                return render_to_response('djmongo/console/login2.html',
+                                    {'form': form},
+                                    RequestContext(request))
+
+        else:
+         return render_to_response('djmongo/console/login2.html',
+                              RequestContext(request, {'form': form}))
+    #this is a GET
+    return render_to_response('djmongo/console/login2.html',
+                              {'form': LoginForm()},
+                              context_instance = RequestContext(request))
 
 
 
@@ -199,7 +249,7 @@ def remove_data_from_collection(request,  database_name=settings.MONGO_DB_NAME,
             #convert to json and respond.
             results_json = json.dumps(results, indent =4)
             return HttpResponse(results_json, status=int(results['code']),
-                                    mimetype="application/json")        
+                                    content_type="application/json")        
         else:
             #The form is invalid
              messages.error(request,_("Please correct the errors in the form."))
@@ -228,9 +278,7 @@ def remove_data_from_collection(request,  database_name=settings.MONGO_DB_NAME,
 
 
 
-def create_document_in_collection(request,
-                                  database_name=settings.MONGO_DB_NAME,
-                collection_name=settings.MONGO_MASTER_COLLECTION):
+def create_document_in_collection(request, database_name,collection_name):
 
     name = _("Create a Document from JSON")
     
@@ -246,7 +294,7 @@ def create_document_in_collection(request,
             #convert to json and respond.
             results_json = json.dumps(results, indent = 4)
             return HttpResponse(results_json, status=int(results['code']),
-                                    mimetype="application/json")        
+                                    content_type="application/json")        
         else:
             #The form is invalid
              messages.error(request,_("Please correct the errors in the form."))
@@ -255,18 +303,11 @@ def create_document_in_collection(request,
                                              'name':name,
                                              },
                                             RequestContext(request))
-    
     #this is a GET
-    if not database_name or collection_name:
-        idata ={'database_name': settings.MONGO_DB_NAME,
-           'collection_name': settings.MONGO_MASTER_COLLECTION,
-           }
-    else:
-        idata ={'database_name': database_name,
+    idata ={'database_name': database_name,
              'collection_name': collection_name,
              }
     
-
     context= {'name':name,
               'form': DocumentForm(initial=idata)
               }
@@ -290,7 +331,7 @@ def update_document_in_collection(request,  database_name=settings.MONGO_DB_NAME
                            "message": "Updates must include either id or _id." }
                 results_json = json.dumps(result, indent = 4)
                 return HttpResponse(results_json, status=result['code'],
-                                    mimetype="application/json")     
+                                    content_type="application/json")     
         
             if doc.has_key("_id") and doc.has_key("id"):
                 result = { "code":    400,
@@ -298,7 +339,7 @@ def update_document_in_collection(request,  database_name=settings.MONGO_DB_NAME
                            "message": "Updates cannot contain both id and _id" }
                 results_json = json.dumps(result, indent = 4)
                 return HttpResponse(results_json, status=result[code],
-                                    mimetype="application/json")     
+                                    content_type="application/json")     
         
             if doc.has_key("id"):
                 doc["_id"] = ObjectId(doc["id"])
@@ -316,7 +357,7 @@ def update_document_in_collection(request,  database_name=settings.MONGO_DB_NAME
             #convert to json and respond.
             results_json = json.dumps(results, indent = 4)
             return HttpResponse(results_json, status=int(results['code']),
-                                    mimetype="application/json")        
+                                    content_type="application/json")        
         else:
             #The form is invalid
              messages.error(request,_("Please correct the errors in the form."))

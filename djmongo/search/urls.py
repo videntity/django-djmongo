@@ -50,9 +50,16 @@ urlpatterns = patterns('',
     
     url(r'^create-saved-search$', login_required(create_saved_search),
                     name="djmongo_create_saved_search"),
+
+    
     
     url(r'^create-saved-search/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
          login_required(create_saved_search), name="djmongo_create_saved_search_w_params"),
+
+
+    url(r'^create-saved-aggregation/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
+                   login_required(create_saved_aggregation),
+                    name="djmongo_create_saved_aggregation_w_params"),
 
     
     url(r'^complex-search/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',

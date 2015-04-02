@@ -1,0 +1,34 @@
+{% extends "djmongo/console/base.html" %}
+{% load i18n %}
+
+{% block Content %}
+
+
+  <div class="container">
+    
+    <div class="hero-unit">
+    <h1>{% trans "Login" %}</h1>
+  <br>
+   
+    <div class="row">
+        
+     <div class="col-lg-5">
+    
+      <form class="well" method="post" action="">
+        
+        {% csrf_token %}
+        <table>
+	{% load bootstrap %}
+	{{ form|bootstrap }}
+        </table>
+	<input type="submit" class="btn btn-success btn-large"  value="{% trans 'Login' %}" /><br>
+	<a href="javascript:history.go(-1)">{% trans "Cancel" %}</a>
+      </form>
+    </div>
+  </div>
+
+
+    
+{% endblock %}
+
+

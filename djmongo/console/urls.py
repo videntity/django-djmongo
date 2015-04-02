@@ -13,6 +13,9 @@ urlpatterns = patterns('',
     
     url(r'^new-database$', create_new_database, name="djmongo_create_new_database"),
 
+    url(r'^logout$', simple_logout, name="djmongo_logout"),
+    url(r'^login$', simple_login, name="djmongo_login"),
+
     url(r'^clear-collection/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
          login_required(clear_collection),
          name="djmongo_clear_collection"), 
