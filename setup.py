@@ -9,11 +9,11 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-djmongo',
-    version='0.4',
+    version='0.5.1',
     packages=['djmongo', 'djmongo.console', 'djmongo.search','djmongo.dataimport' ],
     include_package_data=True,
     license='Public Domain',  
-    description='Django app providing a MongoDB Web UI and REST API Toolkit.',
+    description='A reusable Django application providing a web interface for MongoDB and RESTFul API Toolkit.',
     long_description=README,
     url='https://github.com/hhsidealab/django-djmongo',
     author='Alan Viars',

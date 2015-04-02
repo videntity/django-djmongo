@@ -13,6 +13,25 @@ from bson.objectid import ObjectId
 from pymongo import MongoClient
 
 
+
+
+def run_aggregation_pipeline(database_name, collection_name, pipeline):
+    result = False
+    mc =   MongoClient(host=settings.MONGO_HOST,
+    port=settings.MONGO_PORT)    
+    db           = mc[str(database_name)]
+    collection   = db[str(collection_name)]
+    print "here"
+    #explain = db.command('aggregate', collection, pipeline=pipeline, explain=True)
+    #print explain
+    print "process"
+    agg_result = collection.aggregate(pipeline)
+    
+    print agg_result
+    result = True
+    return result
+
+
 def to_json(results_dict):
     return json.dumps(results_dict, indent = 4)
   
@@ -198,8 +217,8 @@ def write_mongo(document, database_name=settings.MONGO_DB_NAME,
         
         
         # Cast the query to integers 
-        if settings.CAST_STRINGS_TO_INTEGERS: 
-            query = cast_number_strings_to_integers(query)
+        #if settings.CAST_ININGS_TO_INTEGERS: 
+        #    query = cast_number_strings_to_integers(query)
         
         potential_key_found = False
         existing_transaction_id = None
@@ -419,7 +438,7 @@ def delete_tx(attrs, collection=None):
     except:
         error=str(sys.exc_value)
         d={"code":'500',
-           "message": "MongoDB Connection Error. MongoDB may not be running or flangio cannot access it.",
+           "message": "MongoDB Connection Error. MongoDB may not be running or djmongo cannot access it.",
            "errors":(error,)}
         return d
 
@@ -488,18 +507,13 @@ def raw_query_mongo_db(kwargs, collection_name=None):
 
 
 
-def get_collection_keys(collection_name=None):
+def get_collection_keys(database_name, collection_name):
     l=[]
     try:
         mconnection =   Connection(settings.MONGO_HOST, settings.MONGO_PORT)
-        db =            mconnection[settings.MONGO_DB_NAME]
-        if not collection_name:
-            ckey_collection = "%s_keys" % (settings.MONGO_MASTER_COLLECTION)
-            print settings.MONGO_DB_NAME, ckey_collection
-            collection = db[ckey_collection]
-        else:
-            ckey_collection = "%s_keys" % (collection_name)
-            collection = db[ckey_collection]
+        db =            mconnection[database_name]
+        ckey_collection = "%s_keys" % (collection_name)
+        collection = db[ckey_collection]
         result = collection.find({}).distinct("_id")
         for r in result:
             l.append(r)

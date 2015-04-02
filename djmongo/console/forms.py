@@ -5,6 +5,13 @@ from django.utils.translation import ugettext_lazy as _
 from utils import mongodb_ensure_index, create_mongo_db
 
 
+class LoginForm(forms.Form):
+    username = forms.CharField(max_length=30, label=_("User"))
+    password = forms.CharField(widget=forms.PasswordInput, max_length=30,
+                               label=_("Password"))
+    required_css_class = 'required'
+
+
 
 class EnsureIndexForm(forms.Form):
     key = forms.CharField(label=_("Key"))

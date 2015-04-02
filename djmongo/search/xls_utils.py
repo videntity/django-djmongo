@@ -41,7 +41,7 @@ def flatten_results(keylist, listresults, exclude=()):
                         row[j]=str(i[j])
                     else:
                          # Avoiding int object has no attribute encode
-                        if isinstance(i[j],(int, long)):
+                        if isinstance(i[j],(int, long, float)):
                             row[j] =str(i[j])
                         else:
                             row[j] ="".join(s for s in i[j].encode("ascii", errors="ignore") if s in string.printable)
@@ -53,7 +53,8 @@ def flatten_results(keylist, listresults, exclude=()):
 
     return rows
 
-def tupleize(rows):
+def tupleize(rows,
+             alphabetize_columns = getattr(settings, 'ALPHABETIZE_COLUMNS', False)):
     """Also alphabetizes columns and returns a tuple of tuples"""
 
     #define a blank list as our return object
@@ -63,9 +64,8 @@ def tupleize(rows):
         row =list(r.values())
         l.append(row)
 
-
     # alphabetize
-    if settings.ALPHABETIZE_COLUMNS:
+    if alphabetize_columns:
         col = zip(*l)
         col.sort()
         result = zip(*col)
@@ -74,31 +74,10 @@ def tupleize(rows):
         return l
 
 
-#def apply_custom_labels(rows):
-#    if settings.OTHER_LABELS:
-#        labeldict = get_collection_labels()
-#        counter=0
-#        old_column_header = rows[0]
-#        new_column_header = []
-#        for i in old_column_header:
-#            try:
-#                l =  DataLabelMeta.objects.get(variable_name = build_non_observational_key(i))
-#                new_column_header.append(str(l.label))
-#            except(DataLabelMeta.DoesNotExist):
-#                #there is no custom label defined, so lets try and use the
-#                #regular label from the Data dictionary.
-#                if labeldict.has_key(i):
-#                    new_column_header.append(labeldict[i])
-#                else:
-#                    # else, fallback to the system key
-#                    new_column_header.append(i)
-#        rows[0] = new_column_header
-#    return rows
 
+def sort_by_columns(rows, sort_columns=getattr(settings, 'SORTCOLUMNS', False)):
 
-def sort_by_columns(rows):
-
-    if settings.SORTCOLUMNS:
+    if  sort_columns:
         ncolumns =[]
         columns = list(zip(*rows))
         sl = get_collection_keys()
@@ -122,42 +101,12 @@ def sort_by_columns(rows):
     return rows
 
 
-def convert_to_xls(keylist, listresults, exclude=()):
-    rows = flatten_results(keylist, listresults, exclude=())
-
-
-    #turn rows into a tuple of tuples
-    rows = tupleize(rows)
-
-    if settings.SORTCOLUMNS:
-        #sort by our preferred column order, if specificed
-        rows = sort_by_columns(rows)
-
-
-
-    filename = datetime.now().strftime('%m-%d-%Y_%H:%M:%S') + '.xls'
-    response = HttpResponse(mimetype="application/vnd.ms-excel")
-    response['Content-Disposition'] = 'attachment; filename=' + filename
-    excelwb = excelify(rows)
-    excelwb.save(response)
-    return response
-
-
-
-def convert_labels_to_xls(rows):
-
-    filename = datetime.now().strftime('%m-%d-%Y_%H:%M:%S') + '.xls'
-    response = HttpResponse(mimetype="application/vnd.ms-excel")
-    response['Content-Disposition'] = 'attachment; filename=' + filename
-    excelwb = excelify(rows['labels'])
-    excelwb.save(response)
-    return response
-
-def convert_to_csv(keylist, listresults, exclude=()):
+def convert_to_csv(keylist, listresults, exclude=(),
+                    sort_columns=getattr(settings, 'SORTCOLUMNS', False)):
     rows =flatten_results(keylist, listresults, exclude=())
     rows = tupleize(rows)
 
-    if settings.SORTCOLUMNS:
+    if sort_columns:
         #sort by our preferred column order, if specificed
         rows = sort_by_columns(rows)
 
@@ -173,11 +122,12 @@ def convert_to_csv(keylist, listresults, exclude=()):
         writer.writerows([r])
     return response
 
-def convert_to_rows(keylist, listresults, exclude=()):
+def convert_to_rows(keylist, listresults, exclude=(),
+                     sort_columns=getattr(settings, 'SORTCOLUMNS', False)):
     rows =flatten_results(keylist, listresults, exclude=())
     rows = tupleize(rows)
 
-    if settings.SORTCOLUMNS:
+    if sort_columns:
         #sort by our preferred column order, if specificed
         rows = sort_by_columns(rows)
 

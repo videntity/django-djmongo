@@ -2,7 +2,6 @@
 
 
 {% block extra_head %}
-<script type="text/javascript" src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js"></script>
 
 <script type="text/javascript">
 $('.dropdown-toggle').dropdown();
@@ -72,39 +71,43 @@ $('.dropdown-toggle').dropdown();
        
        
             <li><a  href="{% url 'djmongo_create_document_in_collection_w_params' d.name  c %}">
-                   <i class="icon-plus-sign"></i> {% trans "Create a Document..." %}</a></li>
+                   <i class="fa fa-plus-circle"></i> {% trans "Create a Document..." %}</a></li>
             
             <li><a  href="{% url 'djmongo_update_document_in_collection_w_params' d.name c %}">
-                   <i class="icon-refresh"></i> {% trans "Update a Document..." %}</a></li>
+                   <i class="fa fa-retweet"></i> {% trans "Update a Document..." %}</a></li>
             
             <li> <a href="{% url 'djmongo_previous_data_imports_w_params' d.name c %}">
-                   <i class="icon-upload"></i> {% trans "Import Data..." %}</a></li>
+                   <i class="fa fa-angle-double-right"></i> {% trans "Import Data..." %}</a></li>
        
             <li><a  href="{% url 'djmongo_ensure_index' d.name c %}">
-                   <i class="icon-fire"></i> {% trans "Create an Index..." %}</a></li>
+                   <i class="fa fa-fighter-jet"></i> {% trans "Create an Index..." %}</a></li>
        
             <li role="presentation" class="divider"></li>       
              
              <li> <a  target=_blank href="{% url 'djmongo_search_json_w_params' d.name c %}">
-                   <i class="icon-search"></i> {% trans "Simple JSON Search" %}</a></li>
+                   <i class="fa fa-search"></i> {% trans "Simple JSON Search" %}</a></li>
              
              <li> <a  target=_blank href="{% url 'djmongo_search_html_w_params' d.name c %}">
-                   <i class="icon-search"></i> {% trans "Simple HTML Search" %}</a></li>
+                   <i class="fa fa-search"></i> {% trans "Simple HTML Search" %}</a></li>
              
              <li> <a  target=_blank href="{% url 'djmongo_search_csv_w_params' d.name c %}">
-                   <i class="icon-search"></i> {% trans "Simple CSV Search" %}</a></li>
+                   <i class="fa fa-search"></i> {% trans "Simple CSV Search" %}</a></li>
              
-             <li> <a  href="{% url 'djmongo_browse_saved_searches_w_params' d.name c %}">
-                   <i class="icon-eye-open"></i> {% trans "Browse Saved Searches..." %}</a>
+            
+             <li role="presentation" class="divider"></li>
+              <li> <a  href="{% url 'djmongo_browse_saved_searches_w_params' d.name c %}">
+                   <i class="fa fa-eye"></i> {% trans "Browse Saved Searches..." %}</a>
              </li>
+            <li> <a  href="{% url 'djmongo_create_saved_aggregation_w_params' d.name c %}">
+                   <i class="fa fa-cogs"></i> {% trans "Create Aggregation" %}</a></li>
             
             <li role="presentation" class="divider"></li>
             <li> <a  href="{% url 'djmongo_clear_collection' d.name c %}">
-                   <i class="icon-step-backward"></i> {% trans "Clear Collection..." %} </a>
+                   <i class="fa fa-fast-backward"></i> {% trans "Clear Collection..." %} </a>
             </li>
        
             <li> <a  href="{% url 'djmongo_drop_collection' d.name c %}"">
-                   <i class="icon-warning-sign"></i> {% trans "Drop Collection" %} </a></li>
+                   <i class="fa fa-warning"></i> {% trans "Drop Collection" %} </a></li>
            
            </ul>
            </div>
