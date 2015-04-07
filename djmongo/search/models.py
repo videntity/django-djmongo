@@ -14,10 +14,9 @@ OUTPUT_CHOICES = (("json","JSON"),
 class Aggregation(models.Model):
 
     user            = models.ForeignKey(settings.AUTH_USER_MODEL)
-    group           = models.ForeignKey(Group, blank=True, null=True)
     output_format   = models.CharField(max_length=4, choices=OUTPUT_CHOICES,
                                         default="json")
-    title           = models.CharField(max_length=100, unique=True)
+    
     slug            = models.SlugField(max_length=100, unique=True)
     pipeline        = models.TextField(max_length=20480, default="[]",            
                                         verbose_name="Pipeline")
@@ -35,36 +34,35 @@ class Aggregation(models.Model):
                             help_text = "Limit results to these keys.Seperate keys by whitespace. Default is blank, which returns all keys.",
                                         )
     
-    default_limit   =  models.IntegerField(max_length=10, default=settings.MONGO_LIMIT,
+    default_limit   =  models.IntegerField(default=getattr(settings, 'MONGO_LIMIT', 200),
                             help_text = "Limit results to this number unless specified otherwise.",
                                         )
-    database_name   = models.CharField(max_length=100,
-                        default = settings.MONGO_DB_NAME)
-    collection_name = models.CharField(max_length=100,
-                        default =settings.MONGO_MASTER_COLLECTION)
+    database_name   = models.CharField(max_length=256)
+    collection_name = models.CharField(max_length=256)
+    output_collection_name = models.CharField(max_length=256,
+                             help_text = "The resulting collection. Do not include $out in your pipeline.")
     creation_date   = models.DateField(auto_now_add=True)
     execute_now     = models.BooleanField(blank=True, default=False)
-    
+    description     = models.TextField(max_length=1024, blank=True, default="")
     
     class Meta:
         get_latest_by = "creation_date"
         ordering = ('-creation_date',)
         verbose_name_plural = "Saved Aggregations"
-
     def __unicode__(self):
         return "%s" % (self.slug)
         
     def save(self, **kwargs):
        
-        #Generate the slug if the record it was not already defined.
-        if not self.id and not self.slug:
-            self.slug = slugify(self.title)
+       #Save off the bat
         super(Aggregation, self).save(**kwargs)
+        #Now try and execute
         if self.execute_now:
             #Process aggregation
-            print "process"
+            print "aggregate"
             pipeline = json.loads(self.pipeline)
-            print "processed"
+            output_dict = {"$out": self.output_collection_name}
+            pipeline.append(output_dict)
             result  = run_aggregation_pipeline(self.database_name, self.collection_name, pipeline)
             #Process aggregation
             print result
@@ -101,13 +99,11 @@ class SavedSearch(models.Model):
                             help_text = "Limit results to these keys.Seperate keys by whitespace. Default is blank, which returns all keys.",
                                         )
     
-    default_limit   =  models.IntegerField(max_length=10, default=settings.MONGO_LIMIT,
+    default_limit   =  models.IntegerField(default=getattr(settings, 'MONGO_LIMIT', 200),
                             help_text = "Limit results to this number unless specified otherwise.",
                                         )
-    database_name   = models.CharField(max_length=100,
-                        default = settings.MONGO_DB_NAME)
-    collection_name = models.CharField(max_length=100,
-                        default =settings.MONGO_MASTER_COLLECTION)
+    database_name   = models.CharField(max_length=100)
+    collection_name = models.CharField(max_length=100)
     creation_date   = models.DateField(auto_now_add=True)
     
     class Meta:

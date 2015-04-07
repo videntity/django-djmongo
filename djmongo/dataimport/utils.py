@@ -10,9 +10,7 @@ from bson.objectid import ObjectId
 from pymongo import MongoClient
 
 
-def bulk_csv_import_mongo(csvfile, delete_collection_before_import=False,
-                          database_name=settings.MONGO_DB_NAME,
-                          collection_name=None):
+def bulk_csv_import_mongo(csvfile, database_name, collection_name, delete_collection_before_import=False):
 
     """return a response_dict  with a list of search results"""
     """method can be insert or update"""
@@ -22,11 +20,8 @@ def bulk_csv_import_mongo(csvfile, delete_collection_before_import=False,
     try:
         mconnection =   Connection(settings.MONGO_HOST, settings.MONGO_PORT)
         db = 	        mconnection[database_name]
-        if not collection_name:
-            collection = db[settings.MONGO_MASTER_COLLECTION]
-        else:
-            collection = db[collection_name]
 
+        collection = db[collection_name]
         
         if delete_collection_before_import:
             myobjectid=collection.remove({})

@@ -11,8 +11,7 @@ import csv
 from ..mongoutils import delete_mongo, write_mongo
 
 
-def mongo_delete_json_util(query={}, database_name=settings.MONGO_DB_NAME,
-                 collection_name=settings.MONGO_MASTER_COLLECTION,
+def mongo_delete_json_util(database_name, collection_name, query={},
                  just_one=False):
    
    response_dict ={}
@@ -35,8 +34,8 @@ def mongo_delete_json_util(query={}, database_name=settings.MONGO_DB_NAME,
    
    return response_dict
    
-def mongo_create_json_util(document, database_name=settings.MONGO_DB_NAME,
-                 collection_name=settings.MONGO_MASTER_COLLECTION,):
+def mongo_create_json_util(document, database_name,
+                 collection_name):
    
    response_dict ={}
    valid_json = True
@@ -61,8 +60,8 @@ def mongo_create_json_util(document, database_name=settings.MONGO_DB_NAME,
    
    
 
-def mongo_create_json_util(document, database_name=settings.MONGO_DB_NAME,
-                 collection_name=settings.MONGO_MASTER_COLLECTION, update=False):
+def mongo_create_json_util(document, database_name,
+                 collection_name, update=False):
    
    response_dict ={}
    valid_json = True
@@ -207,7 +206,7 @@ def mongodb_ensure_index(dbname, collectionname, keys):
 
 
 
-def mongodb_drop_collection(dbname, collectionname):
+def mongodb_drop_collection(database_name, collection_name):
     """return a list of all dbs and related collections"""
     
     #print "skip and limit", skip, limit
@@ -215,8 +214,8 @@ def mongodb_drop_collection(dbname, collectionname):
     response_dict={}
     try:
         c=   Connection(settings.MONGO_HOST, settings.MONGO_PORT)
-        dbs = c[dbname]
-        dbs.drop_collection(collectionname)
+        dbs = c[database_name]
+        dbs.drop_collection(collection_name)
         #print "success"
         return ""
     
@@ -230,7 +229,7 @@ def mongodb_drop_collection(dbname, collectionname):
 
 
 
-def mongodb_drop_database(dbname):
+def mongodb_drop_database(database_name):
     """return a list of all dbs and related collections"""
     
     #print "skip and limit", skip, limit
@@ -238,7 +237,7 @@ def mongodb_drop_database(dbname):
     response_dict={}
     try:
         c=   Connection(settings.MONGO_HOST, settings.MONGO_PORT)
-        c.drop_database(dbname)
+        c.drop_database(database_name)
         #print "success"
         return ""
     

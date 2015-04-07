@@ -32,6 +32,11 @@ urlpatterns = patterns('',
                     run_saved_search_by_slug,
                     name="djmongo_run_saved_search_by_slug"),
     
+    url(r'^run-aggregation/(?P<slug>\S+)$',
+                    run_aggregation_by_slug,
+                    name="djmongo_run_aggregation_by_slug"),
+    
+    
     url(r'^run/(?P<slug>\S+)$',
                     login_required(run_saved_search_by_slug),
                     name="djmongo_run_saved_search_by_slug"),
@@ -48,13 +53,21 @@ urlpatterns = patterns('',
                     login_required(delete_saved_search_by_slug),
                     name="djmongo_delete_saved_search_by_slug"),
     
-    url(r'^create-saved-search$', login_required(create_saved_search),
-                    name="djmongo_create_saved_search"),
-
-    
-    
     url(r'^create-saved-search/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
-         login_required(create_saved_search), name="djmongo_create_saved_search_w_params"),
+                    login_required(create_saved_search),
+                    name="djmongo_create_saved_search_w_params"),
+    
+    
+    url(r'^edit-saved-aggregation/(?P<slug>\S+)$',
+                    login_required(edit_saved_aggregation_by_slug),
+                    name="djmongo_edit_saved_aggregation_by_slug"),
+    
+    url(r'^delete-saved-aggregation/(?P<slug>\S+)$',
+                    login_required(delete_saved_aggregation_by_slug),
+                    name="djmongo_delete_saved_aggregation_by_slug"),
+    
+    
+
 
 
     url(r'^create-saved-aggregation/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
@@ -63,14 +76,19 @@ urlpatterns = patterns('',
 
     
     url(r'^complex-search/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
-         login_required(complex_search), name="djmongo_complex_search"),
+                    login_required(complex_search), name="djmongo_complex_search"),
     
-    url(r'^browse-saved-searches$', login_required(display_saved_searches),
-                    name="djmongo_browse_saved_searches"),
+
+
+    
+    url(r'^browse-saved-aggregations/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
+                login_required(display_saved_aggregations),
+                name="djmongo_browse_saved_aggregations_w_params"),
+    
     
     url(r'^browse-saved-searches/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
                 login_required(display_saved_searches),
-                    name="djmongo_browse_saved_searches_w_params"),
+                name="djmongo_browse_saved_searches_w_params"),
     
     url(r'^build-keys', login_required(build_keys),
                     name="djmongo_search_build_keys"),

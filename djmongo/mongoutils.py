@@ -21,10 +21,9 @@ def run_aggregation_pipeline(database_name, collection_name, pipeline):
     port=settings.MONGO_PORT)    
     db           = mc[str(database_name)]
     collection   = db[str(collection_name)]
-    print "here"
+    
     #explain = db.command('aggregate', collection, pipeline=pipeline, explain=True)
     #print explain
-    print "process"
     agg_result = collection.aggregate(pipeline)
     
     print agg_result
@@ -63,9 +62,9 @@ def normalize_list(results_list):
 
     return results_list
 
-def query_mongo(query={}, database_name=settings.MONGO_DB_NAME,
-                collection_name=settings.MONGO_MASTER_COLLECTION,
-                skip=0, sort=None, limit=settings.MONGO_LIMIT, cast_strings_to_integers=False, return_keys=()):
+def query_mongo(database_name, collection_name, query={}, 
+                skip=0, sort=None, limit=getattr(settings,'MONGO_LIMIT', 200),
+                cast_strings_to_integers=False, return_keys=()):
     """return a response_dict  with a list of search results"""
     
     
@@ -118,9 +117,8 @@ def query_mongo(query={}, database_name=settings.MONGO_DB_NAME,
     return response_dict
 
 
-def query_mongo_sort_decend(query={}, database_name=settings.MONGO_DB_NAME,
-                collection_name=settings.MONGO_MASTER_COLLECTION,
-                skip=0, limit=settings.MONGO_LIMIT, return_keys=(), sortkey=None):
+def query_mongo_sort_decend(database_name, collection_name, query={},
+                skip=0, limit=getattr(settings, 'MONGO_LIMIT', 200), return_keys=(), sortkey=None):
     """return a response_dict  with a list of search results in decending
     order based on a sort key
     """
@@ -165,9 +163,8 @@ def query_mongo_sort_decend(query={}, database_name=settings.MONGO_DB_NAME,
 
 
 
-def delete_mongo(query={}, database_name=settings.MONGO_DB_NAME,
-                 collection_name=settings.MONGO_MASTER_COLLECTION,
-                 just_one=False):
+def delete_mongo(database_name, collection_name,
+                 query={},just_one=False):
     """delete from mongo helper"""
     
     l=[]
@@ -200,9 +197,8 @@ def delete_mongo(query={}, database_name=settings.MONGO_DB_NAME,
 
 
 
-def write_mongo(document, database_name=settings.MONGO_DB_NAME,
-                 collection_name=settings.MONGO_MASTER_COLLECTION,
-                 update = False):
+def write_mongo(document, database_name,
+                 collection_name, update = False):
     """Write a document to the collection. Return a response_dict containing
     the written record. Method functions as both insert or update based on update
     parameter"""
@@ -321,22 +317,18 @@ def write_mongo(document, database_name=settings.MONGO_DB_NAME,
 
 
 
-def bulk_csv_import_mongo(csvfile, delete_collection_before_import=False,
-                          database_name=settings.MONGO_DB_NAME,
-                          collection_name=None):
+def bulk_csv_import_mongo(csvfile, database_name, collection_name,
+                          delete_collection_before_import=False):
 
     """return a response_dict  with a list of search results"""
     """method can be insert or update"""
-    #print "writing ", csvfile._get_path(), "to the collection" , settings.MONGO_DB_NAME, settings.MONGO_MASTER_COLLECTION
+
     l=[]
     response_dict={}
     try:
         mconnection =   Connection(settings.MONGO_HOST, settings.MONGO_PORT)
         db = 	        mconnection[database_name]
-        if not collection_name:
-            collection = db[settings.MONGO_MASTER_COLLECTION]
-        else:
-            collection = db[collection_name]
+        collection = db[collection_name]
 
         
         if delete_collection_before_import:
@@ -372,7 +364,6 @@ def bulk_csv_import_mongo(csvfile, delete_collection_before_import=False,
                             kwargs[k]=int(v)
                         else:
                             kwargs[k]=v
-                        
                 try:
                     
                     myobjectid=collection.insert(kwargs)
@@ -426,85 +417,6 @@ def build_non_observational_key(k):
         return newlabel   
     return k
 
-def delete_tx(attrs, collection=None):
-    
-
-    #Connect to the db or fail.
-    try:
-        mconnection     = Connection(settings.MONGO_HOST, settings.MONGO_PORT)
-        db              = mconnection[settings.MONGO_DB_NAME]
-        transactions    = db[settings.MONGO_MASTER_COLLECTION_NAME]
-        history         = db[settings.MONGO_HISTORYDB_NAME]
-    except:
-        error=str(sys.exc_value)
-        d={"code":'500',
-           "message": "MongoDB Connection Error. MongoDB may not be running or djmongo cannot access it.",
-           "errors":(error,)}
-        return d
-
-
-    #Check to be sure this transaction_id exists
-    mysearchresult=transactions.find_one({'transaction_id':attrs['transaction_id']})
-
-    if mysearchresult:
-        # This tx already exists (this uuid has been submitted before)
-        if settings.ALLOW_DELETE_TX==True:
-            attrs['history']=True
-            responsedict=mysearchresult
-            responsedict['_id'] = str(uuid.uuid4())
-            hist_id=history.insert(responsedict)
-            #print "saved to history!!!"
-            r= transactions.remove({'_id': attrs['transaction_id']})
-        #print "removed origional from main collection"
-            return {"code": "200", "message": "Transaction deleted.",}
-        else:
-            #if settings.ALLOW_DELETE_TX==False, then we fail the delete attempt.
-            error="%s could not be deleted because the server is not configured to allow deletes." % (attrs['transaction_id'])
-            d={"code": '403',
-               "message": "Fobidden.  Deletes are not allowed.",
-               "errors": (error,)}
-            return d
-    else:
-        error="%s does not exist." % (attrs['transaction_id'])
-        d={"code": '404',
-            "message": "Not found.  The transaction you are trying to delete does not exist.",
-            "errors": (error,)}
-        return d
-
-
-
-def raw_query_mongo_db(kwargs, collection_name=None):
-    #for key in kwargs:
-    #    print "arg: %s: %s" % (key, kwargs[key])
-
-    """return a result list or an empty list"""
-    l=[]
-    response_dict={}
-
-    try:
-        mconnection =   Connection(settings.MONGO_HOST, settings.MONGO_PORT)
-        db =            mconnection[settings.MONGO_DB_NAME]
-        if not collection_name:
-            transactions = db[settings.MONGO_MASTER_COLLECTION]
-        elif (collection_name=="history"):
-            transactions = db[settings.MONGO_HISTORYDB_NAME]
-
-        mysearchresult=transactions.find(kwargs)
-        mysearchcount=mysearchresult.count()
-        if mysearchcount>0:
-            response_dict['code']=200
-            for d in mysearchresult:
-                l.append(d)
-            response_dict['results']=l
-    except:
-        #print "Error reading from Mongo"
-        #print str(sys.exc_info())
-        response_dict['code']=400
-
-        response_dict['type']="Error"
-        response_dict['message']=str(sys.exc_info())
-    return response_dict
-
 
 
 def get_collection_keys(database_name, collection_name):
@@ -518,11 +430,11 @@ def get_collection_keys(database_name, collection_name):
         for r in result:
             l.append(r)
 
-        if settings.SORTCOLUMNS:
+        if getattr(settings, 'SORTCOLUMNS', False):
             nl=[] #new list list
             #sort the list according to our list
 
-            for i in settings.SORTCOLUMNS:
+            for i in getattr(settings, 'SORTCOLUMNS', False):
                 for j in l:
                     if j.__contains__(i):
                         nl.append(j)
@@ -540,12 +452,12 @@ def get_collection_keys(database_name, collection_name):
 
 
 
-def get_collection_labels():
+def get_collection_labels(database_name, collection_name):
     l=[]
     try:
         mconnection     = Connection(settings.MONGO_HOST, settings.MONGO_PORT)
-        db              = mconnection[settings.MONGO_DB_NAME]
-        collection      = db[settings.MONGO_MASTER_LABELS_COLLECTION]
+        db              = mconnection[database_name]
+        collection      = db[collection_name]
 
         result = collection.find_one({})
 
@@ -556,12 +468,12 @@ def get_collection_labels():
         print "Error reading from Mongo!", str(sys.exc_info())
         return {}
 
-def get_labels_tuple():
+def get_labels_tuple(database_name, collection_name):
     l=[]
     try:
         mconnection     = Connection(settings.MONGO_HOST, settings.MONGO_PORT)
-        db              = mconnection[settings.MONGO_DB_NAME]
-        collection      = db[settings.MONGO_MASTER_LABELS_COLLECTION]
+        db              = mconnection[database_name]
+        collection      = db[collection_name]
 
         dbresult = collection.find_one({})
 
@@ -580,7 +492,7 @@ def get_labels_tuple():
 
 
 
-def build_keys_with_mapreduce(collection_name=None):
+def build_keys_with_mapreduce(database_name, collection_name):
     map= Code("function() { "
               "    for (var key in this)"
               "        { emit(key, null); } }"
@@ -589,24 +501,17 @@ def build_keys_with_mapreduce(collection_name=None):
                   "{ return null; }"
                   )
 
-
     mconnection =   Connection(settings.MONGO_HOST, settings.MONGO_PORT)
-    db =            mconnection[settings.MONGO_DB_NAME]
+    db =            mconnection[database_name]
 
-    if collection_name:
-        collection = db[collection_name]
-        result_collection_name = "%s_keys" % (collection_name)
-    else:
-        collection = db[settings.MONGO_MASTER_COLLECTION]
-        result_collection_name = "%s_keys" % (settings.MONGO_MASTER_COLLECTION)
-
-    #print "mr: %s %s %s" % (settings.MONGO_DB_NAME, collection, result_collection_name)
+    collection = db[collection_name]
+    result_collection_name = "%s_keys" % (collection_name)
 
     result = collection.map_reduce(map, reduce, result_collection_name)
     return None
 
 
-def raw_query_mongo_db(kwargs, collection_name=None):
+def raw_query_mongo_db(kwargs, database_name, collection_name):
     #for key in kwargs:
     #    print "arg: %s: %s" % (key, kwargs[key])
 
@@ -615,15 +520,11 @@ def raw_query_mongo_db(kwargs, collection_name=None):
     response_dict={}
 
     try:
-        mconnection =   Connection(settings.MONGO_HOST, settings.MONGO_PORT)
-        db =            mconnection[settings.MONGO_DB_NAME]
-        if not collection_name:
-            transactions = db[settings.MONGO_MASTER_COLLECTION]
-        elif (collection_name=="history"):
-            transactions = db[settings.MONGO_HISTORYDB_NAME]
-
-        mysearchresult=transactions.find(kwargs)
-        mysearchcount=mysearchresult.count()
+        mconnection    = Connection(settings.MONGO_HOST, settings.MONGO_PORT)
+        db             = mconnection[database_name]
+        transactions   = db[collection_name]
+        mysearchresult = transactions.find(kwargs)
+        mysearchcount  = mysearchresult.count()
         if mysearchcount>0:
             response_dict['code']=200
             for d in mysearchresult:

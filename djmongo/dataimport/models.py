@@ -32,11 +32,9 @@ class DataImport(models.Model):
     response        = models.TextField(max_length=2048, default="", blank=True,
                                         verbose_name="Response")
     
-    database_name   = models.CharField(max_length=100,
-                        default = settings.MONGO_DB_NAME)
+    database_name   = models.CharField(max_length=256)
 
-    collection_name = models.CharField(max_length=100,
-                        default =settings.MONGO_MASTER_COLLECTION)
+    collection_name = models.CharField(max_length=256)
     
     creation_date     = models.DateField(auto_now_add=True)
     

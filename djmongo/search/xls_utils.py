@@ -112,7 +112,7 @@ def convert_to_csv(keylist, listresults, exclude=(),
 
 
     filename = datetime.now().strftime('%m-%d-%Y_%H:%M:%S') + '.csv'
-    response = HttpResponse(mimetype="text/csv")
+    response = HttpResponse(content_type="text/csv")
     response['Content-Disposition'] = 'attachment; filename=' + filename
 
 
