@@ -122,8 +122,7 @@ def clear_collection(request, database_name, collection_name):
 
 
 
-def simple_ensure_index(request,  database_name=settings.MONGO_DB_NAME,
-                collection_name=settings.MONGO_MASTER_COLLECTION):
+def simple_ensure_index(request,  database_name, collection_name):
     """Ensure a MongoDB index on a particular field name"""
     name = "Ensure a MongoDB index on a particular field name"
 
@@ -157,8 +156,8 @@ def simple_ensure_index(request,  database_name=settings.MONGO_DB_NAME,
 
 
 def create_new_database(request):
-    """Create a new mongo database by adding a single document."""
-    name = "Create a new MongoDB Database"
+    """Create a New Mongo Database by adding a single document."""
+    name = "Create a New MongoDB Database"
 
     if request.method == 'POST':
         form = CreateDatabaseForm(request.POST)
@@ -230,8 +229,7 @@ def create_collection(request, database_name):
 
 
 
-def remove_data_from_collection(request,  database_name=settings.MONGO_DB_NAME,
-                collection_name=settings.MONGO_MASTER_COLLECTION):
+def remove_data_from_collection(request,  database_name, collection_name):
     
     name = _("Delete select information from a MongoDB Collection based on a query")
     
@@ -260,12 +258,7 @@ def remove_data_from_collection(request,  database_name=settings.MONGO_DB_NAME,
                                             RequestContext(request))
     
     #this is a GET
-    if not database_name or collection_name:
-        idata ={'database_name': settings.MONGO_DB_NAME,
-           'collection_name': settings.MONGO_MASTER_COLLECTION,
-           }
-    else:
-        idata ={'database_name': database_name,
+    idata ={'database_name': database_name,
              'collection_name': collection_name,
              }
     
@@ -316,8 +309,7 @@ def create_document_in_collection(request, database_name,collection_name):
     
 
     
-def update_document_in_collection(request,  database_name=settings.MONGO_DB_NAME,
-                collection_name=settings.MONGO_MASTER_COLLECTION):
+def update_document_in_collection(request,  database_name, collection_name):
     name = _("Update a Document from JSON")
     
     if request.method == 'POST' or request.method == 'PUT':

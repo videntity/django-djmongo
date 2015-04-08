@@ -6,7 +6,10 @@
 {% block Content %}
     
     <h1>Seach Results  @ {{ timestamp }}</h1>
-    <table border="1">
+    <table class="table table-condensed table-bordered">
+        
+        
+        
         {% for row in rows %}
         <tr>
             {% for field in row%}

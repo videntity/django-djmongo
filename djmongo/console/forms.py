@@ -30,7 +30,8 @@ class CreateDatabaseForm(forms.Form):
     database_name = forms.CharField()
     collection_name = forms.CharField()
     initial_document= forms.CharField(widget=forms.Textarea,
-                                      initial = '{"foo":"bar"}')
+                                      initial = '{"foo":"bar"}',
+        help_text = "You must create a document in order to create a new database and collection")
     required_css_class = 'required'
 
     def save(self):

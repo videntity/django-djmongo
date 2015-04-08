@@ -1,7 +1,7 @@
 ==================================================
 djmongo - A Drop-in Django Application for MongoDB
 ==================================================
-0.5.1 (beta)
+0.5.3 (beta)
 
 django-djmongo is an "API in a Box".  It provides a web-based UI for MongoDB,
 the ability to import data, and create RESTful APIs without the need to write code.
@@ -68,6 +68,8 @@ In the simple configuration above, we allow all GET requests from all origins ho
 
 6. Append some Djmongo specific settings to your settings file.::
 
+    #Make sure you have a static root set.
+    STATIC_ROOT = str(os.path.join(BASE_DIR, 'collectedstatic'))
     #Djmongo Settings --------------
     
     #Pretty Bootstrap3 messages.
@@ -97,10 +99,7 @@ In the simple configuration above, we allow all GET requests from all origins ho
     #Instruct Django to accept standard httpauth. (Optional)
     AUTHENTICATION_BACKENDS = (#'djmongo.auth.HTTPAuthBackend',
                            'django.contrib.auth.backends.ModelBackend',)
-    
-    #Set the Login URL provided by djmongo (Optional)
-    LOGIN_URL = '/console/login'
-                       
+                           
     #Setting DEFAULT_TO_OPEN_READ to True removes any authentication or group requirements
     #to view or search data. When set to true, you need to explicity define it as open in
     #the Console/Database Access model within the django admin.

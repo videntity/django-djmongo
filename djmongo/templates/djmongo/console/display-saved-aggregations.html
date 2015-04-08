@@ -1,0 +1,76 @@
+{% extends "djmongo/console/base.html" %}
+{% block Content %}
+
+{% load i18n %}
+
+
+<div class="container">
+      <div class="row">
+              <div class="col-lg-12">
+                  <h1>{% trans "Saved Aggregations" %}</h1>
+              </div>
+      </div>
+
+ <div class="row">
+      <div class="col-lg-12">
+           <a class="btn pull-right btn-info btn-large" href="{% url 'djmongo_create_saved_aggregation_w_params' database_name collection_name   %}">
+            <i class="icon-plus-sign icon-white"></i> {% trans "New Saved Aggregation from " %} {{database_name}}/{{collection_name}}
+            </a>
+
+       </div>
+ </div>     
+      
+
+<div class="row">
+  <div class="col-lg-12">    
+<table class="table">
+   
+
+<thead>
+<tr>
+<th>Slug</th>
+<th>Created By</th>
+<th>Database</th>
+<th>Source Collection</th>
+<th>Destination Collection</th>
+<th>Actions</th>
+
+</tr>
+</thead>
+ 
+<tbody>
+
+
+{% for a in savedaggs %}
+
+<tr class="success">
+<td>{{a.slug}}</td>
+<td>{{a.user.first_name}}  {{a.user.last_name}}  ({{a.user}})</td>
+<td>{{a.database_name}}/{{a.collection_name}}</td>
+<td>{{a.collection_name}}</td>
+<td>{{a.output_collection_name}}</td>
+<td>
+            
+            <a class="btn pull-left btn-success btn-xs" target=_blank href="{% url 'djmongo_run_aggregation_by_slug' a.slug %}">
+            <i class="icon-search  icon-white"></i> Run</a>           
+     
+            <a class="btn pull-left btn-primary btn-xs" href="{% url 'djmongo_edit_saved_aggregation_by_slug' a.slug %}">
+            <i class="icon-edit  icon-white"></i> Edit</a>
+            
+            <a class="btn pull-left btn-danger btn-xs" href="{% url 'djmongo_delete_saved_aggregation_by_slug' a.slug %}">
+            <i class="icon-remove-sign  icon-white"></i> Delete</a>
+</td>
+
+</tr>
+{% endfor %}
+
+</tbody>
+
+    </table>
+
+ </div>    
+    
+</div>
+</div>
+
+{% endblock %}

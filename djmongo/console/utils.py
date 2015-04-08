@@ -4,15 +4,13 @@
 
 from django.conf import settings
 import os, json, sys
-from pymongo import Connection, DESCENDING
-from pymongo import MongoClient
+from pymongo import MongoClient, DESCENDING
 from bson.objectid import ObjectId
 import csv
 from ..mongoutils import delete_mongo, write_mongo
 
 
-def mongo_delete_json_util(query={}, database_name=settings.MONGO_DB_NAME,
-                 collection_name=settings.MONGO_MASTER_COLLECTION,
+def mongo_delete_json_util(database_name, collection_name, query={},
                  just_one=False):
    
    response_dict ={}
@@ -35,8 +33,8 @@ def mongo_delete_json_util(query={}, database_name=settings.MONGO_DB_NAME,
    
    return response_dict
    
-def mongo_create_json_util(document, database_name=settings.MONGO_DB_NAME,
-                 collection_name=settings.MONGO_MASTER_COLLECTION,):
+def mongo_create_json_util(document, database_name,
+                 collection_name):
    
    response_dict ={}
    valid_json = True
@@ -61,8 +59,8 @@ def mongo_create_json_util(document, database_name=settings.MONGO_DB_NAME,
    
    
 
-def mongo_create_json_util(document, database_name=settings.MONGO_DB_NAME,
-                 collection_name=settings.MONGO_MASTER_COLLECTION, update=False):
+def mongo_create_json_util(document, database_name,
+                 collection_name, update=False):
    
    response_dict ={}
    valid_json = True
@@ -127,32 +125,35 @@ def create_mongo_db(database_name, collection_name, initial_document):
 
 
 def show_dbs():
-    """return a list of all dbs and related collections.
-    Return an empty list on error.
-    """
+   """return a list of all dbs and related collections.
+   Return an empty list on error.
+   """
     
-    #print "skip and limit", skip, limit
-    l=[]
-    response_dict={}
-    try:
-        c=   Connection(settings.MONGO_HOST, settings.MONGO_PORT)
-        dbs = c.database_names()
+   #print "skip and limit", skip, limit
+   l=[]
+   response_dict={}
+   try:
+      mc =   MongoClient(host=settings.MONGO_HOST,
+                           port=settings.MONGO_PORT)
+      dbs = mc.database_names()
         
         
-        
-        #print "Databases", dbs
-        dbs.remove("local")
-        for d in dbs:
-            dbc =   c[d]
-            collections = dbc.collection_names()  
-            collections = remove_values_from_list(collections, "system.indexes")
-            l.append({"name":d, "collections":collections})
-        return tuple(l)
+      #Hide a couple admin dbs from our UI.
+      if "local" in dbs:
+         dbs.remove("local")
+      if "admin" in dbs:
+         dbs.remove("admin")
+      for d in dbs:
+          dbc =   mc[d]
+          collections = dbc.collection_names()  
+          collections = remove_values_from_list(collections, "system.indexes")
+          l.append({"name":d, "collections":collections})
+      return tuple(l)
     
-    except:
-        #error connecting to mongodb
-        print str(sys.exc_info())
-        return ()
+   except:
+      #error connecting to mongodb
+      print str(sys.exc_info())
+      return ()
 
 
 
@@ -207,7 +208,7 @@ def mongodb_ensure_index(dbname, collectionname, keys):
 
 
 
-def mongodb_drop_collection(dbname, collectionname):
+def mongodb_drop_collection(database_name, collection_name):
     """return a list of all dbs and related collections"""
     
     #print "skip and limit", skip, limit
@@ -215,8 +216,8 @@ def mongodb_drop_collection(dbname, collectionname):
     response_dict={}
     try:
         c=   Connection(settings.MONGO_HOST, settings.MONGO_PORT)
-        dbs = c[dbname]
-        dbs.drop_collection(collectionname)
+        dbs = c[database_name]
+        dbs.drop_collection(collection_name)
         #print "success"
         return ""
     
@@ -230,7 +231,7 @@ def mongodb_drop_collection(dbname, collectionname):
 
 
 
-def mongodb_drop_database(dbname):
+def mongodb_drop_database(database_name):
     """return a list of all dbs and related collections"""
     
     #print "skip and limit", skip, limit
@@ -238,7 +239,7 @@ def mongodb_drop_database(dbname):
     response_dict={}
     try:
         c=   Connection(settings.MONGO_HOST, settings.MONGO_PORT)
-        c.drop_database(dbname)
+        c.drop_database(database_name)
         #print "success"
         return ""
     

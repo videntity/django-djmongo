@@ -19,12 +19,8 @@ $('.dropdown-toggle').dropdown();
       
    <div class="row">
               
-             
-      
 
-
-
-       <table class="table">
+       <table class="table table-condensed">
        
           
        <thead>
@@ -40,22 +36,24 @@ $('.dropdown-toggle').dropdown();
        
        {% for d in dbs %}
        
-       <tr class="success">
+       <tr>
        <td>
        
        <div class="btn-group">
-           <a class="btn pull-left dropdown-toggle btn-primary btn-large" data-toggle="dropdown" href="#">
+           <a class="btn pull-left dropdown-toggle btn-info btn-large" data-toggle="dropdown" href="#">
            {{d.name}}
            <span class="caret"></span>
            </a>
            <ul class="dropdown-menu">
-               <li><a href="{% url 'djmongo_create_collection' d.name %}">
-                   <i class="icon-plus-sign"></i> Create Collection</a> </li>
-               <li role="presentation" class="divider"></li>   
-                <li><a href="{% url 'djmongo_drop_database' d.name %}">
-                   <i class="icon-warning-sign"></i> Drop Database</a> </li>
+              <li><a href="{% url 'djmongo_create_collection' d.name %}">
+                   <i class="fa fa-database"></i> Create Collection</a> </li>
+              <li role="presentation" class="divider"></li>   
+              
+              <li><a href="{% url 'djmongo_drop_database' d.name %}">
+                   <i class="fa fa-warning"></i> Drop Database</a>
+              </li>
                
-             </ul>
+              </ul>
             </div>
        
        
@@ -63,13 +61,23 @@ $('.dropdown-toggle').dropdown();
        <td>
            {% for c in d.collections %}
            <div class="btn-group">
-           <a class="btn pull-left dropdown-toggle btn-primary btn-large" data-toggle="dropdown" href="#">
+           <a class="btn pull-left dropdown-toggle btn-info btn-large" data-toggle="dropdown" href="#">
            {{c}}
            <span class="caret"></span>
            </a>
            <ul class="dropdown-menu">
-       
-       
+
+             
+             <li> <a  target=_blank href="{% url 'djmongo_search_json_w_params' d.name c %}">
+                   <i class="fa fa-search"></i> {% trans "Simple JSON Search" %}</a></li>
+             
+             <li> <a  target=_blank href="{% url 'djmongo_search_html_w_params' d.name c %}">
+                   <i class="fa fa-search"></i> {% trans "Simple HTML Search" %}</a></li>
+             
+             <li> <a  target=_blank href="{% url 'djmongo_search_csv_w_params' d.name c %}">
+                   <i class="fa fa-search"></i> {% trans "Simple CSV Search" %}</a></li>
+             
+            <li role="presentation" class="divider"></li> 
             <li><a  href="{% url 'djmongo_create_document_in_collection_w_params' d.name  c %}">
                    <i class="fa fa-plus-circle"></i> {% trans "Create a Document..." %}</a></li>
             
@@ -82,28 +90,17 @@ $('.dropdown-toggle').dropdown();
             <li><a  href="{% url 'djmongo_ensure_index' d.name c %}">
                    <i class="fa fa-fighter-jet"></i> {% trans "Create an Index..." %}</a></li>
        
-            <li role="presentation" class="divider"></li>       
-             
-             <li> <a  target=_blank href="{% url 'djmongo_search_json_w_params' d.name c %}">
-                   <i class="fa fa-search"></i> {% trans "Simple JSON Search" %}</a></li>
-             
-             <li> <a  target=_blank href="{% url 'djmongo_search_html_w_params' d.name c %}">
-                   <i class="fa fa-search"></i> {% trans "Simple HTML Search" %}</a></li>
-             
-             <li> <a  target=_blank href="{% url 'djmongo_search_csv_w_params' d.name c %}">
-                   <i class="fa fa-search"></i> {% trans "Simple CSV Search" %}</a></li>
-             
-            
-             <li role="presentation" class="divider"></li>
+            <li role="presentation" class="divider"></li>
               <li> <a  href="{% url 'djmongo_browse_saved_searches_w_params' d.name c %}">
-                   <i class="fa fa-eye"></i> {% trans "Browse Saved Searches..." %}</a>
+                   <i class="fa fa-search"></i> {% trans "Saved Searches..." %}</a>
              </li>
-            <li> <a  href="{% url 'djmongo_create_saved_aggregation_w_params' d.name c %}">
-                   <i class="fa fa-cogs"></i> {% trans "Create Aggregation" %}</a></li>
+              <li> <a  href="{% url 'djmongo_browse_saved_aggregations_w_params' d.name c %}">
+                   <i class="fa fa-cogs"></i> {% trans "Saved Aggregations..." %}</a>
+             </li>
             
             <li role="presentation" class="divider"></li>
             <li> <a  href="{% url 'djmongo_clear_collection' d.name c %}">
-                   <i class="fa fa-fast-backward"></i> {% trans "Clear Collection..." %} </a>
+                   <i class="fa fa-warning"></i> {% trans "Clear Collection..." %} </a>
             </li>
        
             <li> <a  href="{% url 'djmongo_drop_collection' d.name c %}"">

@@ -5,14 +5,11 @@
 from django.conf import settings
 from django.utils.datastructures import SortedDict
 import os, json, sys, uuid, csv
-from pymongo import Connection, DESCENDING
+from pymongo import MongoClient, DESCENDING
 from bson.objectid import ObjectId
-from pymongo import MongoClient
 
 
-def bulk_csv_import_mongo(csvfile, delete_collection_before_import=False,
-                          database_name=settings.MONGO_DB_NAME,
-                          collection_name=None):
+def bulk_csv_import_mongo(csvfile, database_name, collection_name, delete_collection_before_import=False):
 
     """return a response_dict  with a list of search results"""
     """method can be insert or update"""
@@ -20,13 +17,11 @@ def bulk_csv_import_mongo(csvfile, delete_collection_before_import=False,
     l=[]
     response_dict={}
     try:
-        mconnection =   Connection(settings.MONGO_HOST, settings.MONGO_PORT)
-        db = 	        mconnection[database_name]
-        if not collection_name:
-            collection = db[settings.MONGO_MASTER_COLLECTION]
-        else:
-            collection = db[collection_name]
-
+           
+        mc =   MongoClient(host=settings.MONGO_HOST,
+        port=settings.MONGO_PORT)    
+        db           = mc[str(database_name)]
+        collection   = db[str(collection_name)]
         
         if delete_collection_before_import:
             myobjectid=collection.remove({})

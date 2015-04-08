@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 from django.core.urlresolvers import reverse
 from forms import SavedSearchForm, ComplexSearchForm, AggregationForm
 from ..mongoutils import query_mongo, to_json, normalize_results
-from models import SavedSearch
+from models import SavedSearch, Aggregation
 from xls_utils import convert_to_csv, convert_to_rows
 from django.db import IntegrityError
 from django.utils.translation import ugettext_lazy as _
@@ -31,7 +31,7 @@ def build_keys(request):
 
 
 def prepare_search_results(request, database_name, collection_name,
-                skip=0, sort=None, limit=settings.MONGO_LIMIT, return_keys=(), query={}):
+                skip=0, sort=None, limit=getattr(settings, 'MONGO_LIMIT', 200), return_keys=(), query={}):
     if not query:
         kwargs = {}
         for k,v in request.GET.items():
@@ -46,7 +46,7 @@ def prepare_search_results(request, database_name, collection_name,
         kwargs = query
     
 
-    result = query_mongo(kwargs, database_name, collection_name, skip=skip, limit=limit,
+    result = query_mongo(database_name, collection_name, query=kwargs, skip=skip, limit=limit,
                          sort=sort, return_keys=return_keys)
 
     return result
@@ -100,7 +100,7 @@ def custom_report(request, database_name, collection_name):
 
 @check_database_access
 def search_json(request, database_name,collection_name,
-                skip=0, limit=settings.MONGO_LIMIT, sort=None, return_keys=(),
+                skip=0, limit=getattr(settings,'MONGO_LIMIT', 200), sort=None, return_keys=(),
                 query={}):
     
 
@@ -122,7 +122,8 @@ def search_json(request, database_name,collection_name,
 
 @check_database_access
 def search_csv(request, database_name,collection_name,
-                skip=0, sort=None, limit=settings.MONGO_LIMIT, return_keys=(), query={}):
+                skip=0, sort=None, limit=getattr(settings,'MONGO_LIMIT', 200),
+                return_keys=(), query={}):
     
     result = prepare_search_results(request, database_name=database_name,
                 collection_name=collection_name, sort=sort, skip=skip,
@@ -149,7 +150,8 @@ def search_csv(request, database_name,collection_name,
 
 @check_database_access
 def search_html(request, database_name, collection_name,
-                sort=None, skip=0, limit=settings.MONGO_LIMIT, return_keys=(),
+                sort=None, skip=0, limit=getattr(settings,'MONGO_LIMIT', 200),
+                return_keys=(),
                 query={}):
     
     
@@ -254,7 +256,7 @@ def load_labels(request):
 
 
 def run_saved_search_by_slug(request, slug, output_format=None, skip=0,
-                             sort=None, limit = settings.MONGO_LIMIT):
+                             sort=None, limit = getattr(settings,'MONGO_LIMIT', 200)):
     
     error = False
     response_dict = {}
@@ -377,6 +379,10 @@ def run_saved_search_by_slug(request, slug, output_format=None, skip=0,
 
 
 
+
+
+
+
 def create_saved_aggregation(request, database_name=None,
                 collection_name=None):
     name = _("Create a Saved Aggregation")
@@ -387,7 +393,8 @@ def create_saved_aggregation(request, database_name=None,
             sa.user = request.user
             sa.save()
                 
-            return HttpResponseRedirect(reverse('djmongo_show_dbs'))
+            return HttpResponseRedirect(reverse('djmongo_browse_saved_aggregations_w_params',
+                                        args=(sa.database_name, sa.collection_name )))
         else:
             #The form is invalid
              messages.error(request,_("Please correct the errors in the form."))
@@ -412,7 +419,7 @@ def create_saved_aggregation(request, database_name=None,
 
 def create_saved_search(request, database_name=None,
                 collection_name=None,
-                        skip=0, limit=settings.MONGO_LIMIT, return_keys=()):
+                        skip=0, limit=getattr(settings,'MONGO_LIMIT', 200), return_keys=()):
     name = _("Create a Saved Search")
     if request.method == 'POST':
         form = SavedSearchForm(request.POST)
@@ -447,15 +454,26 @@ def create_saved_search(request, database_name=None,
 
 def delete_saved_search_by_slug(request, slug):
     name = _("Edit Saved Search")
-    ss = get_object_or_404(SavedSearch,  slug=slug, user=request.user)
+    ss = get_object_or_404(SavedSearch,  slug=slug)
     ss.delete()
     messages.success(request,_("Saved search deleted."))
-    return HttpResponseRedirect(reverse('djmongo_show_dbs'))
+    return HttpResponseRedirect(reverse('djmongo_browse_saved_search_w_params', 
+                                        args=(ss.database_name, ss.collection_name )))
+
+
+def delete_saved_aggregation_by_slug(request, slug):
+    name = _("Edit Saved Search")
+    ss = get_object_or_404(SavedSearch,  slug=slug, user=request.user)
+    ss.delete()
+    messages.success(request,_("Saved aggregation deleted."))
+    return HttpResponseRedirect(reverse('djmongo_browse_saved_search_w_params',
+                                        args=(ss.database_name, ss.collection_name )))
+
 
 
 def edit_saved_search_by_slug(request, slug):
     name = _("Edit Saved Search")
-    ss = get_object_or_404(SavedSearch,  slug=slug, user=request.user)
+    ss = get_object_or_404(SavedSearch,  slug=slug)
     
     if request.method == 'POST':
         form = SavedSearchForm(request.POST, instance =ss)
@@ -464,7 +482,8 @@ def edit_saved_search_by_slug(request, slug):
             ss.user = request.user
             ss.save()
             messages.success(request,_("Saved search edit saved."))    
-            return HttpResponseRedirect(reverse('djmongo_show_dbs'))
+            return HttpResponseRedirect(reverse('djmongo_browse_saved_search_w_params',
+                                        args=(ss.database_name, ss.collection_name )))
         else:
             #The form is invalid
              messages.error(request,_("Please correct the errors in the form."))
@@ -484,8 +503,71 @@ def edit_saved_search_by_slug(request, slug):
 
 
 
-def complex_search(request, database_name=settings.MONGO_DB_NAME,
-                collection_name=settings.MONGO_MASTER_COLLECTION,
+def delete_saved_search_by_slug(request, slug):
+    name = _("Edit Saved Search")
+    ss = get_object_or_404(SavedSearch,  slug=slug)
+    ss.delete()
+    messages.success(request,_("Saved search deleted."))
+    return HttpResponseRedirect(reverse('djmongo_browse_saved_search_w_params',
+                                        args=(ss.database_name, ss.collection_name )))
+
+
+
+def run_aggregation_by_slug(request, slug):
+    name = _("Execute Aggregation")
+    sa = get_object_or_404(Aggregation,  slug=slug)
+    sa.execute_now = True
+    sa.save()
+    messages.success(request,_("Saved aggregation executed."))
+    return HttpResponseRedirect(reverse('djmongo_browse_saved_aggregations_w_params',
+                                        args=(sa.database_name, sa.collection_name )))
+
+
+
+def delete_saved_aggregation_by_slug(request, slug):
+    name = _("Edit Saved Search")
+    ss = get_object_or_404(Aggregation,  slug=slug)
+    ss.delete()
+    messages.success(request,_("Saved aggregation deleted."))
+    return HttpResponseRedirect(reverse('djmongo_browse_saved_aggregations_w_params',
+                                        args=(ss.database_name, ss.collection_name )))
+
+
+
+def edit_saved_aggregation_by_slug(request, slug):
+    name = _("Edit Saved Aggregation")
+    ss = get_object_or_404(Aggregation,  slug=slug, user=request.user)
+    
+    if request.method == 'POST':
+        form = AggregationForm(request.POST, instance =ss)
+        if form.is_valid():
+            ss = form.save(commit = False)
+            ss.user = request.user
+            ss.save()
+            messages.success(request,_("Aggregation edit saved."))    
+            return HttpResponseRedirect(reverse('djmongo_browse_saved_aggregations_w_params',
+                                        args=(ss.database_name, ss.collection_name )))
+        else:
+            #The form is invalid
+             messages.error(request,_("Please correct the errors in the form."))
+             return render_to_response('generic/bootstrapform.html',
+                                            {'form': form,
+                                             'name':name,
+                                             },
+                                            RequestContext(request))
+            
+   #this is a GET
+    context= {'name':name,
+              'form': AggregationForm(instance = ss)
+              }
+    return render_to_response('djmongo/console/generic/bootstrapform.html',
+                             RequestContext(request, context,))
+
+
+
+
+
+def complex_search(request, database_name,collection_name,
                         sort=None, skip=0, limit=200, return_keys=()):
     name = _("Run a Complex Search")
     if request.method == 'POST':
@@ -561,12 +643,20 @@ def complex_search(request, database_name=settings.MONGO_DB_NAME,
     return render_to_response('djmongo/console/generic/bootstrapform.html',
                              RequestContext(request, context,))
 
-def display_saved_searches(request, database_name=settings.MONGO_DB_NAME,
-                collection_name=settings.MONGO_MASTER_COLLECTION):
+def display_saved_searches(request, database_name, collection_name):
      
     savedsearches = SavedSearch.objects.filter(database_name=database_name, collection_name=collection_name)
     context = {"savedsearches": savedsearches,
                'database_name': database_name,
                'collection_name': collection_name}
     return render_to_response('djmongo/console/display-saved-searches.html',
+                              RequestContext(request, context,))
+
+def display_saved_aggregations(request, database_name, collection_name):
+     
+    savedaggs = Aggregation.objects.filter(database_name=database_name, collection_name=collection_name)
+    context = {"savedaggs": savedaggs,
+               'database_name': database_name,
+               'collection_name': collection_name}
+    return render_to_response('djmongo/console/display-saved-aggregations.html',
                               RequestContext(request, context,))
