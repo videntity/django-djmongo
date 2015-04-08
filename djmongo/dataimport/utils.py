@@ -5,9 +5,8 @@
 from django.conf import settings
 from django.utils.datastructures import SortedDict
 import os, json, sys, uuid, csv
-from pymongo import Connection, DESCENDING
+from pymongo import MongoClient, DESCENDING
 from bson.objectid import ObjectId
-from pymongo import MongoClient
 
 
 def bulk_csv_import_mongo(csvfile, database_name, collection_name, delete_collection_before_import=False):
@@ -18,10 +17,11 @@ def bulk_csv_import_mongo(csvfile, database_name, collection_name, delete_collec
     l=[]
     response_dict={}
     try:
-        mconnection =   Connection(settings.MONGO_HOST, settings.MONGO_PORT)
-        db = 	        mconnection[database_name]
-
-        collection = db[collection_name]
+           
+        mc =   MongoClient(host=settings.MONGO_HOST,
+        port=settings.MONGO_PORT)    
+        db           = mc[str(database_name)]
+        collection   = db[str(collection_name)]
         
         if delete_collection_before_import:
             myobjectid=collection.remove({})

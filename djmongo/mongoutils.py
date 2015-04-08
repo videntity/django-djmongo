@@ -5,12 +5,10 @@
 from django.conf import settings
 from django.utils.datastructures import SortedDict
 import os, json, sys, uuid, csv, pickle
-from pymongo import Connection
 from datetime import datetime, date, time
 from bson.code import Code
-from pymongo import Connection, DESCENDING
 from bson.objectid import ObjectId
-from pymongo import MongoClient
+from pymongo import MongoClient, DESCENDING
 
 
 

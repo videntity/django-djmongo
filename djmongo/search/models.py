@@ -128,9 +128,7 @@ class DatabaseAccessControl(models.Model):
     database_name   = models.CharField(max_length=256)
     collection_name = models.CharField(max_length=256)
     is_public       = models.BooleanField(default=False, blank=True)
-    groups          = models.ManyToManyField(Group,
-                                null=True,
-                                blank=True,
+    groups          = models.ManyToManyField(Group,  blank=True,
                                 related_name = "djmongo_database_access_control")
     
     class Meta:

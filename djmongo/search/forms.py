@@ -43,7 +43,7 @@ class AggregationForm(forms.ModelForm):
                         raise forms.ValidationError(msg)
                     if i.has_key("$out"):
                        msg="Do not provide $out in your pipeline. Use output_collection_name instead."
-                    raise forms.ValidationError(msg) 
+                       raise forms.ValidationError(msg) 
                 
         
         except ValueError:  
