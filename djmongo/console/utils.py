@@ -160,21 +160,20 @@ def show_dbs():
 
 
 
-def mongodb_clear_collection(dbname, collectionname):
-    #print """ clear a mongo collectio i.e. remove({})"""
+def mongodb_clear_collection(database_name, collection_name):
+    #print """ clear a mongo collection i.e. remove({})"""
     
-
     l=[]
     response_dict={}
     try:
-        c   =  Connection(settings.MONGO_HOST, settings.MONGO_PORT)
-        dbs =  c[dbname]
-        dbc =  dbs[collectionname]
+         mc =   MongoClient(host=settings.MONGO_HOST,
+                           port=settings.MONGO_PORT)
+         dbs =  mc[database_name]
+         dbc =  dbs[collection_name]
         
-        dbc.remove({})
-        #print "success"
-        return ""
-    
+         dbc.remove({})
+         #print "success"
+         return ""
     except:
         #error connecting to mongodb
         #print str(sys.exc_info())
@@ -183,15 +182,17 @@ def mongodb_clear_collection(dbname, collectionname):
 
 
 
-def mongodb_ensure_index(dbname, collectionname, keys):
+def mongodb_ensure_index(database_name, collection_name, keys):
     """ ensure index """
     
     l=[]
     response_dict={}
     try:
-        c   =  Connection(settings.MONGO_HOST, settings.MONGO_PORT)
-        dbs =  c[dbname]
-        dbc =  dbs[collectionname]
+        mc =   MongoClient(host=settings.MONGO_HOST,
+                           port=settings.MONGO_PORT)
+        dbs =  mc[database_name]
+        dbc =  dbs[collection_name]
+
         dbc.ensure_index(keys)
         #print "success"
         return ""
@@ -215,11 +216,13 @@ def mongodb_drop_collection(database_name, collection_name):
     l=[]
     response_dict={}
     try:
-        c=   Connection(settings.MONGO_HOST, settings.MONGO_PORT)
-        dbs = c[database_name]
-        dbs.drop_collection(collection_name)
-        #print "success"
-        return ""
+         mc =   MongoClient(host=settings.MONGO_HOST,
+                           port=settings.MONGO_PORT)
+         dbs =  mc[database_name]
+         dbc =  dbs[collection_name]
+         dbs.drop_collection(collection_name)
+         #print "success"
+         return ""
     
     except:
         #error connecting to mongodb
@@ -238,10 +241,11 @@ def mongodb_drop_database(database_name):
     l=[]
     response_dict={}
     try:
-        c=   Connection(settings.MONGO_HOST, settings.MONGO_PORT)
-        c.drop_database(database_name)
-        #print "success"
-        return ""
+         mc =   MongoClient(host=settings.MONGO_HOST,
+                           port=settings.MONGO_PORT)
+         mc.drop_database(database_name)
+         #print "success"
+         return ""
     
     except:
         #error connecting to mongodb
