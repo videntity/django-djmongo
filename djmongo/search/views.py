@@ -183,8 +183,6 @@ def search_html(request, database_name, collection_name,
 
 
 
-
-
 @csrf_exempt
 def data_dictionary(request):
 
@@ -251,7 +249,6 @@ def load_labels(request):
     #A GET
     return render_to_response('djmongo/console/data-dictionary.html',
          {'form': DataDictionaryForm()}, RequestContext(request))
-
 
 
 
@@ -379,10 +376,6 @@ def run_saved_search_by_slug(request, slug, output_format=None, skip=0,
 
 
 
-
-
-
-
 def create_saved_aggregation(request, database_name=None,
                 collection_name=None):
     name = _("Create a Saved Aggregation")
@@ -414,8 +407,6 @@ def create_saved_aggregation(request, database_name=None,
     return render_to_response('djmongo/console/generic/bootstrapform.html',
                              RequestContext(request, context,))
     
-
-
 
 def create_saved_search(request, database_name=None,
                 collection_name=None,
@@ -449,7 +440,6 @@ def create_saved_search(request, database_name=None,
               }
     return render_to_response('djmongo/console/generic/bootstrapform.html',
                              RequestContext(request, context,))
-    
     
 
 def delete_saved_search_by_slug(request, slug):

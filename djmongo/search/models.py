@@ -96,7 +96,8 @@ class SavedSearch(models.Model):
     
     return_keys   =  models.TextField(max_length=2048, default="", blank=True,
                                       
-                            help_text = "Limit results to these keys.Seperate keys by whitespace. Default is blank, which returns all keys.",
+                            help_text = """Default is blank which returns all keys.
+                            Seperate keys by whitespace to limit the keys that are returned."""
                                         )
     
     default_limit   =  models.IntegerField(default=getattr(settings, 'MONGO_LIMIT', 200),
@@ -128,8 +129,17 @@ class DatabaseAccessControl(models.Model):
     database_name   = models.CharField(max_length=256)
     collection_name = models.CharField(max_length=256)
     is_public       = models.BooleanField(default=False, blank=True)
+    search_keys     =  models.TextField(max_length=4096, default="", blank=True,              
+                        help_text = """The default, blank, returns all keys.
+                                        Providing a list of keys, seperated by whitespace,
+                                        limits the API search to only these keys.""")
     groups          = models.ManyToManyField(Group,  blank=True,
                                 related_name = "djmongo_database_access_control")
+    
+    
+    
+    
+    
     
     class Meta:
         #get_latest_by = "creation_date"
