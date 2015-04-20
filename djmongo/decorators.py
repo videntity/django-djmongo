@@ -18,7 +18,8 @@ from django.conf import settings
 from django.contrib.auth import authenticate, login
 from utils import authorize, unauthorized_json_response
 from search.models import DatabaseAccessControl
-
+import shlex
+import json
 
 def json_login_required(func):
     """
@@ -74,6 +75,7 @@ def check_database_access(func):
                 dac = DatabaseAccessControl.objects.get(database_name=database_name,
                                                     collection_name=collection_name)      
             except DatabaseAccessControl.DoesNotExist:
+                
                 return HttpResponse(unauthorized_json_response(),
                                 content_type="application/json")
             
@@ -94,7 +96,30 @@ def check_database_access(func):
                         group = dg
   
                 if not in_group:
-                    return HttpResponse(unauthorized_json_response(),
+                    message = "NOT-IN-GROUP: You do not have access to this collection. Please see your system administrator." % (k)                    
+                    
+                    body={"code": 400,
+                           "message": k,
+                           "errors": [ message, ]}          
+                    return HttpResponse(json.dumps(body, indent=4, ),
+                                content_type="application/json")
+
+                
+
+            #If search keys have been limitied...
+            if dac.search_keys:
+                search_key_list = shlex.split(dac.search_keys)
+                keys = []
+                for k in request.GET.keys():
+                    
+                    if k not in search_key_list:
+                        message = "Search key %s  is not allowed." % (k)                    
+                    
+                        body={"code": 400,
+                           "message": k,
+                           "errors": [ message, ]}
+          
+                        return HttpResponse(json.dumps(body, indent=4, ),
                                 content_type="application/json")
         
         return func(request, *args, **kwargs)
