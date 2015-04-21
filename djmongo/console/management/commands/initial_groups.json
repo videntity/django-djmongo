@@ -1,0 +1,11 @@
+Warning: settings_local was not found.
+[
+{
+    "fields": {
+        "name": "test-group",
+        "permissions": []
+    },
+    "model": "auth.group",
+    "pk": 1
+}
+]
