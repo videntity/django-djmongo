@@ -94,7 +94,7 @@ def query_mongo(database_name, collection_name, query={},
         if sort:
             mysearchresult.sort(sort)
 
-        response_dict['num_results']=int(mysearchresult.count(with_limit_and_skip=False))
+        #response_dict['num_results']=int(mysearchresult.count(with_limit_and_skip=False))
         response_dict['code']=200
         response_dict['type']="search-results"
         for d in mysearchresult:
@@ -140,7 +140,7 @@ def query_mongo_sort_decend(database_name, collection_name, query={},
         else:
             mysearchresult=collection.find(query).skip(skip).limit(limit).sort(sortkey,DESCENDING)
         
-        response_dict['num_results']=int(mysearchresult.count(with_limit_and_skip=False))
+        #response_dict['num_results']=int(mysearchresult.count(with_limit_and_skip=False))
         response_dict['code']=200
         response_dict['type']="search-results"
         for d in mysearchresult:
@@ -177,8 +177,6 @@ def delete_mongo(database_name, collection_name,
         
         mysearchresult=collection.remove(query, just_one)
         
-        
-        #response_dict['num_results']=int(mysearchresult.count())
         response_dict['code']=200
         response_dict['type']="remove-confirmation"
  
@@ -236,7 +234,6 @@ def write_mongo(document, database_name,
         
         if update==False and potential_key_found==True:
                 """409 conflict"""
-                response_dict['num_results']=0
                 response_dict['code']=409
                 response_dict['type']="Error"
                 response_dict['results']=[]
@@ -305,7 +302,6 @@ def write_mongo(document, database_name,
     except:
         #print "Error reading from Mongo"
         #print str(sys.exc_info())
-        response_dict['num_results']=0
         response_dict['code']=400
         response_dict['type']="Error"
         response_dict['results']=[]
@@ -326,7 +322,7 @@ def bulk_csv_import_mongo(csvfile, database_name, collection_name,
     try:
         mconnection =   Connection(settings.MONGO_HOST, settings.MONGO_PORT)
         db = 	        mconnection[database_name]
-        collection = db[collection_name]
+        collection  = db[collection_name]
 
         
         if delete_collection_before_import:
