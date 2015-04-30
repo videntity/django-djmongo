@@ -9,8 +9,10 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-djmongo',
-    version='0.5.5',
-    packages=['djmongo', 'djmongo.console', 'djmongo.search','djmongo.dataimport' ],
+    version='0.5.7',
+    packages=['djmongo', 'djmongo.console', 
+              'djmongo.console.management.commands', 
+              'djmongo.search','djmongo.dataimport' ],
     include_package_data=True,
     license='Public Domain',  
     description='A reusable Django application providing a web interface for MongoDB and RESTFul API Toolkit.',

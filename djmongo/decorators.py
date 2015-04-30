@@ -96,10 +96,10 @@ def check_database_access(func):
                         group = dg
   
                 if not in_group:
-                    message = "NOT-IN-GROUP: You do not have access to this collection. Please see your system administrator." % (k)                    
+                    message = "NOT-IN-GROUP: You do not have access to this collection. Please see your system administrator."                  
                     
                     body={"code": 400,
-                           "message": k,
+                           "message": message,
                            "errors": [ message, ]}          
                     return HttpResponse(json.dumps(body, indent=4, ),
                                 content_type="application/json")
