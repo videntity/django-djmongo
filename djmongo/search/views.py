@@ -32,6 +32,9 @@ def build_keys(request):
 
 def prepare_search_results(request, database_name, collection_name,
                 skip=0, sort=None, limit=getattr(settings, 'MONGO_LIMIT', 200), return_keys=(), query={}):
+    #By default, do not include number of search results.
+    include_num_results = "0"
+    
     if not query:
         kwargs = {}
         for k,v in request.GET.items():
@@ -42,11 +45,20 @@ def prepare_search_results(request, database_name, collection_name,
             if kwargs.has_key('skip'):
                 skip=int(kwargs['skip'])
                 del kwargs['skip']
+            #Include search result numbers if asked.    
+            if kwargs.has_key('include_num_results'):
+                include_num_results = kwargs['include_num_results']
+                del kwargs['include_num_results']
+
     else:
         kwargs = query
     
 
-    result = query_mongo(database_name, collection_name, query=kwargs, skip=skip, limit=limit,
+    result = query_mongo(database_name,
+                         collection_name,
+                         query=kwargs,
+                         include_num_results = include_num_results,
+                         skip=skip, limit=limit,
                          sort=sort, return_keys=return_keys)
 
     return result
@@ -100,7 +112,8 @@ def custom_report(request, database_name, collection_name):
 
 @check_database_access
 def search_json(request, database_name,collection_name,
-                skip=0, limit=getattr(settings,'MONGO_LIMIT', 200), sort=None, return_keys=(),
+                skip=0, limit=getattr(settings,'MONGO_LIMIT', 200),
+                sort=None, return_keys=(),
                 query={}):
     
 
@@ -251,7 +264,6 @@ def load_labels(request):
          {'form': DataDictionaryForm()}, RequestContext(request))
 
 
-
 def run_saved_search_by_slug(request, slug, output_format=None, skip=0,
                              sort=None, limit = getattr(settings,'MONGO_LIMIT', 200)):
     
@@ -375,7 +387,6 @@ def run_saved_search_by_slug(request, slug, output_format=None, skip=0,
     return HttpResponse(response, content_type="application/json")
 
 
-
 def create_saved_aggregation(request, database_name=None,
                 collection_name=None):
     name = _("Create a Saved Aggregation")
@@ -460,7 +471,6 @@ def delete_saved_aggregation_by_slug(request, slug):
                                         args=(ss.database_name, ss.collection_name )))
 
 
-
 def edit_saved_search_by_slug(request, slug):
     name = _("Edit Saved Search")
     ss = get_object_or_404(SavedSearch,  slug=slug)
@@ -491,8 +501,6 @@ def edit_saved_search_by_slug(request, slug):
                              RequestContext(request, context,))
 
 
-
-
 def delete_saved_search_by_slug(request, slug):
     name = _("Edit Saved Search")
     ss = get_object_or_404(SavedSearch,  slug=slug)
@@ -500,7 +508,6 @@ def delete_saved_search_by_slug(request, slug):
     messages.success(request,_("Saved search deleted."))
     return HttpResponseRedirect(reverse('djmongo_browse_saved_search_w_params',
                                         args=(ss.database_name, ss.collection_name )))
-
 
 
 def run_aggregation_by_slug(request, slug):
@@ -513,7 +520,6 @@ def run_aggregation_by_slug(request, slug):
                                         args=(sa.database_name, sa.collection_name )))
 
 
-
 def delete_saved_aggregation_by_slug(request, slug):
     name = _("Edit Saved Search")
     ss = get_object_or_404(Aggregation,  slug=slug)
@@ -521,7 +527,6 @@ def delete_saved_aggregation_by_slug(request, slug):
     messages.success(request,_("Saved aggregation deleted."))
     return HttpResponseRedirect(reverse('djmongo_browse_saved_aggregations_w_params',
                                         args=(ss.database_name, ss.collection_name )))
-
 
 
 def edit_saved_aggregation_by_slug(request, slug):
@@ -552,9 +557,6 @@ def edit_saved_aggregation_by_slug(request, slug):
               }
     return render_to_response('djmongo/console/generic/bootstrapform.html',
                              RequestContext(request, context,))
-
-
-
 
 
 def complex_search(request, database_name,collection_name,

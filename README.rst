@@ -1,7 +1,7 @@
 ==================================================
 djmongo - A Drop-in Django Application for MongoDB
 ==================================================
-0.5.8 (beta)
+0.5.9 (beta)
 
 django-djmongo is an "API in a Box".  It provides a web-based UI for MongoDB,
 the ability to import data, and create RESTful APIs without the need to write code.
@@ -90,12 +90,6 @@ In the simple configuration above, we allow all GET requests from all origins ho
     #Set the default limit on searches (unless specified otherwise).
     MONGO_LIMIT = 200
     
-    #The default database name when none is provided.
-    MONGO_DB_NAME="nppes"
-    
-    #The default collection name when none is provided.
-    MONGO_MASTER_COLLECTION = "pjson"
-
     #Instruct Django to accept standard httpauth. (Optional)
     AUTHENTICATION_BACKENDS = (#'djmongo.auth.HTTPAuthBackend',
                            'django.contrib.auth.backends.ModelBackend',)
