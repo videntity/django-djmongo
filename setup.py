@@ -9,7 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-djmongo',
-    version='0.5.8',
+    version='0.6.0',
     packages=['djmongo', 'djmongo.console', 
               'djmongo.console.management.commands', 
               'djmongo.search','djmongo.dataimport' ],
@@ -19,7 +19,7 @@ setup(
     long_description=README,
     url='https://github.com/hhsidealab/django-djmongo',
     author='Alan Viars',
-    author_email='alan.viars@cms.hhs.gov',
+    author_email='djmongo@videntity.com',
     install_requires=[
         'django>=1.6.1', 'pymongo', 'django-widget-tweaks', 'django-bootstrap-form', 'django-cors-headers' ],
     classifiers=[

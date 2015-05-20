@@ -52,19 +52,17 @@ def normalize_list(results_list):
     mydt=datetime.now()
     myd=date.today()
     myt=time(0,0)
-
     for r in results_list:
         for k,v in r.items():
             if type(r[k]) == type(mydt):
                 r[k]= v.__str__()
-
     return results_list
 
+
 def query_mongo(database_name, collection_name, query={}, 
-                skip=0, sort=None, limit=getattr(settings,'MONGO_LIMIT', 200),
+                include_num_results="0",skip=0, sort=None, limit=getattr(settings,'MONGO_LIMIT', 200),
                 cast_strings_to_integers=False, return_keys=()):
     """return a response_dict  with a list of search results"""
-    
     
     l=[]
     response_dict={}
@@ -73,7 +71,7 @@ def query_mongo(database_name, collection_name, query={},
         mc =   MongoClient(host=settings.MONGO_HOST,
                            port=settings.MONGO_PORT)
         
-        db          =   mc[str(database_name)]
+        db           = mc[str(database_name)]
         collection   = db[str(collection_name)]
         
         
@@ -94,8 +92,15 @@ def query_mongo(database_name, collection_name, query={},
         if sort:
             mysearchresult.sort(sort)
 
-        #response_dict['num_results']=int(mysearchresult.count(with_limit_and_skip=False))
+        
         response_dict['code']=200
+        if include_num_results=="1":
+            response_dict['num_results']= response_dict['num_results']=int(mysearchresult.count(with_limit_and_skip=False))
+        
+        if include_num_results=="2":
+            response_dict['num_results']= response_dict['num_results']=int(mysearchresult.count(with_limit_and_skip=True))
+        
+        
         response_dict['type']="search-results"
         for d in mysearchresult:
             d['id'] = d['_id'].__str__()

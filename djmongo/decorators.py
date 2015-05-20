@@ -43,7 +43,7 @@ def json_login_required(func):
         
         if not user or not user.is_active:
             return HttpResponse(unauthorized_json_response(),
-                    mimetype="application/json")          
+                    content_type="application/json")          
         login(request, user)
         return func(request, *args, **kwargs)
 
