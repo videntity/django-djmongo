@@ -81,8 +81,9 @@ class SavedSearch(models.Model):
     title           = models.CharField(max_length=100, unique=True)
     slug            = models.SlugField(max_length=100, unique=True)
     query           = models.TextField(max_length=2048, default="{}",            
-                                        verbose_name="JSON Query Dict")
-    
+                                        verbose_name="JSON Query")
+    type_mapper     = models.TextField(max_length=2048, default="{}",            
+                                        verbose_name="Map non-string variables to numbers or boolean")
     is_public       =  models.BooleanField(default=False, blank=True,
                             help_text = "If checked, the search can be run without authentication")
     

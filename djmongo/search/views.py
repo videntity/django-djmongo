@@ -267,6 +267,7 @@ def load_labels(request):
 def run_saved_search_by_slug(request, slug, output_format=None, skip=0,
                              sort=None, limit = getattr(settings,'MONGO_LIMIT', 200)):
     
+    
     error = False
     response_dict = {}
     ss = get_object_or_404(SavedSearch,  slug=slug)
@@ -293,20 +294,30 @@ def run_saved_search_by_slug(request, slug, output_format=None, skip=0,
         
     
     query = ss.query
+    
+    type_mapper = json.loads(ss.type_mapper)
+    type_mapper_keys = type_mapper.keys()
     #if a GET param matches, then replace it
     
     for k,v in request.GET.items():
        if k in query:
-        quoted_value = '"%s"' % (v)
+        if k not in type_mapper_keys:
+            quoted_value = '"%s"' % (v)
+        else:
+            if type_mapper[k] == "number":
+                quoted_value = '%s' % (v)
+            if type_mapper[k] == "boolean":
+                if v in ('true', 'True', 'TRUE', 'T', 'Y' '1'):
+                    quoted_value = 'true'
+                if v in ('false', 'False', 'F', 'FALSE', 'N', '0'):
+                    quoted_value = 'false'
         query = query.replace(k, quoted_value)
-    
     try:
         query = json.loads(query)
         if ss.sort:
             #print ss.sort
             sort = json.loads(ss.sort)
- 
- 
+
     except ValueError:
         response_dict = {}
         response_dict['num_results']=0
