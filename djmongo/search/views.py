@@ -469,7 +469,7 @@ def delete_saved_search_by_slug(request, slug):
     ss = get_object_or_404(SavedSearch,  slug=slug)
     ss.delete()
     messages.success(request,_("Saved search deleted."))
-    return HttpResponseRedirect(reverse('djmongo_browse_saved_search_w_params', 
+    return HttpResponseRedirect(reverse('djmongo_browse_saved_searches_w_params', 
                                         args=(ss.database_name, ss.collection_name )))
 
 
@@ -478,7 +478,7 @@ def delete_saved_aggregation_by_slug(request, slug):
     ss = get_object_or_404(SavedSearch,  slug=slug, user=request.user)
     ss.delete()
     messages.success(request,_("Saved aggregation deleted."))
-    return HttpResponseRedirect(reverse('djmongo_browse_saved_search_w_params',
+    return HttpResponseRedirect(reverse('djmongo_browse_saved_searches_w_params',
                                         args=(ss.database_name, ss.collection_name )))
 
 
@@ -493,7 +493,7 @@ def edit_saved_search_by_slug(request, slug):
             ss.user = request.user
             ss.save()
             messages.success(request,_("Saved search edit saved."))    
-            return HttpResponseRedirect(reverse('djmongo_browse_saved_search_w_params',
+            return HttpResponseRedirect(reverse('djmongo_browse_saved_searches_w_params',
                                         args=(ss.database_name, ss.collection_name )))
         else:
             #The form is invalid
@@ -517,7 +517,7 @@ def delete_saved_search_by_slug(request, slug):
     ss = get_object_or_404(SavedSearch,  slug=slug)
     ss.delete()
     messages.success(request,_("Saved search deleted."))
-    return HttpResponseRedirect(reverse('djmongo_browse_saved_search_w_params',
+    return HttpResponseRedirect(reverse('djmongo_browse_saved_searches_w_params',
                                         args=(ss.database_name, ss.collection_name )))
 
 
