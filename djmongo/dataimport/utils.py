@@ -52,10 +52,7 @@ def bulk_csv_import_mongo(csvfile, database_name, collection_name, delete_collec
                 #Only populate fields that are not blank.
                 for k,v in record.items():
                     if v:
-                        if v.isdigit():
-                            kwargs[k]=int(v)
-                        else:
-                            kwargs[k]=v
+                        kwargs[k]=v
                         
                 try:
                     

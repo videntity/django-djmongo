@@ -6,13 +6,10 @@ import datetime
 from django.forms import ModelForm
 from models import DataImport
 
-
-
-
 class DataImportForm(ModelForm):
     class Meta:
         model = DataImport
-        fields = ('title', 'file1', 'delete_collection_before_import',
+        fields = ('file1', 'delete_collection_before_import',
                   'input_format', 'database_name', 'collection_name')
     required_css_class = 'required'
     

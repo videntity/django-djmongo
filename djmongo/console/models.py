@@ -12,6 +12,7 @@ class CreateHistory(models.Model):
         #get_latest_by = "creation_date"
         #ordering = ('-creation_date',)
         verbose_name_plural = "Create Histories"
+        unique_together = (('database_name','collection_name'),)
 
     def __unicode__(self):
         return "%s/%s" % (self.database_name, self.collection_name )

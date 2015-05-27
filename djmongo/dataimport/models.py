@@ -23,10 +23,8 @@ class DataImport(models.Model):
                                         default="csv")
     
     delete_collection_before_import   = models.BooleanField(default=False)
-    title           = models.CharField(max_length=100)
-    slug            = models.SlugField(max_length=50)
-   
-    status         = models.TextField(max_length=2048, default="New",
+
+    status         = models.CharField(max_length=10, default="New",
                                         verbose_name="Status", editable = False)
     
     response        = models.TextField(max_length=2048, default="", blank=True,
@@ -49,14 +47,12 @@ class DataImport(models.Model):
         self.status = "Proccessing"
         
         #Generate the slug if the record it was not already defined.
-        if not self.id and not self.slug:
-            self.slug = slugify(self.title)
         super(DataImport, self).save(**kwargs)
         #process the file
         result = bulk_csv_import_mongo(self.file1,
-                                       self.delete_collection_before_import,
                                        self.database_name,
-                                       self.collection_name) 
+                                       self.collection_name,
+                                       self.delete_collection_before_import) 
         
         #report results
         self.response = json.dumps(result, indent = 4)

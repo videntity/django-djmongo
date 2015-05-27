@@ -3,11 +3,8 @@ from django.contrib.auth.models import Group
 from django.core.management import call_command
 
 
-
-
-
 class Command(NoArgsCommand):
-    help = "Print a cliche to the console."
+    help = "Creates initial groups for djmongo security groups."
 
     def handle_noargs(self, **options):
         print "Hello, World!"

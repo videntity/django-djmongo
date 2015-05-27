@@ -66,9 +66,6 @@ urlpatterns = patterns('',
                     login_required(delete_saved_aggregation_by_slug),
                     name="djmongo_delete_saved_aggregation_by_slug"),
     
-    
-
-
 
     url(r'^create-saved-aggregation/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
                    login_required(create_saved_aggregation),
@@ -80,6 +77,11 @@ urlpatterns = patterns('',
     
 
 
+    url(r'^database-access-control/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
+        login_required(database_access_control),
+        name="djmongo_database_access_control"),
+    
+    
     
     url(r'^browse-saved-aggregations/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
                 login_required(display_saved_aggregations),

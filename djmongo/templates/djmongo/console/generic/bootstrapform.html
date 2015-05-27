@@ -24,25 +24,11 @@
       </div>
 	  
 
-      <div class="row">
-
-        <div class="col-lg-12">
-	  
-	
-
-  {% if additional_info %}
-    <div class="alert alert-block">
-    <button type="button" class="close" data-dismiss="alert">×</button>
-    <h4>{%trans "Important" %}</h4>
-    {{ additional_info }}
-    </div>
-
-  {% endif %}
+ 
  
 <div class="row">
   
     <div class="col-lg-8">
-      {% include "djmongo/console/include/messages.html" %}
       
       <form class="well" method="post" action="" enctype="multipart/form-data">
         {% csrf_token %}

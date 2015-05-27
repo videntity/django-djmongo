@@ -24,7 +24,7 @@ def run_aggregation_pipeline(database_name, collection_name, pipeline):
     #print explain
     agg_result = collection.aggregate(pipeline)
     
-    print agg_result
+    #print agg_result
     result = True
     return result
 

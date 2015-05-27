@@ -38,6 +38,7 @@ urlpatterns = patterns('',
         login_required(update_document_in_collection),
         name="djmongo_update_document_in_collection_w_params"),
     
+    
     url(r'^drop-database/(?P<database_name>[^/]+)$',
          login_required(drop_database), name="djmongo_drop_database"),
 

@@ -29,7 +29,7 @@ def import_data_file(request, database_name=None, collection_name=None):
             di.user = request.user
             di.save()
             messages.success(request,_("The data was imported successfully."))   
-            return HttpResponseRedirect(reverse('show_dbs'))
+            return HttpResponseRedirect(reverse('djmongo_show_dbs'))
         else:
             #The form is invalid
              messages.error(request,_("Please correct the errors in the form."))
@@ -40,7 +40,6 @@ def import_data_file(request, database_name=None, collection_name=None):
             
     #this is a GET
     
-    print database_name, collection_name
     if database_name and collection_name:
                 idata ={'database_name': database_name,
              'collection_name': collection_name,
@@ -51,9 +50,9 @@ def import_data_file(request, database_name=None, collection_name=None):
             idata ={'database_name': settings.MONGO_DB_NAME,
            'collection_name': settings.MONGO_MASTER_COLLECTION,
            }
-
+    messages.warning(request, _("""For large data imports use the command line utility csv2mongo. Its part of "JSON Data Tools" and can be installed with "pip install jdt"."""))
     context= {'name':name,
-              'form': DataImportForm(initial=idata)
+              'form': DataImportForm(initial=idata),
               }
     return render_to_response('djmongo/console/generic/bootstrapform.html',
                               RequestContext(request, context,))

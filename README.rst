@@ -1,7 +1,7 @@
 ==================================================
 djmongo - A Drop-in Django Application for MongoDB
 ==================================================
-0.6.1 (beta)
+0.6.4 (beta)
 
 django-djmongo is an "API in a Box".  It provides a web-based UI for MongoDB,
 the ability to import data, and create RESTful APIs without the need to write code.
@@ -65,8 +65,23 @@ Add the follwing to allow all GET CORS requests to the bottom of your settings f
     
 In the simple configuration above, we allow all GET requests from all origins hosts.
 
+6. (Optional) Setup MEDIA URLS
 
-6. Append some Djmongo specific settings to your settings file.::
+You only need to do this if you are going to use the web-based data import tool.
+::
+
+   # Absolute path to the directory that holds media.
+   # Example: "/home/media/media.lawrence.com/"
+   MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
+
+   # URL that handles the media served from MEDIA_ROOT. Make sure to use a
+   # trailing slash if there is a path component (optional in other cases).
+   # Examples: "http://media.lawrence.com", "http://example.com/media/"
+   MEDIA_URL = '/media/'
+
+Make sure you create the folder "uploads" and make it wrateable by the web application.
+
+7. Append some Djmongo specific settings to your settings file.::
 
     #Make sure you have a static root set.
     STATIC_ROOT = str(os.path.join(BASE_DIR, 'collectedstatic'))
@@ -102,7 +117,7 @@ In the simple configuration above, we allow all GET requests from all origins ho
                            
 
 
-7. Include the "djmongo" URLconf in your project's urls.py like this::
+8. Include the "djmongo" URLconf in your project's urls.py like this::
 
     
     ...
@@ -114,7 +129,7 @@ In the simple configuration above, we allow all GET requests from all origins ho
 
 
 
-8. Create the models that contain information to help with seacrching and imports.
+9. Create the models that contain information to help with seacrching and imports.
 
 On Django 1.6::
 
@@ -122,18 +137,19 @@ On Django 1.6::
 
 On django 1.7+::
 
+    python manage.py syncdb
     python manage.py migrate
 
 
-9. Collect static content::
+10. Collect static content::
 
     python manage.py collectstatic
 
-10. Start the development server::
+11. Start the development server::
 
     python manage.py runserver
 
-11. Point your browser to http://127.0.0.1:8000
+12. Point your browser to http://127.0.0.1:8000
 
 
 
