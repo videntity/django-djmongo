@@ -2,14 +2,21 @@
 # -*- coding: utf-8 -*-
 # vim: ai ts=4 sts=4 et sw=4
 
-import datetime
+import datetime, json
 from django import forms
-from models import SavedSearch, OUTPUT_CHOICES, Aggregation
+from models import SavedSearch, OUTPUT_CHOICES, Aggregation, DatabaseAccessControl
 from django.utils.translation import ugettext_lazy as _
-import json
 
 
-
+class DatabaseAccessControlForm(forms.ModelForm):
+    class Meta:
+        model = DatabaseAccessControl
+        fields = ('database_name', 'collection_name',  
+            'is_public', 'search_keys', 'groups')                                      
+    required_css_class = 'required'
+           
+           
+                 
 class SavedSearchForm(forms.ModelForm):
     class Meta:
         model = SavedSearch

@@ -3,7 +3,7 @@ from models import DataImport
 
 
 class DataImportAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('title',)}
-    list_display = ('title', 'status','creation_date')
+    list_display = ('database_name', 'collection_name',
+                    'status','creation_date')
     
 admin.site.register(DataImport, DataImportAdmin)

@@ -13,9 +13,9 @@ from django.core.context_processors import csrf
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime, timedelta
 from django.core.urlresolvers import reverse
-from forms import SavedSearchForm, ComplexSearchForm, AggregationForm
+from forms import SavedSearchForm, ComplexSearchForm, AggregationForm, DatabaseAccessControlForm
 from ..mongoutils import query_mongo, to_json, normalize_results
-from models import SavedSearch, Aggregation
+from models import SavedSearch, Aggregation, DatabaseAccessControl
 from xls_utils import convert_to_csv, convert_to_rows
 from django.db import IntegrityError
 from django.utils.translation import ugettext_lazy as _
@@ -429,6 +429,37 @@ def create_saved_aggregation(request, database_name=None,
     return render_to_response('djmongo/console/generic/bootstrapform.html',
                              RequestContext(request, context,))
     
+
+
+
+def database_access_control(request, database_name, collection_name):
+    name = _("Database Access Control")
+    
+    dac, created = DatabaseAccessControl.objects.get_or_create(database_name=database_name,
+                                                      collection_name=collection_name)
+    if request.method == 'POST':
+        form = DatabaseAccessControlForm(request.POST, instance =dac)
+        if form.is_valid():
+            dac = form.save()
+            messages.success(request,_("Database Access Control record created/updated.")) 
+                
+            return HttpResponseRedirect(reverse('djmongo_show_dbs'))
+        else:
+            #The form is invalid
+             messages.error(request,_("Please correct the errors in the form."))
+             return render_to_response('djmongo/console/generic/bootstrapform.html',
+                                            {'form': form,
+                                             'name':name,
+                                             },
+                                            RequestContext(request))
+            
+   #this is a GET
+    context= {'name':name,
+              'form': DatabaseAccessControlForm(instance=dac)
+              }
+    return render_to_response('djmongo/console/generic/bootstrapform.html',
+                             RequestContext(request, context,))
+
 
 def create_saved_search(request, database_name=None,
                 collection_name=None,

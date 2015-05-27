@@ -67,7 +67,10 @@ $('.dropdown-toggle').dropdown();
            </a>
            <ul class="dropdown-menu">
 
+             <li> <a href="{% url 'djmongo_database_access_control' d.name c %}">
+                   <i class="fa fa-unlock"></i> {% trans "Access Control" %}</a></li>
              
+            <li role="presentation" class="divider"></li>  
              <li> <a  target=_blank href="{% url 'djmongo_search_json_w_params' d.name c %}">
                    <i class="fa fa-search"></i> {% trans "Simple JSON Search" %}</a></li>
              
