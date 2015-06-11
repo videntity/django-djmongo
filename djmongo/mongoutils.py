@@ -9,7 +9,7 @@ from datetime import datetime, date, time
 from bson.code import Code
 from bson.objectid import ObjectId
 from pymongo import MongoClient, DESCENDING
-
+from collections import OrderedDict
 
 
 
@@ -69,7 +69,8 @@ def query_mongo(database_name, collection_name, query={},
     
     try:
         mc =   MongoClient(host=settings.MONGO_HOST,
-                           port=settings.MONGO_PORT)
+                           port=settings.MONGO_PORT,
+                           document_class=OrderedDict)
         
         db           = mc[str(database_name)]
         collection   = db[str(collection_name)]
@@ -131,7 +132,8 @@ def query_mongo_sort_decend(database_name, collection_name, query={},
     
     try:
         mc =   MongoClient(host=settings.MONGO_HOST,
-                           port=settings.MONGO_PORT)
+                           port=settings.MONGO_PORT,
+                           document_class=OrderedDict)
         
         db          =   mc[str(database_name)]
         collection   = db[str(collection_name)]
@@ -325,7 +327,7 @@ def bulk_csv_import_mongo(csvfile, database_name, collection_name,
     l=[]
     response_dict={}
     try:
-        mconnection =   Connection(settings.MONGO_HOST, settings.MONGO_PORT)
+        mconnection =   MongoClient(settings.MONGO_HOST, settings.MONGO_PORT)
         db = 	        mconnection[database_name]
         collection  = db[collection_name]
 
@@ -352,9 +354,9 @@ def bulk_csv_import_mongo(csvfile, database_name, collection_name,
                     cleaned_headers.append(c)
             else:
           
-                record = dict(zip(cleaned_headers, row))
+                record = OrderedDict(zip(cleaned_headers, row))
                 #if there is no values, skip the key value pair
-                kwargs ={}
+                kwargs =OrderedDict()
         
                 #Only populate fields that are not blank.
                 for k,v in record.items():
@@ -421,7 +423,7 @@ def build_non_observational_key(k):
 def get_collection_keys(database_name, collection_name):
     l=[]
     try:
-        mconnection =   Connection(settings.MONGO_HOST, settings.MONGO_PORT)
+        mconnection =   MongoClient(settings.MONGO_HOST, settings.MONGO_PORT)
         db =            mconnection[database_name]
         ckey_collection = "%s_keys" % (collection_name)
         collection = db[ckey_collection]
@@ -454,13 +456,13 @@ def get_collection_keys(database_name, collection_name):
 def get_collection_labels(database_name, collection_name):
     l=[]
     try:
-        mconnection     = Connection(settings.MONGO_HOST, settings.MONGO_PORT)
+        mconnection     = MongoClient(settings.MONGO_HOST, settings.MONGO_PORT)
         db              = mconnection[database_name]
         collection      = db[collection_name]
 
         result = collection.find_one({})
 
-        label_dict = dict((x, y) for x, y in result['labels'])
+        label_dict = OrderedDict((x, y) for x, y in result['labels'])
 
         return label_dict
     except:
@@ -470,7 +472,7 @@ def get_collection_labels(database_name, collection_name):
 def get_labels_tuple(database_name, collection_name):
     l=[]
     try:
-        mconnection     = Connection(settings.MONGO_HOST, settings.MONGO_PORT)
+        mconnection     = MongoClient(settings.MONGO_HOST, settings.MONGO_PORT)
         db              = mconnection[database_name]
         collection      = db[collection_name]
 
@@ -500,7 +502,7 @@ def build_keys_with_mapreduce(database_name, collection_name):
                   "{ return null; }"
                   )
 
-    mconnection =   Connection(settings.MONGO_HOST, settings.MONGO_PORT)
+    mconnection =   MongoClient(settings.MONGO_HOST, settings.MONGO_PORT)
     db =            mconnection[database_name]
 
     collection = db[collection_name]
@@ -519,7 +521,9 @@ def raw_query_mongo_db(kwargs, database_name, collection_name):
     response_dict={}
 
     try:
-        mconnection    = Connection(settings.MONGO_HOST, settings.MONGO_PORT)
+        mconnection    = MongoClient(settings.MONGO_HOST,
+                                     settings.MONGO_PORT,
+                                     document_class=OrderedDict)
         db             = mconnection[database_name]
         transactions   = db[collection_name]
         mysearchresult = transactions.find(kwargs)

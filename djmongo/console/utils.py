@@ -7,6 +7,7 @@ import os, json, sys
 from pymongo import MongoClient, DESCENDING
 from bson.objectid import ObjectId
 import csv
+from collections import OrderedDict
 from ..mongoutils import delete_mongo, write_mongo
 
 
@@ -16,8 +17,8 @@ def mongo_delete_json_util(database_name, collection_name, query={},
    response_dict ={}
    valid_json = True
    try:
-      query = json.loads(query)
-      if type(query)!=type({}):
+      query = json.loads(query, object_pairs_hook=OrderedDict)
+      if type(query)!=type(OrderedDict()):
          valid_json = False
    except ValueError:
       valid_json = False
@@ -38,9 +39,10 @@ def mongo_create_json_util(document, database_name,
    
    response_dict ={}
    valid_json = True
+   
    try:
-      document = json.loads(document)
-      if type(document)!=type({}):
+      document = json.loads(document, object_pairs_hook=OrderedDict)
+      if type(document)!=type(OrderedDict()):
          valid_json = False
    except ValueError:
       valid_json = False
@@ -48,53 +50,20 @@ def mongo_create_json_util(document, database_name,
    if valid_json == False:
       response_dict['code']=400
       response_dict['type']="Error"
-      response_dict['message']="Your query was not valid JSON or not a dictionary (i.e.{})."
+      response_dict['message']="Your query was not valid JSON or not a JSON object (i.e.{})."
    else:
        #valid json so run the delete
-       response_dict = write_mongo(document, database_name=database_name,
-                              collection_name=collection_name)
+       response_dict = write_mongo(document,
+                                   database_name=database_name,
+                                   collection_name=collection_name)
    
    
    return response_dict
    
-   
-
-def mongo_create_json_util(document, database_name,
-                 collection_name, update=False):
-   
-   response_dict ={}
-   valid_json = True
-   try:
-      document = json.loads(document)
-      if type(document)!=type({}):
-         valid_json = False
-   except ValueError:
-      valid_json = False
-
-   if valid_json == False:
-      response_dict['code']=400
-      response_dict['type']="Error"
-      response_dict['message']="Your query was not valid JSON or not a dictionary (i.e.{})."
-   else:
-       #valid json so run the delete
-       response_dict = write_mongo(document, database_name=database_name,
-                              collection_name=collection_name, update=update)
-   
-   
-   return response_dict
-
-
-
-
-
-
-
+  
 def remove_values_from_list(the_list, val):
    return [value for value in the_list if value != val]
    
-
-
-
 
 def create_mongo_db(database_name, collection_name, initial_document):
    """create dat new database and collection by inserting one document."""
@@ -108,7 +77,7 @@ def create_mongo_db(database_name, collection_name, initial_document):
       db          =   mc[str(database_name)]
       collection  =  db[str(collection_name)]
       
-      d = json.loads(initial_document)
+      d = json.loads(initial_document, object_pairs_hook=OrderedDict)
       
       myobjectid=collection.save(d)
         
@@ -117,10 +86,6 @@ def create_mongo_db(database_name, collection_name, initial_document):
       response_dict['error']=str(sys.exc_info())
    
    return response_dict
-
-
-
-
 
 
 
@@ -204,11 +169,6 @@ def mongodb_ensure_index(database_name, collection_name, keys):
 
 
 
-
-
-
-
-
 def mongodb_drop_collection(database_name, collection_name):
     """return a list of all dbs and related collections"""
     
@@ -228,10 +188,6 @@ def mongodb_drop_collection(database_name, collection_name):
         #error connecting to mongodb
         #print str(sys.exc_info())
         return str(sys.exc_info())
-
-
-
-
 
 
 def mongodb_drop_database(database_name):
