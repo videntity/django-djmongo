@@ -11,12 +11,13 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext_lazy as _
 from utils import (show_dbs, mongodb_drop_collection, mongodb_drop_database,
-                mongodb_clear_collection, mongodb_ensure_index)
+                mongodb_clear_collection, mongodb_ensure_index, mongo_delete_json_util,
+                mongo_create_json_util)
 
 from forms import EnsureIndexForm, DeleteForm, DocumentForm, CreateDatabaseForm, LoginForm
-from utils import mongo_delete_json_util, mongo_create_json_util
 from bson.objectid import ObjectId
 from django.contrib.auth import authenticate, login, logout
+from collections import OrderedDict
 
 def showdbs(request):
     dbs = show_dbs()
@@ -272,22 +273,22 @@ def remove_data_from_collection(request,  database_name, collection_name):
 
 
 def create_document_in_collection(request, database_name,collection_name):
-
     name = _("Create a Document from JSON")
     
     if request.method == 'POST':
         form = DocumentForm(request.POST)
         if form.is_valid():
             document = form.cleaned_data['document']
-        
             #create the document
-            results = mongo_create_json_util(document, database_name=database_name,
+            results = mongo_create_json_util(document,
+                                             database_name=database_name,
                                              collection_name=collection_name)
             
             #convert to json and respond.
             results_json = json.dumps(results, indent = 4)
-            return HttpResponse(results_json, status=int(results['code']),
-                                    content_type="application/json")        
+            return HttpResponse(results_json,
+                                status=int(results['code']),
+                                content_type="application/json")        
         else:
             #The form is invalid
              messages.error(request,_("Please correct the errors in the form."))
@@ -316,7 +317,7 @@ def update_document_in_collection(request,  database_name, collection_name):
         form = DocumentForm(request.POST)
         if form.is_valid():
             document = form.cleaned_data['document']
-            doc = json.loads(document)
+            doc = json.loads(document, object_pairs_hook=OrderedDict)
             if not doc.has_key("_id") and not doc.has_key("id"):
                 result = { "code":    400,
                            "type":    "Error",

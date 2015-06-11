@@ -9,20 +9,22 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-djmongo',
-    version='0.6.4',
+    version='0.6.5',
     packages=['djmongo', 'djmongo.console',  
               'djmongo.management.commands',
               'djmongo.management', 
               'djmongo.search','djmongo.dataimport' ],
     include_package_data=True,
-    license='Public Domain',  
+    license='GPL2',  
     description='A reusable Django application providing a web interface for MongoDB and RESTFul API Toolkit.',
     long_description=README,
     url='https://github.com/hhsidealab/django-djmongo',
     author='Alan Viars',
     author_email='djmongo@videntity.com',
     install_requires=[
-        'django>=1.6.1', 'pymongo', 'django-widget-tweaks', 'django-bootstrap-form', 'django-cors-headers' ],
+        'django>=1.6.1', 'pymongo', 'django-widget-tweaks', 
+        'django-bootstrap-form', 
+        'django-cors-headers', 'jdt' ],
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
