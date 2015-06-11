@@ -79,7 +79,7 @@ You only need to do this if you are going to use the web-based data import tool.
    # Examples: "http://media.lawrence.com", "http://example.com/media/"
    MEDIA_URL = '/media/'
 
-Make sure you create the folder "uploads" and make it wrateable by the web application.
+Make sure you create the folder "uploads" and make it writable by the web application.
 
 7. Append some Djmongo specific settings to your settings file.::
 
@@ -110,7 +110,7 @@ Make sure you create the folder "uploads" and make it wrateable by the web appli
                            'django.contrib.auth.backends.ModelBackend',)
                            
     #Setting DEFAULT_TO_OPEN_READ to True removes any authentication or group requirements
-    #to view or search data. When set to true, you need to explicity define it as open in
+    #to view or search data. When set to true, you need to explicitly define it as open in
     #the Console/Database Access model within the django admin.
     DEFAULT_TO_OPEN_READ = False
                            
@@ -129,7 +129,7 @@ Make sure you create the folder "uploads" and make it wrateable by the web appli
 
 
 
-9. Create the models that contain information to help with seacrching and imports.
+9. Create the models that contain information to help with searching and imports.
 
 On Django 1.6::
 
