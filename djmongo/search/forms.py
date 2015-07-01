@@ -16,11 +16,11 @@ class DatabaseAccessControlForm(forms.ModelForm):
     required_css_class = 'required'
            
            
-                 
 class SavedSearchForm(forms.ModelForm):
     class Meta:
         model = SavedSearch
-        fields = ('group', 'title', 'query', 'type_mapper','return_keys', 'is_public', 'sort', 'default_limit',
+        fields = ('slug', 'query', 'group', 'is_public', 'type_mapper',
+                  'return_keys',  'sort', 'default_limit',
                   'database_name', 'collection_name', 'output_format')
 
     required_css_class = 'required'

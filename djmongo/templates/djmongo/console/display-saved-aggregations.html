@@ -5,6 +5,23 @@
 
 
 <div class="container">
+      
+      <div class="row">
+  <div class="col-lg-10">
+         <div class="alert alert-info">
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    <h4>{%trans "Notes:" %}</h4>
+    Depending on how your saved searches are constructed, they may not run without GET parameters supplied.
+    Use double dollar sign "$$" notaion for variable replacement. 
+	<a target="_blank" href="https://github.com/videntity/django-djmongo/wiki/Saved-Searches">
+            See the Saved Search Documentaion</a> for more information.
+	  </div>
+      
+      </div>
+   </div>
+      
+      
+      
       <div class="row">
               <div class="col-lg-12">
                   <h1>{% trans "Saved Aggregations" %}</h1>
@@ -14,7 +31,7 @@
  <div class="row">
       <div class="col-lg-12">
            <a class="btn pull-right btn-info btn-large" href="{% url 'djmongo_create_saved_aggregation_w_params' database_name collection_name   %}">
-            <i class="icon-plus-sign icon-white"></i> {% trans "New Saved Aggregation from " %} {{database_name}}/{{collection_name}}
+            <i class="icon-plus-sign icon-white"></i> {% trans "Create a Saved Aggregation from " %} {{database_name}}/{{collection_name}}
             </a>
 
        </div>
@@ -72,5 +89,10 @@
     
 </div>
 </div>
+
+
+
+
+
 
 {% endblock %}

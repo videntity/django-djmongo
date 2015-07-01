@@ -12,38 +12,30 @@ urlpatterns = patterns('',
 
     #return JSON
 
-    url(r'^(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/search.json$',
+    url(r'^(?P<database_name>[^/]+)/(?P<collection_name>[^.]+).json$',
             search_json, name="djmongo_search_json_w_params"),
     
     #return CSV
-    url(r'^(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/search.csv$',
+    url(r'^(?P<database_name>[^/]+)/(?P<collection_name>[^.]+).csv$',
             search_csv, name="djmongo_search_csv_w_params"),
     
     #return HTML Table
-    url(r'^(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/search.html$',
+    url(r'^(?P<database_name>[^/]+)/(?P<collection_name>[^.]+).html$',
             search_html, name="djmongo_search_html_w_params"),
 
-    url(r'^run-private-saved-search/(?P<slug>\S+)/(?P<skip>[^/]+)/(?P<limit>[^/]+)$',
-                    login_required(run_saved_search_by_slug),
-                    name="djmongo_run_saved_search_by_slug"),
-
-
-    url(r'^run-public-saved-search/(?P<slug>\S+)/(?P<skip>[^/]+)/(?P<limit>[^/]+)$',
-                    run_saved_search_by_slug,
-                    name="djmongo_run_saved_search_by_slug"),
-    
+   
     url(r'^run-aggregation/(?P<slug>\S+)$',
                     run_aggregation_by_slug,
                     name="djmongo_run_aggregation_by_slug"),
     
     
-    url(r'^run/(?P<slug>\S+)$',
+    url(r'^saved-search/(?P<slug>\S+)$',
                     login_required(run_saved_search_by_slug),
                     name="djmongo_run_saved_search_by_slug"),
     
-    url(r'^run-public/(?P<slug>\S+)$',
+    url(r'^public/saved-search/(?P<slug>\S+)$',
                     run_saved_search_by_slug,
-                    name="djmongo_run_saved_search_by_slug"),
+                    name="djmongo_run_public_saved_search_by_slug"),
    
     url(r'^edit-saved-search/(?P<slug>\S+)$',
                     login_required(edit_saved_search_by_slug),
@@ -92,48 +84,43 @@ urlpatterns = patterns('',
                 login_required(display_saved_searches),
                 name="djmongo_browse_saved_searches_w_params"),
     
+    
+    # Unsupported/Experimental
     url(r'^build-keys', login_required(build_keys),
                     name="djmongo_search_build_keys"),
-    
+     # Unsupported/Experimental
     url(r'^custom-report', login_required(custom_report),
-                   name="cdjmongo_ustom_report"),
-    
+                   name="cdjmongo_custom_report"),
+     # Unsupported/Experimental
     url(r'^data-dictionary', login_required(data_dictionary),
                     name="djmongo_data_dictionary"),
-    
-    url(r'^load-labels-from-data-dictonary', login_required(load_labels),
+    # Unsupported/Experimental
+    url(r'^load-labels-from-data-dictonary',
+                    login_required(load_labels),
                     name="djmongo_load_labels"),
 
-    
     #API CALLS ------------------------------------------------------------------   
     
     #return JSON ----------------------------------------------
-    url(r'^api/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/search.json$',
-         search_json, name="api_search_json_w_params"),
+    url(r'^api/(?P<database_name>[^/]+)/(?P<collection_name>[^.]+).json$',
+         search_json, name="djmongo_api_search_json_w_params"),
     
     #return CSV ------------------------------------------------
-    url(r'^api/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/search.csv$',
-         search_csv, name="api_search_csv_w_params"),
+    url(r'^api/(?P<database_name>[^/]+)/(?P<collection_name>[^.]+).csv$',
+         search_csv, name="djmongo_api_search_csv_w_params"),
  
     #return HTML Table ----------------------------------------------------------  
-    url(r'^api/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/search.html$',
-         search_html, name="api_search_html_w_params"),
+    url(r'^api/(?P<database_name>[^/]+)/(?P<collection_name>[^.]+).html$',
+         search_html, name="djmongo_api_search_html_w_params"),
     
     #Saved Search API Calls ------------------------------------------------------- 
-    url(r'^api/run-public-saved-search/(?P<slug>\S+)$',
+    url(r'^api/public/saved-search/(?P<slug>\S+)$',
         run_saved_search_by_slug,
-        name="run_saved_search_by_slug"),
+        name="djmongo_api_run_public_saved_search_by_slug"),
     
-    url(r'^api/run-private-saved-search/(?P<slug>\S+)$',
+    url(r'^api/saved-search/(?P<slug>\S+)$',
         json_login_required(run_saved_search_by_slug),
-        name="run_saved_search_by_slug"),
+        name="djmongo_api_run_saved_search_by_slug"),
     
-    #Complex Searches
-    url(r'^api/complex-search$',
-        json_login_required(csrf_exempt(complex_search)),
-        name="api_complex_search"),
-    
-    url(r'^api/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/complex-search$',
-         json_login_required(csrf_exempt(complex_search)), name="api_complex_search"),
 
     )
