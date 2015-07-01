@@ -5,6 +5,24 @@
 
 
 <div class="container">
+      
+      
+      
+       <div class="row">
+  <div class="col-lg-10">
+         <div class="alert alert-info">
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    <h4>{%trans "Notes:" %}</h4>
+    Depending on how your saved searches are constructed, they may not run without GET parameters supplied.
+    Use double dollar sign "$$" notaion for variable replacement. 
+	<a target="_blank" href="https://github.com/videntity/django-djmongo/wiki/Saved-Searches">
+            See the Saved Search Documentaion</a> for more information.
+	  </div>
+      
+      </div>
+   </div>
+      
+      
       <div class="row">
               <div class="col-lg-12">
                   <h1>{% trans "Saved Searches" %}</h1>
@@ -13,8 +31,8 @@
 
  <div class="row">
       <div class="col-lg-12">
-           <a class="btn pull-left btn-primary btn-large" href="{% url 'djmongo_create_saved_search_w_params' database_name collection_name   %}">
-            <i class="icon-plus-sign icon-white"></i> {% trans "New Saved Search in " %} {{database_name}}/{{collection_name}}
+           <a class="btn pull-right btn-primary btn-large" href="{% url 'djmongo_create_saved_search_w_params' database_name collection_name   %}">
+            <i class="icon-plus-sign icon-white"></i> {% trans "Create a Saved Search in " %} {{database_name}}/{{collection_name}}
             </a>
            
        </div>
@@ -28,12 +46,12 @@
 
 <thead>
 <tr>
-<th>Title</th>
 <th>Slug</th>
 <th>Is Public</th>
 <th>Group</th>
 <th>Created By</th>
 <th>Database/Collection</th>
+<th>API URL</th>
 <th>Query</th>
 <th>Actions</th>
 
@@ -46,17 +64,33 @@
 {% for s in savedsearches %}
 
 <tr class="success">
-<td>{{s.title}}</td>
 <td>{{s.slug}}</td>
 <td>{{s.is_public}}</td>
 <td>{{s.group}}</td>
 <td>{{s.user.first_name}}  {{s.user.last_name}}  ({{s.user}})</td>
 <td>{{s.database_name}}/{{s.collection_name}}</td>
+{% if s.is_public %}
+
+    <td><pre>{% url 'djmongo_api_run_public_saved_search_by_slug' s.slug %}</pre></td>
+{% else %}
+    <td><pre>{% url 'djmongo_api_run_saved_search_by_slug' s.slug %}</pre></td>
+{% endif %}
+
 <td><pre>{{s.query}}</pre></td>
 <td>
             
-            <a class="btn pull-left btn-success btn-xs" target=_blank href="{% url 'djmongo_run_saved_search_by_slug' s.slug %}">
-            <i class="icon-search  icon-white"></i> Run</a>           
+            {% if s.is_public %}
+              <a class="btn pull-left btn-success btn-xs" target=_blank href="{% url 'djmongo_run_public_saved_search_by_slug' s.slug %}">
+              <i class="icon-search  icon-white"></i> Run</a>
+              
+     
+            {% else %}
+     
+              <a class="btn pull-left btn-success btn-xs" target=_blank href="{% url 'djmongo_run_saved_search_by_slug' s.slug %}">
+              <i class="icon-search  icon-white"></i> Run</a>
+              
+     
+            {% endif %}
      
             <a class="btn pull-left btn-primary btn-xs" href="{% url 'djmongo_edit_saved_search_by_slug' s.slug %}">
             <i class="icon-edit  icon-white"></i> Edit</a>

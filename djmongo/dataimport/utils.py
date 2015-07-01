@@ -7,7 +7,7 @@ from django.utils.datastructures import SortedDict
 import os, json, sys, uuid, csv
 from pymongo import MongoClient, DESCENDING
 from bson.objectid import ObjectId
-
+from collections import OrderedDict
 
 def bulk_csv_import_mongo(csvfile, database_name, collection_name, delete_collection_before_import=False):
 
@@ -47,7 +47,7 @@ def bulk_csv_import_mongo(csvfile, database_name, collection_name, delete_collec
           
                 record = dict(zip(cleaned_headers, row))
                 #if there is no values, skip the key value pair
-                kwargs ={}
+                kwargs =OrderedDict()
         
                 #Only populate fields that are not blank.
                 for k,v in record.items():

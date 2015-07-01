@@ -22,16 +22,16 @@ class Aggregation(models.Model):
     collection_name = models.CharField(max_length=256)
     output_collection_name = models.CharField(max_length=256,
                              help_text = "The resulting collection. Do not include $out in your pipeline.")
-    creation_date     = models.DateField(auto_now_add=True)
+    creation_date          = models.DateField(auto_now_add=True)
     
     execute_now            = models.BooleanField(blank=True, default=False)
     
     scheduled_job_in_process      = models.BooleanField(blank=True, default=False)
     scheduled_job_completed_for_today       = models.BooleanField(blank=True, default=False)
-    scheduled_job_not_ran   = models.BooleanField(blank=True, default=True)
+    scheduled_job_not_ran         = models.BooleanField(blank=True, default=True)
     
-    execute_everyday       = models.BooleanField(blank=True, default=False)
-    execute_sunday         = models.BooleanField(blank=True, default=False)
+    execute_everyday  = models.BooleanField(blank=True, default=False)
+    execute_sunday    = models.BooleanField(blank=True, default=False)
     execute_monday    = models.BooleanField(blank=True, default=False)
     execute_tuesday   = models.BooleanField(blank=True, default=False)
     execute_wednesday = models.BooleanField(blank=True, default=False)
@@ -69,11 +69,6 @@ class Aggregation(models.Model):
             pipeline.append(output_dict)
             result  = run_aggregation_pipeline(self.database_name, self.collection_name, pipeline)
 
-        
-        
-        
-
-
 
 class SavedSearch(models.Model):
 
@@ -81,30 +76,25 @@ class SavedSearch(models.Model):
     group           = models.ForeignKey(Group, blank=True, null=True)
     output_format   = models.CharField(max_length=4, choices=OUTPUT_CHOICES,
                                         default="json")
-    title           = models.CharField(max_length=100, unique=True)
     slug            = models.SlugField(max_length=100, unique=True)
     query           = models.TextField(max_length=2048, default="{}",            
                                         verbose_name="JSON Query")
     type_mapper     = models.TextField(max_length=2048, default="{}",            
                                         verbose_name="Map non-string variables to numbers or boolean")
-    is_public       =  models.BooleanField(default=False, blank=True,
+    is_public       = models.BooleanField(default=False, blank=True,
                             help_text = "If checked, the search can be run without authentication")
     
-    
-    
-    
-    
-    sort            =  models.TextField(max_length=2048, default="", blank=True,
+    sort            = models.TextField(max_length=2048, default="", blank=True,
                                         verbose_name="Sort Dict",
                                         help_text="""e.g. [["somefield", 1], ["someotherfield", -1] ]""")
     
-    return_keys   =  models.TextField(max_length=2048, default="", blank=True,
+    return_keys     = models.TextField(max_length=2048, default="", blank=True,
                                       
                             help_text = """Default is blank which returns all keys.
                             Seperate keys by whitespace to limit the keys that are returned."""
                                         )
     
-    default_limit   =  models.IntegerField(default=getattr(settings, 'MONGO_LIMIT', 200),
+    default_limit   = models.IntegerField(default=getattr(settings, 'MONGO_LIMIT', 200),
                             help_text = "Limit results to this number unless specified otherwise.",
                                         )
     database_name   = models.CharField(max_length=100)
@@ -118,13 +108,6 @@ class SavedSearch(models.Model):
 
     def __unicode__(self):
         return "%s" % (self.slug)
-        
-    def save(self, **kwargs):
-       
-        #Generate the slug if the record it was not already defined.
-        if not self.id and not self.slug:
-            self.slug = slugify(self.title)
-        super(SavedSearch, self).save(**kwargs)
         
         
         

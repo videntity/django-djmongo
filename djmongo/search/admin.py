@@ -10,9 +10,8 @@ admin.site.register(Aggregation, AggregationAdmin)
 
 
 class SavedSearchAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('title',)}
-    list_display = ('slug', 'title', 'user','database_name',
-                    'collection_name','creation_date')
+    list_display = ('slug', 'collection_name', 'database_name', 'user',
+                    'collection_name', 'is_public', 'creation_date')
 
 
 admin.site.register(SavedSearch, SavedSearchAdmin)
