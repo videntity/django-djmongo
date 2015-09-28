@@ -209,10 +209,9 @@ def write_mongo(document, database_name,
     l=[]
     response_dict={}
     try:
-        mc =   MongoClient(host=settings.MONGO_HOST,
-                           port=settings.MONGO_PORT)
-        db          =   mc[str(database_name)]
-        collection   = db[str(collection_name)]
+        mc          = MongoClient(host=settings.MONGO_HOST, port=settings.MONGO_PORT)
+        db          = mc[str(database_name)]
+        collection  = db[str(collection_name)]
         
         
         # Cast the query to integers 

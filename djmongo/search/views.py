@@ -312,6 +312,11 @@ def run_saved_search_by_slug(request, slug, output_format=None, skip=0,
                 if v in ('false', 'False', 'F', 'FALSE', 'N', '0'):
                     quoted_value = 'false'
         query = query.replace(k, quoted_value)
+    
+    print "query", query
+        
+        
+        
     try:
         query = json.loads(query)
         if ss.sort:
@@ -354,7 +359,6 @@ def run_saved_search_by_slug(request, slug, output_format=None, skip=0,
         response = json.dumps(response_dict, indent =4)
         return HttpResponse(response,
                 content_type="application/json")
-    
     
     #setup the list of keys for return if specified.
     key_list=()
