@@ -9,7 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-djmongo',
-    version='0.6.7',
+    version='0.6.8',
     packages=['djmongo', 'djmongo.console',
               'djmongo.accounts',
               'djmongo.write',

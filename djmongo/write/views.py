@@ -26,7 +26,6 @@ def write_to_collection(request, slug):
             json_schema = json.loads(wapi.json_schema, object_pairs_hook=OrderedDict)
             return HttpResponse(json.dumps(json_schema, indent=4), content_type="application/json")  
         except:
-            print str(sys.exc_info())
             return kickout("The JSON Schema did not contain valid JSON")
             
     
@@ -52,7 +51,6 @@ def write_to_collection(request, slug):
             try: 
                 validate(j, json_schema)
             except ValidationError:
-                print type(sys.exc_info()),   str(sys.exc_info())
                 msg = "JSON Schema Conformance Error. %s" % (str(sys.exc_info()[1][0]))
                 return kickout(msg)
                  

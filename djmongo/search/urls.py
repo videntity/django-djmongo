@@ -102,16 +102,16 @@ urlpatterns = patterns('',
     #API CALLS ------------------------------------------------------------------   
     
     #return JSON ----------------------------------------------
-    url(r'^api/(?P<database_name>[^/]+)/(?P<collection_name>[^.]+).json$',
-         search_json, name="djmongo_api_search_json_w_params"),
+    url(r'^/api/(?P<database_name>[^/]+)/(?P<collection_name>[^.]+).json$',
+         json_login_required(search_json), name="djmongo_api_search_json_w_params"),
     
     #return CSV ------------------------------------------------
     url(r'^api/(?P<database_name>[^/]+)/(?P<collection_name>[^.]+).csv$',
-         search_csv, name="djmongo_api_search_csv_w_params"),
+         json_login_required(search_csv), name="djmongo_api_search_csv_w_params"),
  
     #return HTML Table ----------------------------------------------------------  
     url(r'^api/(?P<database_name>[^/]+)/(?P<collection_name>[^.]+).html$',
-         search_html, name="djmongo_api_search_html_w_params"),
+          json_login_required(search_html), name="djmongo_api_search_html_w_params"),
     
     #Saved Search API Calls ------------------------------------------------------- 
     url(r'^api/public/saved-search/(?P<slug>\S+)$',

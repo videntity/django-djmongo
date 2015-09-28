@@ -17,5 +17,5 @@ class SavedSearchAdmin(admin.ModelAdmin):
 admin.site.register(SavedSearch, SavedSearchAdmin)
 
 class DatabaseAccessControlAdmin(admin.ModelAdmin):
-    list_display = ('database_name', 'collection_name', 'is_public')
+    list_display = ('collection_name', 'database_name', 'is_public')
 admin.site.register(DatabaseAccessControl, DatabaseAccessControlAdmin)

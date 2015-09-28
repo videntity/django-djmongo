@@ -111,12 +111,11 @@ def custom_report(request, database_name, collection_name):
 
 
 @check_database_access
-def search_json(request, database_name,collection_name,
+def search_json(request, database_name, collection_name,
                 skip=0, limit=getattr(settings,'MONGO_LIMIT', 200),
                 sort=None, return_keys=(),
                 query={}):
     
-
     result = prepare_search_results(request, database_name=database_name,
                 collection_name=collection_name, skip=skip, sort=sort,
                 limit=limit, return_keys=return_keys, query=query)

@@ -63,7 +63,6 @@ def check_database_access(func):
         database_name   = kwargs.get('database_name', "")
         collection_name = kwargs.get('collection_name', "")
         
-    
         if not default_to_open:
             
             if not database_name or not collection_name:
