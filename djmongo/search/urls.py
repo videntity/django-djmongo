@@ -122,5 +122,8 @@ urlpatterns = patterns('',
         json_login_required(run_saved_search_by_slug),
         name="djmongo_api_run_saved_search_by_slug"),
     
+    url(r'^api/complex-search/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
+        json_login_required(complex_search), name="djmongo_api_complex_search"),
+    
 
     )
