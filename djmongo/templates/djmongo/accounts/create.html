@@ -1,0 +1,19 @@
+{% extends "djmongo/console/base.html" %}
+
+{% block pretitle %}Account Create:{% endblock %}
+
+
+{% block content %}
+
+<div class="hero-unit">
+
+  <h1>{{Name}}</h1>
+
+    <form action="" method="POST">
+    {% csrf_token %}  
+    {{ form.as_p }}
+    <input type="submit" name="Create"/>
+  </form>
+</div>
+  
+{% endblock %}

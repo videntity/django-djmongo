@@ -2,7 +2,6 @@ import sys, types, datetime, os, json
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.conf import settings
-from models import flangioUser as User
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -42,20 +41,20 @@ def simple_email_login(request):
                 else:
                     messages.error(request,
                          _("Your account is inactive so you may not log in."))
-                    return render_to_response('accounts/login.html',
+                    return render_to_response('djmongo/console/login.html',
                                              {'form': form},
                                              RequestContext(request))
             else:
                 messages.error(request, _("Invalid username or password."))
-                return render_to_response('accounts/login.html',
+                return render_to_response('djmongo/console/login.html',
                                     {'form': form},
                                     RequestContext(request))
 
         else:
-            return render_to_response('accounts/login.html',
+            return render_to_response('djmongo/console/login.html',
                               RequestContext(request, {'form': form}))
     #this is a GET
-    return render_to_response('accounts/login.html',
+    return render_to_response('djmongo/console/login.html',
                               {'form': LoginForm()},
                               context_instance = RequestContext(request))
 
@@ -67,7 +66,7 @@ def api_test_credentials(request):
     message ="Your API credentials for user %s are valid." % (request.user)
     jsonstr={"code": 200, "message": message}
     jsonstr=json.dumps(jsonstr, indent = 4,)
-    return HttpResponse(jsonstr, status=200, mimetype="application/json")
+    return HttpResponse(jsonstr, status=200, content_type="application/json")
 
 
 
@@ -84,13 +83,13 @@ def api_delete_user(request, email):
         message ="User %s does not exist." % (email)
         jsond={"code": 404, "message": message}
         jsonstr=json.dumps(jsond, indent = 4,)
-        return HttpResponse(jsonstr, status=404, mimetype="application/json")
+        return HttpResponse(jsonstr, status=404, content_type="application/json")
         
     u.delete()
     message ="User %s deleted." % (email)
     jsond={"code": 200, "message": message}
     jsonstr=json.dumps(jsond, indent = 4,)
-    return HttpResponse(jsonstr, status=200, mimetype="application/json")
+    return HttpResponse(jsonstr, status=200, content_type="application/json")
     
     
 
@@ -118,7 +117,7 @@ def user_create(request):
     context= {'name':name,
               'form': UserCreationForm()
               }
-    return render_to_response('generic/bootstrapform.html',
+    return render_to_response('djmongo/console/generic/bootstrapform.html',
                               RequestContext(request, context,))
 
 
@@ -136,7 +135,7 @@ def user_update(request):
         else:
             #The form is invalid
             messages.error(request,_("Please correct the errors in the form."))
-            return render_to_response('generic/bootstrapform.html',
+            return render_to_response('djmongo/console/generic/bootstrapform.html',
                                            {'form': form,
                                             'name':name,
                                             },
@@ -145,7 +144,7 @@ def user_update(request):
     context= {'name':name,
               'form': UserUpdateForm(instance=request.user)
               }
-    return render_to_response('generic/bootstrapform.html',
+    return render_to_response('djmongo/console/generic/bootstrapform.html',
                               RequestContext(request, context,))
 
 
@@ -161,14 +160,14 @@ def api_read_user(request, email):
         message ="User %s does not exist." % (email)
         jsond={"code": 404, "message": message}
         jsonstr=json.dumps(jsond, indent = 4,)
-        return HttpResponse(jsonstr, status=404, mimetype="application/json")
+        return HttpResponse(jsonstr, status=404, content_type="application/json")
         
     user = {"first_name": u.first_name, "last_name":u.last_name,
             "username": u.username, "email": email,
             "date_joined": str(u.date_joined)}
     jsond={"code": 200, "user": user}
     jsonstr=json.dumps(jsond, indent = 4,)
-    return HttpResponse(jsonstr, status=200, mimetype="application/json")
+    return HttpResponse(jsonstr, status=200, content_type="application/json")
 
 
 
@@ -188,7 +187,7 @@ def user_password(request):
         else:
             #The form is invalid
             messages.error(request,_("Please correct the errors in the form."))
-            return render_to_response('generic/bootstrapform.html',
+            return render_to_response('djmongo/console/generic/bootstrapform.html',
                                            {'form': form,
                                             'name':name,
                                             },
@@ -199,7 +198,7 @@ def user_password(request):
     context= {'name':name,
               'form': SetPasswordForm(user=request.user)
               }
-    return render_to_response('generic/bootstrapform.html',
+    return render_to_response('djmongo/console/generic/bootstrapform.html',
                               RequestContext(request, context,))
 
 
@@ -220,14 +219,13 @@ def api_user_create(request):
             # between the creator and the new user
             grantor=User.objects.get(username=result['user']['username'])
             s=SocialGraph.objects.create(grantor=grantor, grantee=request.user)
-            if settings.AUTO_SELF_FOLLOW:
-                try:
-                    s=SocialGraph.objects.create(grantor=grantor, grantee=grantor)
-                except:
-                    pass
+            try:
+                s=SocialGraph.objects.create(grantor=grantor, grantee=grantor)
+            except:
+                pass
             jsonstr=result
             jsonstr=json.dumps(jsonstr, indent = 4,)
-            return HttpResponse(jsonstr, status=200, mimetype="application/json")
+            return HttpResponse(jsonstr, status=200, content_type="application/json")
         else:
             # the form had errors
             errors=[]
@@ -242,9 +240,9 @@ def api_user_create(request):
                       "message": "User creation failed due to errors.",
                          "errors": errors}
             jsonstr=json.dumps(jsonstr, indent = 4,)
-            return HttpResponse(jsonstr, status=400, mimetype="application/json")
+            return HttpResponse(jsonstr, status=400, content_type="application/json")
     # this is an HTTP GET
-    return render_to_response('accounts/create.html',
+    return render_to_response('djmongo/accounts/create.html',
                     {'name':name, 'form': APIUserCreationForm(),},
                     RequestContext(request))
     
@@ -269,7 +267,7 @@ def api_user_update(request):
                         "message": "Update did not identify the user by email.",
                         "errors": ["Update did not identify the user by email.", ]}
             jsonstr=json.dumps(jsonstr, indent = 4,)
-            return HttpResponse(jsonstr, status=400, mimetype="application/json")
+            return HttpResponse(jsonstr, status=400, content_type="application/json")
         
         try:
             user = User.objects.get(email=request.POST['email'])
@@ -280,7 +278,7 @@ def api_user_update(request):
                         "message": "User not found.",
                         "errors": [msg, ]}
             jsonstr=json.dumps(jsonstr, indent = 4,)
-            return HttpResponse(jsonstr, status=400, mimetype="application/json")
+            return HttpResponse(jsonstr, status=400, content_type="application/json")
         
         form = APIUserUpdateForm(request.POST, instance=user)
         
@@ -289,7 +287,7 @@ def api_user_update(request):
             result=form.save()
             jsonstr=result
             jsonstr=json.dumps(jsonstr, indent = 4,)
-            return HttpResponse(jsonstr, status=200, mimetype="application/json")
+            return HttpResponse(jsonstr, status=200, content_type="application/json")
         else:
             # the form had errors
             errors=[]
@@ -304,9 +302,9 @@ def api_user_update(request):
                         "message": "User update failed due to errors.",
                         "errors": errors}
             jsonstr=json.dumps(jsonstr, indent = 4,)
-            return HttpResponse(jsonstr, status=400, mimetype="application/json")
+            return HttpResponse(jsonstr, status=400, content_type="application/json")
     # this is an HTTP GET
-    return render_to_response('accounts/create.html',
+    return render_to_response('djmongo/accounts/create.html',
                     {'name':name, 'form': APIUserUpdateForm(),},
                     RequestContext(request))
 

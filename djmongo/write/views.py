@@ -16,10 +16,27 @@ from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 # Create your views here.
 
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+
 @csrf_exempt
 def write_to_collection(request, slug):
     errors = []
     wapi = get_object_or_404(WriteAPI, slug=slug)
+    
+    ip = get_client_ip(request)
+    
+    if wapi.from_ip:
+        allowable_ips = wapi.from_ip.split(" ")
+        if ip not in allowable_ips:
+            return kickout("This IP is not authorized to make the API call.")
     
     if request.method == 'GET': #----------------------------------------------------
         try:

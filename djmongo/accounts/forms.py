@@ -125,8 +125,7 @@ password.
 
     class Meta:
         model = User
-        fields = ("first_name", "last_name",  "username", "email", "user_type",
-                  "gender", "year_of_birth")
+        fields = ("first_name", "last_name",  "username", "email")
 
 
     def clean_password2(self):
@@ -183,7 +182,6 @@ class APIUserUpdateForm(UserUpdateForm):
                   'email':      str(user.email),
                   'first_name': str(user.first_name),
                   'last_name': str(user.last_name),
-                  'user_type':  str(user.user_type),
                   }
         
         
