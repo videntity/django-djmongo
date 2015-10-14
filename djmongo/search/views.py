@@ -33,6 +33,8 @@ def build_keys(request):
 def prepare_search_results(request, database_name, collection_name,
                 skip=0, sort=None, limit=getattr(settings, 'MONGO_LIMIT', 200), return_keys=(), query={}):
     #By default, do not include number of search results.
+    
+    print database_name, collection_name
     include_num_results = "0"
     
     if not query:
@@ -111,12 +113,11 @@ def custom_report(request, database_name, collection_name):
 
 
 @check_database_access
-def search_json(request, database_name,collection_name,
+def search_json(request, database_name, collection_name,
                 skip=0, limit=getattr(settings,'MONGO_LIMIT', 200),
                 sort=None, return_keys=(),
                 query={}):
-    
-
+    print "hello", database_name, collection_name,
     result = prepare_search_results(request, database_name=database_name,
                 collection_name=collection_name, skip=skip, sort=sort,
                 limit=limit, return_keys=return_keys, query=query)

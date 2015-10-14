@@ -9,7 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-djmongo',
-    version='0.6.7',
+    version='0.7.2.6',
     packages=['djmongo', 'djmongo.console',
               'djmongo.accounts',
               'djmongo.write',
@@ -22,7 +22,7 @@ setup(
     long_description=README,
     url='https://github.com/hhsidealab/django-djmongo',
     author='Alan Viars',
-    author_email='djmongo@videntity.com',
+    author_email='sales@videntity.com',
     install_requires=[
         'django>=1.8.1', 'pymongo', 'django-widget-tweaks', 
         'django-bootstrap-form', 

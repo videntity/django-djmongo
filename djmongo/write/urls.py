@@ -13,4 +13,6 @@ urlpatterns = patterns('',
     url(r'^api/(?P<slug>[^/]+)$',
          json_login_required(write_to_collection), name="djmongo_api_write_to_collection"),
 
+    url(r'^api/ip/(?P<slug>[^/]+)$',
+         write_to_collection, name="djmongo_api_write_to_collection_with_ip"),
     )

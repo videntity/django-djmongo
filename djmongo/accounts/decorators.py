@@ -40,7 +40,7 @@ def json_login_required(func):
         
         if not user or not user.is_active:
             return HttpResponse(unauthorized_json_response(), status=401,
-                    mimetype="application/json")          
+                    content_type="application/json")          
         login(request, user)
         return func(request, *args, **kwargs)
 
@@ -54,7 +54,7 @@ def access_required(permission):
                     return func(request, *args, **kwargs)
             else:                    
                     return HttpResponse(unauthorized_json_response(), status=401,
-                                mimetype="application/json")
+                                content_type="application/json")
         return wraps(func)(inner_decorator)
 
     return decorator
