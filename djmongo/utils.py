@@ -41,7 +41,30 @@ def unauthorized_json_response(additional_info=None):
 
 
 
+def json_response_400(errors=""):
+    body={"code": 400,
+          "message": "Client Error",
+          "errors": [error, ]
+          }
+    body=json.dumps(body, indent=4, )
+    return body
 
+
+def json_response_404(errors=""):
+    body={"code": 404,
+          "message": "Not Found",
+          "errors": [error, ]
+          }
+    body=json.dumps(body, indent=4, )
+    return body
+
+def json_response_500(error=""):
+    body={"code": 500,
+          "message": "Server Side Error",
+          "errors": [error,]
+          }
+    body=json.dumps(body, indent=4, )
+    return body
 
 
 
