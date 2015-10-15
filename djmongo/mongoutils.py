@@ -3,7 +3,6 @@
 # vim: ai ts=4 sts=4 et sw=4
 
 from django.conf import settings
-from django.utils.datastructures import SortedDict
 import os, json, sys, uuid, csv, pickle
 from datetime import datetime, date, time
 from bson.code import Code

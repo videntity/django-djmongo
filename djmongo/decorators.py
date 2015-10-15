@@ -9,15 +9,13 @@
 """
 
 import urlparse
-from django.contrib.auth import REDIRECT_FIELD_NAME
-from django.utils.decorators import available_attrs
+from collections import OrderedDict
 from functools import update_wrapper, wraps
-from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect
-from django.conf import settings
+from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
-from utils import authorize, unauthorized_json_response
+from utils import authorize, unauthorized_json_response, json_response_400, json_response_404
 from search.models import DatabaseAccessControl
+from write.models import WriteAPIIP
 import shlex
 import json
 
@@ -43,11 +41,47 @@ def json_login_required(func):
         
         if not user or not user.is_active:
             return HttpResponse(unauthorized_json_response(),
-                    content_type="application/json")          
+                    content_type="application/json", status=401)          
         login(request, user)
         return func(request, *args, **kwargs)
 
     return update_wrapper(wrapper, func)
+
+
+
+def ip_verification_required(func):
+    """
+        Put this decorator before your view to check if the function is coming from an IP on file
+    """
+    
+    def wrapper(request, *args, **kwargs):
+        
+        slug   = kwargs.get('slug', "")
+        if not slug:
+            return HttpResponse(json_response_404(),
+                                content_type="application/json")
+            ip = get_client_ip(request)
+            if ip not in allowable_ips:
+                return kickout("This IP is not authorized to make the API call.")
+        
+        
+        
+        try:
+            wip = WriteAPIIP.objects.get(slug=slug)
+            ip = get_client_ip(request)
+            if ip not in wip.allowable_ips():
+                return kickout_401("This IP is not authorized to make the API call.", 401)
+        
+        except WriteAPIIP.DoesNotExist:
+            return HttpResponse(unauthorized_json_response(),
+                                content_type="application/json")
+        
+        
+        return func(request, *args, **kwargs)
+
+    return update_wrapper(wrapper, func)
+
+
 
 
 def check_database_access(func):
@@ -127,4 +161,42 @@ def check_database_access(func):
     return update_wrapper(wrapper, func)
 
 
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+
+def kickout_401(reason, status_code=401):
+    response= OrderedDict()
+    response["code"] = status_code
+    response["status"] = "Authentication error"
+    response["errors"] = [reason,]
+    return HttpResponse(json.dumps(response, indent = 4), content_type="application/json")
+
+
+def kickout_400(reason, status_code=400):
+    response= OrderedDict()
+    response["code"] = status_code
+    response["status"] = "Client error"
+    response["errors"] = [reason,]
+    return HttpResponse(json.dumps(response, indent = 4), content_type="application/json")
+
+def kickout_404(reason, status_code=404):
+    response= OrderedDict()
+    response["code"] = status_code
+    response["status"] = "NOT FOUND"
+    response["errors"] = [reason,]
+    return HttpResponse(json.dumps(response, indent = 4), content_type="application/json")
+
+
+def kickout_500(reason, status_code=500):
+    response= OrderedDict()
+    response["code"] = status_code
+    response["status"] = "SERVER SIDE ERROR"
+    response["errors"] = [reason,]
+    return HttpResponse(json.dumps(response, indent = 4), content_type="application/json") 
 

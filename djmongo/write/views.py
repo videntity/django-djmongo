@@ -4,46 +4,33 @@
 import os, uuid, json, sys
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
-from ..decorators import check_database_access
-from django.shortcuts import render,  get_object_or_404
-from django.contrib import messages
-from django.http import HttpResponse, Http404, HttpResponseRedirect
-from django.template import RequestContext
-from models import WriteAPI
+from ..decorators import json_login_required, ip_verification_required, kickout_400, kickout_404, kickout_500, kickout_401
+from django.http import HttpResponse
 from collections import OrderedDict
 from ..mongoutils import write_mongo
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
+from models import WriteAPIHTTPAuth, WriteAPIIP
 # Create your views here.
 
 
-def get_client_ip(request):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    return ip
-
-
 @csrf_exempt
-def write_to_collection(request, slug):
+@json_login_required
+def write_to_collection_httpauth(request, slug):
     errors = []
-    wapi = get_object_or_404(WriteAPI, slug=slug)
     
-    ip = get_client_ip(request)
+    try:
+        wapi = WriteAPIHTTPAuth.objects.get(slug=slug)
+    except WriteAPIHTTPAuth.DoesNotExist:
+        return kickout_404("The API was not not found. Perhaps you need to define it?")
     
-    if wapi.from_ip:
-        allowable_ips = wapi.from_ip.split(" ")
-        if ip not in allowable_ips:
-            return kickout("This IP is not authorized to make the API call.")
     
     if request.method == 'GET': #----------------------------------------------------
         try:
             json_schema = json.loads(wapi.json_schema, object_pairs_hook=OrderedDict)
             return HttpResponse(json.dumps(json_schema, indent=4), content_type="application/json")  
         except:
-            return kickout("The JSON Schema did not contain valid JSON")
+            return kickout_500("The JSON Schema did not contain valid JSON")
             
     
     if request.method == 'POST': #----------------------------------------------------
@@ -52,16 +39,16 @@ def write_to_collection(request, slug):
         try:
             j =json.loads(request.body, object_pairs_hook=OrderedDict)
             if type(j) !=  type({}):
-                kickout("The string did not contain a JSON object.")
+                kickout_400("The request body did not contain a JSON object i.e. {}.")
         except:
-            return kickout("The request body did not contain valid JSON.")
+            return kickout_400("The request body did not contain valid JSON.")
         
         #check json_schema is valid
         try:
             json_schema = json.loads(wapi.json_schema, object_pairs_hook=OrderedDict)
               
         except:
-            return kickout("The JSON Schema did not contain valid JSON")
+            return kickout_500("The JSON Schema on the server did not contain valid JSON")
         
         #Check jsonschema
         if json_schema:
@@ -69,20 +56,62 @@ def write_to_collection(request, slug):
                 validate(j, json_schema)
             except ValidationError:
                 msg = "JSON Schema Conformance Error. %s" % (str(sys.exc_info()[1][0]))
-                return kickout(msg)
+                return kickout_400(msg)
                  
         
         #write_to_mongo
         response = write_mongo(j, wapi.database_name, wapi.collection_name)
-        return HttpResponse(json.dumps(response, indent =4),
+        return HttpResponse(json.dumps(response, indent=4),
                                     content_type="application/json") 
 
-def kickout(reason):
-    response= OrderedDict()
-    response["code"] = 400
-    response["status"] = "Error"
-    response["message"] = reason
-    response["errors"] = [reason,]
-    return HttpResponse(json.dumps(response, indent =4), content_type="application/json") 
+
+@csrf_exempt
+@ip_verification_required
+def write_to_collection_ip_auth(request, slug):
+    errors = []
+    try:
+        wapi = WriteAPIIP.objects.get(slug=slug)
+    except WriteAPIIP.DoesNotExist:
+        return kickout_404("The API was not not found. Perhaps you need to define it?")
+    
+    if request.method == 'GET': #----------------------------------------------------
+        try:
+            json_schema = json.loads(wapi.json_schema, object_pairs_hook=OrderedDict)
+            return HttpResponse(json.dumps(json_schema, indent=4), content_type="application/json")  
+        except:
+            return kickout_500("The JSON Schema did not contain valid JSON")
+            
+    
+    if request.method == 'POST': #----------------------------------------------------
+        
+        #Check if request body is JSON ------------------------
+        try:
+            j =json.loads(request.body, object_pairs_hook=OrderedDict)
+            if type(j) !=  type({}):
+                kickout_400("The request body did not contain a JSON object i.e. {}.")
+        except:
+            return kickout_400("The request body did not contain valid JSON.")
+        
+        #check json_schema is valid
+        try:
+            json_schema = json.loads(wapi.json_schema, object_pairs_hook=OrderedDict)
+              
+        except:
+            return kickout_500("The JSON Schema on the server did not contain valid JSON")
+        
+        #Check jsonschema
+        if json_schema:
+            try: 
+                validate(j, json_schema)
+            except ValidationError:
+                msg = "JSON Schema Conformance Error. %s" % (str(sys.exc_info()[1][0]))
+                return kickout_400(msg)
+                 
+        
+        #write_to_mongo
+        response = write_mongo(j, wapi.database_name, wapi.collection_name)
+        return HttpResponse(json.dumps(response, indent=4),
+                                    content_type="application/json") 
+
             
     

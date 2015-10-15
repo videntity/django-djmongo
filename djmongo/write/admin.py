@@ -1,9 +1,25 @@
 from django.contrib import admin
-from models import WriteAPI
+from models import WriteAPIHTTPAuth, WriteAPIIP, WriteAPIoAuth2
 
-class WriteAPIAdmin(admin.ModelAdmin):
+class WriteAPIHTTPAuthAdmin(admin.ModelAdmin):
     list_display = ('slug', 'database_name',
                     'collection_name', 'creation_date')
 
 
-admin.site.register(WriteAPI, WriteAPIAdmin)
+admin.site.register(WriteAPIHTTPAuth, WriteAPIHTTPAuthAdmin)
+
+
+class WriteAPIIPAdmin(admin.ModelAdmin):
+    list_display = ('slug', 'database_name',
+                    'collection_name', 'from_ip', 'creation_date')
+
+
+admin.site.register(WriteAPIIP, WriteAPIIPAdmin)
+
+
+class WriteAPIoAuth2Admin(admin.ModelAdmin):
+    list_display = ('slug', 'database_name',
+                    'collection_name', 'creation_date')
+
+
+admin.site.register(WriteAPIoAuth2, WriteAPIoAuth2Admin)

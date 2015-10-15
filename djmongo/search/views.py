@@ -34,7 +34,7 @@ def prepare_search_results(request, database_name, collection_name,
                 skip=0, sort=None, limit=getattr(settings, 'MONGO_LIMIT', 200), return_keys=(), query={}):
     #By default, do not include number of search results.
     
-    print database_name, collection_name
+    #print database_name, collection_name
     include_num_results = "0"
     
     if not query:

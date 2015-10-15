@@ -4,9 +4,9 @@
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.conf import settings
-from django.utils.datastructures import SortedDict
 from django.http import HttpResponse
 from datetime import datetime
+from collections import OrderedDict
 import csv, string
 from ..mongoutils import get_collection_keys, get_collection_labels, build_non_observational_key
 
@@ -22,7 +22,7 @@ def flatten_results(keylist, listresults, exclude=()):
     #    labeldict={}
 
     # Make the first row
-    row=SortedDict()
+    row=OrderedDict()
     for i in keylist:
         row[i]=i
     rows.append(row)
@@ -30,7 +30,7 @@ def flatten_results(keylist, listresults, exclude=()):
     #write the rest of the rows.
     for i in listresults:
         #Make the other rows
-        row=SortedDict()
+        row=OrderedDict()
         for j in keylist:
             if i.has_key(j):
                 
