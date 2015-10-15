@@ -31,9 +31,9 @@ class WriteAPIIP(models.Model):
     json_schema     = models.TextField(max_length=2048, default="{}",            
                         verbose_name="JSON Schema",
                         help_text="""Default "{}", means no JSONschema.""")
-    from_ip          = models.TextField(max_length=2048, default="", blank=True,           
-                            verbose_name="From IP",
-                            help_text="""Only accept requests from a IP in this list (separated by whitespace).""")
+    from_ip          = models.TextField(max_length=2048, default="127.0.0.1",           
+                            verbose_name="From IPs",
+                            help_text="""Only accept requests from a IP in this list (separated by whitespace). 0.0.0.0 means all.""")
     creation_date   = models.DateField(auto_now_add=True)
     
     class Meta:

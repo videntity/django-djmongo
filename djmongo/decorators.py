@@ -58,19 +58,14 @@ def ip_verification_required(func):
         
         slug   = kwargs.get('slug', "")
         if not slug:
-            return HttpResponse(json_response_404(),
-                                content_type="application/json")
-            ip = get_client_ip(request)
-            if ip not in allowable_ips:
-                return kickout("This IP is not authorized to make the API call.")
-        
-        
+            return kickoutt_404("Not found.", content_type="application/json")
         
         try:
             wip = WriteAPIIP.objects.get(slug=slug)
             ip = get_client_ip(request)
-            if ip not in wip.allowable_ips():
-                return kickout_401("This IP is not authorized to make the API call.", 401)
+            if ip not in wip.allowable_ips() and "0.0.0.0" not in wip.allowable_ips():
+                msg = "The IP %s is not authorized to make the API call." % (ip)
+                return kickout_401(msg)
         
         except WriteAPIIP.DoesNotExist:
             return HttpResponse(unauthorized_json_response(),
