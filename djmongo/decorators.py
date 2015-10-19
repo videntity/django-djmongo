@@ -9,6 +9,7 @@
 """
 
 import urlparse
+from django.conf import settings
 from collections import OrderedDict
 from functools import update_wrapper, wraps
 from django.http import HttpResponse
@@ -77,8 +78,6 @@ def ip_verification_required(func):
     return update_wrapper(wrapper, func)
 
 
-
-
 def check_database_access(func):
     """
         Put this decorator before your view to check if the database/colelction
@@ -88,38 +87,32 @@ def check_database_access(func):
     
     def wrapper(request, *args, **kwargs):
         default_to_open = getattr(settings, 'DEFAULT_TO_OPEN_READ', False)
-        
         database_name   = kwargs.get('database_name', "")
         collection_name = kwargs.get('collection_name', "")
         
-        print  kwargs
         if not default_to_open:
-            
+
             if not database_name or not collection_name:
                 return HttpResponse(unauthorized_json_response(),
                                 content_type="application/json")
             
+            #check the database for a record and other info
             try:
                 #Check to see if we have a matching record in DB access.
                 dac = DatabaseAccessControl.objects.get(database_name=database_name,
-                                                    collection_name=collection_name)      
+                                                    collection_name=collection_name)
             except DatabaseAccessControl.DoesNotExist:
-                
                 return HttpResponse(unauthorized_json_response(),
                                 content_type="application/json")
-            
+
             if not dac.is_public:
                 dac_groups = dac.groups.all()
                 user_groups = request.user.groups.all()
-                
-                print request.user, dac_groups, user_groups
-                 #for g in dac.groups.all():
-                    #if equest.user.groups.
-                
+                 
                #allowedgroups
                 in_group=False
                 group= None
-                for dg in  dac_groups:
+                for dg in dac_groups:
                     if dg in user_groups:
                         in_group =True
                         group = dg
@@ -132,9 +125,7 @@ def check_database_access(func):
                            "errors": [ message, ]}          
                     return HttpResponse(json.dumps(body, indent=4, ),
                                 content_type="application/json")
-
                 
-
             #If search keys have been limitied...
             if dac.search_keys:
                 search_key_list = shlex.split(dac.search_keys)

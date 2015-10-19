@@ -9,7 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-djmongo',
-    version='0.7.5',
+    version='0.7.5.3',
     packages=['djmongo', 'djmongo.console',
               'djmongo.accounts',
               'djmongo.write',
@@ -18,7 +18,7 @@ setup(
               'djmongo.search','djmongo.dataimport' ],
     include_package_data=True,
     license='GPL2',  
-    description='A reusable Django application providing a web interface for MongoDB and RESTFul API Toolkit.',
+    description='A reusable Django application providing a web interface for MongoDB and a RESTFul API Toolkit.',
     long_description=README,
     url='https://github.com/videntity/django-djmongo',
     author='Alan Viars',
