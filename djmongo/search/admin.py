@@ -11,7 +11,7 @@ admin.site.register(Aggregation, AggregationAdmin)
 
 class SavedSearchAdmin(admin.ModelAdmin):
     list_display = ('slug', 'collection_name', 'database_name', 'user',
-                    'collection_name', 'is_public', 'creation_date')
+                    'is_public', 'creation_date')
 
 
 admin.site.register(SavedSearch, SavedSearchAdmin)

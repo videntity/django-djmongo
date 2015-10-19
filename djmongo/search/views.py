@@ -117,7 +117,6 @@ def search_json(request, database_name, collection_name,
                 skip=0, limit=getattr(settings,'MONGO_LIMIT', 200),
                 sort=None, return_keys=(),
                 query={}):
-    print "hello", database_name, collection_name,
     result = prepare_search_results(request, database_name=database_name,
                 collection_name=collection_name, skip=skip, sort=sort,
                 limit=limit, return_keys=return_keys, query=query)

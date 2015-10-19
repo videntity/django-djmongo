@@ -10,10 +10,6 @@ from views import *
 
 urlpatterns = patterns('',
 
-
-
-
-
    
     url(r'^run-aggregation/(?P<slug>\S+)$',
                     run_aggregation_by_slug,
@@ -59,22 +55,17 @@ urlpatterns = patterns('',
                     login_required(complex_search), name="djmongo_complex_search"),
     
 
-
     url(r'^database-access-control/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
         login_required(database_access_control),
         name="djmongo_database_access_control"),
-    
-    
     
     url(r'^browse-saved-aggregations/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
                 login_required(display_saved_aggregations),
                 name="djmongo_browse_saved_aggregations_w_params"),
     
-    
     url(r'^browse-saved-searches/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
                 login_required(display_saved_searches),
                 name="djmongo_browse_saved_searches_w_params"),
-    
     
     # Unsupported/Experimental
     url(r'^build-keys', login_required(build_keys),
@@ -90,8 +81,22 @@ urlpatterns = patterns('',
                     login_required(load_labels),
                     name="djmongo_load_labels"),
 
-    #API CALLS ------------------------------------------------------------------   
+    #API CALLS ------------------------------------------------------------------
+   
+    #return JSON ----------------------------------------------------------------
     
+    url(r'^api/public/(?P<database_name>[^/]+)/(?P<collection_name>[^.]+).json$',
+        search_json, name="djmongo_api_search_json_w_params"),
+    
+    #return CSV ----------------------------------------------------------------
+    url(r'^api/public/(?P<database_name>[^/]+)/(?P<collection_name>[^.]+).csv$',
+        search_csv, name="djmongo_api_search_csv_w_params"),
+ 
+    #return HTML Table ----------------------------------------------------------  
+    url(r'^api/public/(?P<database_name>[^/]+)/(?P<collection_name>[^.]+).html$',
+        search_html, name="djmongo_api_search_html_w_params"),
+   
+   
     #return JSON ----------------------------------------------
     url(r'^api/(?P<database_name>[^/]+)/(?P<collection_name>[^.]+).json$',
          json_login_required(search_json), name="djmongo_api_search_json_w_params"),
