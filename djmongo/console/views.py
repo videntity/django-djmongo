@@ -18,20 +18,24 @@ from forms import EnsureIndexForm, DeleteForm, DocumentForm, CreateDatabaseForm,
 from bson.objectid import ObjectId
 from django.contrib.auth import authenticate, login, logout
 from collections import OrderedDict
-
+import sys
 
 def showdbs(request):
-    try:
-      dbs = show_dbs()
-    except:
-        #error connecting to mongodb
-        print str(sys.exc_info())
-        if not dbs:
-          messages.error(request, "Unable to connect to MongoDB. Check that it is running and accessible.")
-
+    
+    dbs = show_dbs()
+    cleaned_dbs =[]
+    
+    print dbs
     if not dbs:
+          messages.error(request, "Unable to connect to MongoDB. Check that it is running and accessible.")
+    else:
+        for i in dbs:
+            if i.get('name','')!='admin' and i.get('name','')!='local':
+                cleaned_dbs.append(i)
+
+    if dbs and not cleaned_dbs:
       messages.info(request, "You have no databases to work on. Please create one.")
-    context = { "dbs": dbs }
+    context = { "dbs": cleaned_dbs }
     return render_to_response('djmongo/console/showdbs.html',
                               RequestContext(request, context,))
 

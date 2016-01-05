@@ -9,7 +9,16 @@ from bson.objectid import ObjectId
 import csv
 from collections import OrderedDict
 from ..mongoutils import delete_mongo, write_mongo
+import pymongo
 
+
+def client_connector(mongodb_client= settings.MONGODB_CLIENT):
+   client = MongoClient(mongodb_client, connectTimeoutMS=1000, serverSelectionTimeoutMS=1000)
+   try:
+      client.admin.command('isMaster', connectTimeoutMS=1000, serverSelectionTimeoutMS=1000)
+   except pymongo.errors.ConnectionFailure as e:
+      client = None
+   return client
 
 def mongo_delete_json_util(database_name, collection_name, query={},
                  just_one=False):
@@ -94,20 +103,13 @@ def show_dbs():
     Return an empty list on error.
     """
 
-    #print "skip and limit", skip, limit
     l=[]
-    response_dict={}
-
-    mc =   MongoClient(host=settings.MONGO_HOST,
-                       port=settings.MONGO_PORT)
+    mc =  client_connector()
+    if not mc:
+      #The client couldn't connect
+      return ()
+      
     dbs = mc.database_names()
-
-
-    #Hide a couple admin dbs from our UI.
-    if "local" in dbs:
-     dbs.remove("local")
-    if "admin" in dbs:
-     dbs.remove("admin")
     for d in dbs:
       dbc =   mc[d]
       collections = dbc.collection_names()
