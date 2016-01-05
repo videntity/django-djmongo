@@ -19,10 +19,18 @@ from bson.objectid import ObjectId
 from django.contrib.auth import authenticate, login, logout
 from collections import OrderedDict
 
+
 def showdbs(request):
-    dbs = show_dbs()
+    try:
+      dbs = show_dbs()
+    except:
+        #error connecting to mongodb
+        print str(sys.exc_info())
+        if not dbs:
+          messages.error(request, "Unable to connect to MongoDB. Check that it is running and accessible.")
+
     if not dbs:
-        messages.error(request, "No databases were found. You haven't created any yet, MongoDB isn't running, or its not connected.")
+      messages.info(request, "You have no databases to work on. Please create one.")
     context = { "dbs": dbs }
     return render_to_response('djmongo/console/showdbs.html',
                               RequestContext(request, context,))
@@ -42,11 +50,11 @@ def simple_login(request):
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
             user=authenticate(username=username, password=password)
-            
+
             if user is not None:
                 if user.is_active:
                     login(request,user)
-                    
+
                     next = request.GET.get('next','')
                     if next:
                         #If a next is in the URL, then go there
@@ -57,13 +65,13 @@ def simple_login(request):
                    #The user exists but is_active=False
                    messages.error(request,
                         _("Your account is inactive so you may not log in."))
-                   
+
                    return render_to_response('djmongo/console/login2.html',
                                             {'form': form},
                                             RequestContext(request))
             else:
                 messages.error(request, _("Invalid username or password."))
-                   
+
                 return render_to_response('djmongo/console/login2.html',
                                     {'form': form},
                                     RequestContext(request))
@@ -84,7 +92,7 @@ def drop_collection(request, database_name, collection_name):
     if response:
         errormsg = _("ERROR", response)
         messages.error(request,errormsg)
-        
+
         return HttpResponseRedirect(reverse('djmongo_show_dbs'))
     else:
         messages.success(request,_("The collection was deleted."))
@@ -94,7 +102,7 @@ def drop_collection(request, database_name, collection_name):
 
 def drop_database(request, database_name):
     """Drop a MongoDB database"""
-    
+
     response = mongodb_drop_database(database_name)
     #print response
     if response:
@@ -111,11 +119,11 @@ def clear_collection(request, database_name, collection_name):
     """Clear a MongoDB database collection"""
     response = mongodb_clear_collection(database_name, collection_name)
     print response
-    
+
     if response:
         errormsg = _("ERROR", response)
         messages.error(request,errormsg)
-        
+
         return HttpResponseRedirect(reverse('djmongo_show_dbs'))
     else:
         messages.success(request,_("All records were removed from the collection."))
@@ -131,7 +139,7 @@ def simple_ensure_index(request,  database_name, collection_name):
         form = EnsureIndexForm(request.POST)
 
         if form.is_valid():
-            result = form.save(database_name, collection_name)        
+            result = form.save(database_name, collection_name)
             messages.success(request,_("Index created successfully"))
             return HttpResponseRedirect(reverse('djmongo_show_dbs'))
         else:
@@ -142,7 +150,7 @@ def simple_ensure_index(request,  database_name, collection_name):
                                             'name':name,
                                             },
                                            RequestContext(request))
-        
+
     else:
         #this is a GET
 
@@ -150,7 +158,7 @@ def simple_ensure_index(request,  database_name, collection_name):
                 'form': EnsureIndexForm(
                             initial = {"database_name":   database_name,
                                        "collection_name": collection_name})
-        }              
+        }
         return render_to_response('djmongo/console/generic/bootstrapform.html',
                               RequestContext(request, context,))
 
@@ -179,7 +187,7 @@ def create_new_database(request):
                                             'name':name,
                                             },
                                            RequestContext(request))
-        
+
     else:
         #this is a GET
 
@@ -187,7 +195,7 @@ def create_new_database(request):
                 'form': CreateDatabaseForm(
                             initial = {"initial_document": '{ "foo" : "bar" }'
                                        })
-        }              
+        }
         return render_to_response('djmongo/console/generic/bootstrapform.html',
                               RequestContext(request, context,))
 
@@ -216,7 +224,7 @@ def create_collection(request, database_name):
                                             'name':name,
                                             },
                                            RequestContext(request))
-        
+
     else:
         #this is a GET
 
@@ -224,16 +232,16 @@ def create_collection(request, database_name):
                 'form': CreateDatabaseForm(
                             initial = {"initial_document": '{ "foo" : "bar" }',
                                        "database_name": database_name})
-        }              
+        }
         return render_to_response('djmongo/console/generic/bootstrapform.html',
                               RequestContext(request, context,))
 
 
 
 def remove_data_from_collection(request,  database_name, collection_name):
-    
+
     name = _("Delete select information from a MongoDB Collection based on a query")
-    
+
     if request.method == 'POST':
         form = DeleteForm(request.POST)
         if form.is_valid():
@@ -244,11 +252,11 @@ def remove_data_from_collection(request,  database_name, collection_name):
             results = mongo_delete_json_util(query, database_name=database_name,
                                              collection_name=collection_name,
                                              just_one=just_one)
-            
+
             #convert to json and respond.
             results_json = json.dumps(results, indent =4)
             return HttpResponse(results_json, status=int(results['code']),
-                                    content_type="application/json")        
+                                    content_type="application/json")
         else:
             #The form is invalid
              messages.error(request,_("Please correct the errors in the form."))
@@ -257,12 +265,12 @@ def remove_data_from_collection(request,  database_name, collection_name):
                                              'name':name,
                                              },
                                             RequestContext(request))
-    
+
     #this is a GET
     idata ={'database_name': database_name,
              'collection_name': collection_name,
              }
-    
+
 
     context= {'name':name,
               'form': DeleteForm(initial=idata)
@@ -274,7 +282,7 @@ def remove_data_from_collection(request,  database_name, collection_name):
 
 def create_document_in_collection(request, database_name,collection_name):
     name = _("Create a Document from JSON")
-    
+
     if request.method == 'POST':
         form = DocumentForm(request.POST)
         if form.is_valid():
@@ -283,12 +291,12 @@ def create_document_in_collection(request, database_name,collection_name):
             results = mongo_create_json_util(document,
                                              database_name=database_name,
                                              collection_name=collection_name)
-            
+
             #convert to json and respond.
             results_json = json.dumps(results, indent = 4)
             return HttpResponse(results_json,
                                 status=int(results['code']),
-                                content_type="application/json")        
+                                content_type="application/json")
         else:
             #The form is invalid
              messages.error(request,_("Please correct the errors in the form."))
@@ -301,18 +309,18 @@ def create_document_in_collection(request, database_name,collection_name):
     idata ={'database_name': database_name,
              'collection_name': collection_name,
              }
-    
+
     context= {'name':name,
               'form': DocumentForm(initial=idata)
               }
     return render_to_response('djmongo/console/generic/bootstrapform.html',
                               RequestContext(request, context,))
-    
 
-    
+
+
 def update_document_in_collection(request,  database_name, collection_name):
     name = _("Update a Document from JSON")
-    
+
     if request.method == 'POST' or request.method == 'PUT':
         form = DocumentForm(request.POST)
         if form.is_valid():
@@ -324,33 +332,33 @@ def update_document_in_collection(request,  database_name, collection_name):
                            "message": "Updates must include either id or _id." }
                 results_json = json.dumps(result, indent = 4)
                 return HttpResponse(results_json, status=result['code'],
-                                    content_type="application/json")     
-        
+                                    content_type="application/json")
+
             if doc.has_key("_id") and doc.has_key("id"):
                 result = { "code":    400,
                            "type":    "Error",
                            "message": "Updates cannot contain both id and _id" }
                 results_json = json.dumps(result, indent = 4)
                 return HttpResponse(results_json, status=result[code],
-                                    content_type="application/json")     
-        
+                                    content_type="application/json")
+
             if doc.has_key("id"):
                 doc["_id"] = ObjectId(doc["id"])
                 del doc["id"]
-                
+
             if doc.has_key("_id"):
                 doc["_id"] = ObjectId(doc["_id"])
-                
+
 
             #run the update
             results = mongo_create_json_util(document, database_name=database_name,
                                              collection_name=collection_name,
                                              update=True)
-            
+
             #convert to json and respond.
             results_json = json.dumps(results, indent = 4)
             return HttpResponse(results_json, status=int(results['code']),
-                                    content_type="application/json")        
+                                    content_type="application/json")
         else:
             #The form is invalid
              messages.error(request,_("Please correct the errors in the form."))
@@ -359,12 +367,12 @@ def update_document_in_collection(request,  database_name, collection_name):
                                              'name':name,
                                              },
                                             RequestContext(request))
-    
+
     #this is a GET
     idata ={'database_name': database_name,
              'collection_name': collection_name,
              }
-    
+
 
     context= {'name':name,
               'form': DocumentForm(initial=idata)

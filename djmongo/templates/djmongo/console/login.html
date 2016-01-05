@@ -5,18 +5,18 @@
 
 
   <div class="container">
-    
+
     <div class="hero-unit">
     <h1>{% trans "Login" %}</h1>
   <br>
-   
+
     <div class="row">
-        
+
      <div class="col-lg-5">
-    {% include "include/messages.html" %}
-    
+    {% include "djmongo/console/include/messages.html" %}
+
       <form class="well" method="post" action="">
-        
+
         {% csrf_token %}
         <table>
 	{% load bootstrap %}
@@ -29,7 +29,7 @@
   </div>
 
 
-    
+
 {% endblock %}
 
 
