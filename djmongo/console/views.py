@@ -13,7 +13,6 @@ from django.utils.translation import ugettext_lazy as _
 from utils import (show_dbs, mongodb_drop_collection, mongodb_drop_database,
                 mongodb_clear_collection, mongodb_ensure_index, mongo_delete_json_util,
                 mongo_create_json_util)
-
 from forms import EnsureIndexForm, DeleteForm, DocumentForm, CreateDatabaseForm, LoginForm
 from bson.objectid import ObjectId
 from django.contrib.auth import authenticate, login, logout
@@ -24,17 +23,16 @@ def showdbs(request):
     
     dbs = show_dbs()
     cleaned_dbs =[]
-    
-    print dbs
     if not dbs:
           messages.error(request, "Unable to connect to MongoDB. Check that it is running and accessible.")
     else:
         for i in dbs:
+            #only keep non-system DBs.
             if i.get('name','')!='admin' and i.get('name','')!='local':
                 cleaned_dbs.append(i)
 
     if dbs and not cleaned_dbs:
-      messages.info(request, "You have no databases to work on. Please create one.")
+        messages.info(request, "You have no databases to work on. Please create one.")
     context = { "dbs": cleaned_dbs }
     return render_to_response('djmongo/console/showdbs.html',
                               RequestContext(request, context,))

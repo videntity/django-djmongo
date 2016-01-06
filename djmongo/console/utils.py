@@ -13,9 +13,9 @@ import pymongo
 
 
 def client_connector(mongodb_client= settings.MONGODB_CLIENT):
-   client = MongoClient(mongodb_client, connectTimeoutMS=1000, serverSelectionTimeoutMS=1000)
+   client = MongoClient(mongodb_client, connectTimeoutMS=2000, serverSelectionTimeoutMS=2000)
    try:
-      client.admin.command('isMaster', connectTimeoutMS=1000, serverSelectionTimeoutMS=1000)
+      client.admin.command('isMaster', connectTimeoutMS=2000, serverSelectionTimeoutMS=2000)
    except pymongo.errors.ConnectionFailure as e:
       client = None
    return client

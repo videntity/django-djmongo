@@ -102,12 +102,19 @@ $('.dropdown-toggle').dropdown();
              </li>
             
             <li role="presentation" class="divider"></li>
-            <li> <a  href="{% url 'djmongo_clear_collection' d.name c %}">
-                   <i class="fa fa-warning"></i> {% trans "Clear Collection..." %} </a>
-            </li>
+
        
             <li> <a  href="{% url 'djmongo_drop_collection' d.name c %}"">
                    <i class="fa fa-warning"></i> {% trans "Drop Collection" %} </a></li>
+           
+            <li role="presentation" class="divider"></li>
+
+       
+            <li> <a  href="{% url 'djmongo_browse_httpauth_write_apis_w_params' d.name c %}"">
+                   <i class="fa fa-pencil"></i> {% trans "HTTPAuth Write APIs..." %} </a></li>
+           
+            <li> <a  href="{% url 'djmongo_browse_ip_write_apis_w_params' d.name c %}"">
+                   <i class="fa fa-pencil"></i> {% trans "IP-Based Write APIs..." %} </a></li>
            
            </ul>
            </div>

@@ -60,11 +60,11 @@ urlpatterns = patterns('',
         name="djmongo_database_access_control"),
     
     url(r'^browse-saved-aggregations/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
-                login_required(display_saved_aggregations),
+                login_required(browse_saved_aggregations),
                 name="djmongo_browse_saved_aggregations_w_params"),
     
     url(r'^browse-saved-searches/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
-                login_required(display_saved_searches),
+                login_required(browse_saved_searches),
                 name="djmongo_browse_saved_searches_w_params"),
     
     # Unsupported/Experimental
@@ -72,7 +72,7 @@ urlpatterns = patterns('',
                     name="djmongo_search_build_keys"),
      # Unsupported/Experimental
     url(r'^custom-report', login_required(custom_report),
-                   name="cdjmongo_custom_report"),
+                   name="djmongo_custom_report"),
      # Unsupported/Experimental
     url(r'^data-dictionary', login_required(data_dictionary),
                     name="djmongo_data_dictionary"),

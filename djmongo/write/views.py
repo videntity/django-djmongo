@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # vim: ai ts=4 sts=4 et sw=4
+from django.shortcuts import render
 import os, uuid, json, sys
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
@@ -23,7 +24,6 @@ def write_to_collection_httpauth(request, slug):
         wapi = WriteAPIHTTPAuth.objects.get(slug=slug)
     except WriteAPIHTTPAuth.DoesNotExist:
         return kickout_404("The API was not not found. Perhaps you need to define it?")
-    
     
     if request.method == 'GET': #----------------------------------------------------
         try:
@@ -57,8 +57,6 @@ def write_to_collection_httpauth(request, slug):
             except ValidationError:
                 msg = "JSON Schema Conformance Error. %s" % (str(sys.exc_info()[1][0]))
                 return kickout_400(msg)
-                 
-        
         #write_to_mongo
         response = write_mongo(j, wapi.database_name, wapi.collection_name)
         return HttpResponse(json.dumps(response, indent=4),
@@ -106,12 +104,33 @@ def write_to_collection_ip_auth(request, slug):
             except ValidationError:
                 msg = "JSON Schema Conformance Error. %s" % (str(sys.exc_info()[1][0]))
                 return kickout_400(msg)
-                 
-        
         #write_to_mongo
         response = write_mongo(j, wapi.database_name, wapi.collection_name)
         return HttpResponse(json.dumps(response, indent=4),
                                     content_type="application/json") 
 
-            
-    
+
+def browse_ip_write_apis(request, database_name=None, collection_name=None):
+    name = "Write APIs Using IP-based Authentication"
+    if database_name and collection_name:
+        wapis = WriteAPIIP.objects.filter(database_name=database_name, collection_name=collection_name)
+    else:
+        wapis = WriteAPIIP.objects.all()
+    context = {'name':name, 'wapis': wapis,
+               'database_name': database_name,
+               'collection_name': collection_name}
+    return render(request,'djmongo/console/display-write-apis.html', context)
+
+def browse_httpauth_write_apis(request, database_name=None, collection_name=None):
+    name = "Write APIs Using HTTPAuth Authentication" 
+    if database_name and collection_name:
+        wapis = WriteAPIHTTPAuth.objects.filter(database_name=database_name, collection_name=collection_name)
+    else:
+        wapis = WriteAPIHTTPAuth.objects.all()
+    context = {'name':name, 'wapis': wapis,
+               'database_name': database_name,
+               'collection_name': collection_name}
+    return render(request,'djmongo/console/display-write-apis.html', context)
+
+
+   

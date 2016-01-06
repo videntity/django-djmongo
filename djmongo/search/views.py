@@ -312,11 +312,7 @@ def run_saved_search_by_slug(request, slug, output_format=None, skip=0,
                 if v in ('false', 'False', 'F', 'FALSE', 'N', '0'):
                     quoted_value = 'false'
         query = query.replace(k, quoted_value)
-    
-    print "query", query
-        
-        
-        
+       
     try:
         query = json.loads(query)
         if ss.sort:
@@ -681,7 +677,7 @@ def complex_search(request, database_name,collection_name,
     return render_to_response('djmongo/console/generic/bootstrapform.html',
                              RequestContext(request, context,))
 
-def display_saved_searches(request, database_name, collection_name):
+def browse_saved_searches(request, database_name, collection_name):
      
     savedsearches = SavedSearch.objects.filter(database_name=database_name, collection_name=collection_name)
     context = {"savedsearches": savedsearches,
@@ -690,7 +686,7 @@ def display_saved_searches(request, database_name, collection_name):
     return render_to_response('djmongo/console/display-saved-searches.html',
                               RequestContext(request, context,))
 
-def display_saved_aggregations(request, database_name, collection_name):
+def browse_saved_aggregations(request, database_name, collection_name):
      
     savedaggs = Aggregation.objects.filter(database_name=database_name, collection_name=collection_name)
     context = {"savedaggs": savedaggs,
