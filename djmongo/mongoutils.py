@@ -7,6 +7,7 @@ import os, json, sys, uuid, csv, pickle
 from datetime import datetime, date, time
 from bson.code import Code
 from bson.objectid import ObjectId
+from bson import json_util
 from pymongo import MongoClient, DESCENDING
 from collections import OrderedDict
 
@@ -29,7 +30,7 @@ def run_aggregation_pipeline(database_name, collection_name, pipeline):
 
 
 def to_json(results_dict):
-    return json.dumps(results_dict, indent = 4)
+    return json.dumps(results_dict, indent = 4, default=json_util.default)
   
 
 
