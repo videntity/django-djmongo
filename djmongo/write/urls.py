@@ -22,7 +22,6 @@ urlpatterns = patterns('',
                 login_required(browse_httpauth_write_apis),
                 name="djmongo_browse_httpauth_write_apis_w_params"),
     
-
     url(r'^browse-ip-write-apis$',
                 login_required(browse_ip_write_apis),
                 name="djmongo_browse_ip_write_apis"),
@@ -31,6 +30,4 @@ urlpatterns = patterns('',
                 login_required(browse_httpauth_write_apis),
                 name="djmongo_browse_httpauth_write_apis"),
 
-
-    
     )
