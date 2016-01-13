@@ -6,8 +6,8 @@ from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext_lazy as _
-from forms import DataImportForm
-from models import DataImport
+from .forms import DataImportForm
+from .models import DataImport
 
 
 def delete_import(request, slug):

@@ -2,7 +2,7 @@
 from django import forms
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
-from utils import mongodb_ensure_index, create_mongo_db
+from .utils import mongodb_ensure_index, create_mongo_db
 import json
 
 class LoginForm(forms.Form):

@@ -1,6 +1,7 @@
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
 
-
+@python_2_unicode_compatible
 class CreateHistory(models.Model):
 
     database_name   = models.CharField(max_length=100, unique=True)
@@ -14,7 +15,7 @@ class CreateHistory(models.Model):
         verbose_name_plural = "Create Histories"
         unique_together = (('database_name','collection_name'),)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s/%s" % (self.database_name, self.collection_name )
         
 

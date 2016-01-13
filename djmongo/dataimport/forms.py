@@ -4,7 +4,7 @@
 
 import datetime
 from django.forms import ModelForm
-from models import DataImport
+from .models import DataImport
 
 class DataImportForm(ModelForm):
     class Meta:

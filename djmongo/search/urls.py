@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from ..decorators import json_login_required
 from django.conf.urls import patterns, include, url
-from views import *
+from .views import *
 
 
 urlpatterns = patterns('',
@@ -76,10 +76,7 @@ urlpatterns = patterns('',
      # Unsupported/Experimental
     url(r'^data-dictionary', login_required(data_dictionary),
                     name="djmongo_data_dictionary"),
-    # Unsupported/Experimental
-    url(r'^load-labels-from-data-dictonary',
-                    login_required(load_labels),
-                    name="djmongo_load_labels"),
+
 
     #API CALLS ------------------------------------------------------------------
    

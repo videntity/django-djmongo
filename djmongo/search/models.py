@@ -4,13 +4,14 @@ from django.template.defaultfilters import slugify
 from django.contrib.auth.models import Group
 from ..mongoutils import run_aggregation_pipeline
 import json
+from django.utils.encoding import python_2_unicode_compatible
 
 OUTPUT_CHOICES = (("json","JSON"),
                   ("html", "HTML"),
                   ("csv","Comma Seperated Value (.csv)"),
                   )
 
-
+@python_2_unicode_compatible
 class Aggregation(models.Model):
 
     user            = models.ForeignKey(settings.AUTH_USER_MODEL)
@@ -45,7 +46,7 @@ class Aggregation(models.Model):
         get_latest_by = "creation_date"
         ordering = ('-creation_date',)
         verbose_name_plural = "Saved Aggregations"
-    def __unicode__(self):
+    def __str__(self):
         return "%s" % (self.slug)
         
     def save(self, **kwargs):
@@ -69,7 +70,7 @@ class Aggregation(models.Model):
             pipeline.append(output_dict)
             result  = run_aggregation_pipeline(self.database_name, self.collection_name, pipeline)
 
-
+@python_2_unicode_compatible
 class SavedSearch(models.Model):
 
     user            = models.ForeignKey(settings.AUTH_USER_MODEL)
@@ -106,11 +107,11 @@ class SavedSearch(models.Model):
         ordering = ('-creation_date',)
         verbose_name_plural = "Saved Searches"
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s" % (self.slug)
         
         
-        
+@python_2_unicode_compatible        
 class DatabaseAccessControl(models.Model):
 
     database_name   = models.CharField(max_length=256)
@@ -129,7 +130,7 @@ class DatabaseAccessControl(models.Model):
         verbose_name_plural = "Database Access Controls"
         unique_together =  (('database_name', 'collection_name'), )
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s/%s" % (self.database_name, self.collection_name )
         
 

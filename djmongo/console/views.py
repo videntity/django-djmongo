@@ -10,10 +10,10 @@ from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext_lazy as _
-from utils import (show_dbs, mongodb_drop_collection, mongodb_drop_database,
+from .utils import (show_dbs, mongodb_drop_collection, mongodb_drop_database,
                 mongodb_clear_collection, mongodb_ensure_index, mongo_delete_json_util,
                 mongo_create_json_util)
-from forms import EnsureIndexForm, DeleteForm, DocumentForm, CreateDatabaseForm, LoginForm
+from .forms import EnsureIndexForm, DeleteForm, DocumentForm, CreateDatabaseForm, LoginForm
 from bson.objectid import ObjectId
 from django.contrib.auth import authenticate, login, logout
 from collections import OrderedDict

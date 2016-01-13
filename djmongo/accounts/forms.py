@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from django import forms
 from django.conf import settings
-from models import *
+from .models import *
 #from django.contrib.admin import widgets
 from django.contrib.auth.models import User
 from localflavor.us.forms import *

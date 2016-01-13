@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 from django.conf import settings
 import os, uuid, json
 from django.template.defaultfilters import slugify
-from utils import bulk_csv_import_mongo
+from .utils import bulk_csv_import_mongo
+from django.utils.encoding import python_2_unicode_compatible
 
 def update_import_filename(instance, filename):
     path = "imports/"
@@ -13,7 +14,7 @@ def update_import_filename(instance, filename):
 
 INPUT_CHOICES = (("csv","Comma Seperated Value (.csv)"),
                 )
-
+@python_2_unicode_compatible
 class DataImport(models.Model):
 
     user            = models.ForeignKey(settings.AUTH_USER_MODEL)
@@ -40,7 +41,7 @@ class DataImport(models.Model):
         get_latest_by = "creation_date"
         ordering = ('-creation_date',)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s by %s %s" % (self.title, self.user.first_name,
                                 self.user.last_name)
     def save(self, **kwargs):

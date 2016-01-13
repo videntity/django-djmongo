@@ -4,7 +4,7 @@
 
 import datetime, json
 from django import forms
-from models import SavedSearch, OUTPUT_CHOICES, Aggregation, DatabaseAccessControl
+from .models import SavedSearch, OUTPUT_CHOICES, Aggregation, DatabaseAccessControl
 from django.utils.translation import ugettext_lazy as _
 
 

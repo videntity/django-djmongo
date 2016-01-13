@@ -7,7 +7,7 @@ from  django.views.generic.base import TemplateView
 from django.views.decorators.csrf import csrf_exempt
 from ..decorators import json_login_required
 from django.conf.urls import patterns, include, url
-from views import *
+from .views import *
 
 
 urlpatterns = patterns('',

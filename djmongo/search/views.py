@@ -13,10 +13,10 @@ from django.core.context_processors import csrf
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime, timedelta
 from django.core.urlresolvers import reverse
-from forms import SavedSearchForm, ComplexSearchForm, AggregationForm, DatabaseAccessControlForm
+from .forms import SavedSearchForm, ComplexSearchForm, AggregationForm, DatabaseAccessControlForm
 from ..mongoutils import query_mongo, to_json, normalize_results
-from models import SavedSearch, Aggregation, DatabaseAccessControl
-from xls_utils import convert_to_csv, convert_to_rows
+from .models import SavedSearch, Aggregation, DatabaseAccessControl
+from .xls_utils import convert_to_csv, convert_to_rows
 from django.db import IntegrityError
 from django.utils.translation import ugettext_lazy as _
 import shlex
@@ -25,7 +25,7 @@ import shlex
 def build_keys(request):
     """Perform the map/reduce to refresh the keys form. The display the custom report screen"""
     x = build_keys_with_mapreduce()
-    messages.success(request, "Successfully completed MapReduce operation. Key rebuild for custom report complete.")
+    messages.success(request, _("Successfully completed MapReduce operation. Key rebuild for custom report complete."))
     return HttpResponseRedirect(reverse("djmongo_home"))
 
 
@@ -33,8 +33,6 @@ def build_keys(request):
 def prepare_search_results(request, database_name, collection_name,
                 skip=0, sort=None, limit=getattr(settings, 'MONGO_LIMIT', 200), return_keys=(), query={}):
     #By default, do not include number of search results.
-    
-    #print database_name, collection_name
     include_num_results = "0"
     
     if not query:
@@ -54,15 +52,12 @@ def prepare_search_results(request, database_name, collection_name,
 
     else:
         kwargs = query
-    
-
     result = query_mongo(database_name,
                          collection_name,
                          query=kwargs,
                          include_num_results = include_num_results,
                          skip=skip, limit=limit,
                          sort=sort, return_keys=return_keys)
-
     return result
     
 
@@ -88,14 +83,10 @@ def custom_report(request, database_name, collection_name):
             elif data['outputformat']=="csv":
                 return search_csv(request, collection=None, return_keys=return_keys,
                                    query=json.loads(data['query']))
-            
-            elif data['outputformat']=="xml":
-                return search_xml(request, collection=None, return_keys=return_keys,
-                                   query=json.loads(data['query']))
+
             else:
                 return search_json(request, collection=None, return_keys=return_keys,
                                    query=json.loads(data['query']))
-
         else:
 
             return render_to_response('search/select-keys.html', {'form': form},
@@ -222,52 +213,11 @@ def data_dictionary(request):
          {'form': DataDictionaryForm()}, RequestContext(request))
 
 
-@csrf_exempt
-def load_labels(request):
 
-    labels = get_labels_tuple()
-
-    for i in labels:
-        variable = strip_occurences(i[0])
-        try:
-            DataLabelMeta.objects.create(variable_name=variable,
-                                          verbose_name=i[1],
-                                          label=i[1],)
-        except(IntegrityError):
-            l =  DataLabelMeta.objects.get(variable_name=variable)
-            l.verbose_name = i[1]
-            l.label=i[1]
-            l.question_text=i[1]
-            l.save()
-    return HttpResponse("OK")
-
-    if request.method == 'POST':
-        form = DataDictionaryForm(request.POST)
-        if form.is_valid():
-            data = form.save()
-
-            if data['outputformat']=="xls":
-                pass
-                #return convert_labels_to_xls(data)
-
-            else:
-                response = json.dumps(data['labels'], indent =4)
-                return HttpResponse(response, status=200,
-                                    content_type="application/json")
-        else:
-            #The form contained errors.
-            return render_to_response('djmongo/console/data-dictionary.html',
-                                 {'form': form}, RequestContext(request))
-
-    #A GET
-    return render_to_response('djmongo/console/data-dictionary.html',
-         {'form': DataDictionaryForm()}, RequestContext(request))
 
 
 def run_saved_search_by_slug(request, slug, output_format=None, skip=0,
                              sort=None, limit = getattr(settings,'MONGO_LIMIT', 200)):
-    
-    
     error = False
     response_dict = {}
     ss = get_object_or_404(SavedSearch,  slug=slug)
@@ -292,9 +242,7 @@ def run_saved_search_by_slug(request, slug, output_format=None, skip=0,
             response = json.dumps(response_dict, indent =4)
             return HttpResponse(response, content_type="application/json")
         
-    
     query = ss.query
-    
     type_mapper = json.loads(ss.type_mapper)
     type_mapper_keys = type_mapper.keys()
     #if a GET param matches, then replace it
@@ -328,7 +276,6 @@ def run_saved_search_by_slug(request, slug, output_format=None, skip=0,
         response_dict['message']="Your query was not valid JSON."
         response = json.dumps(response_dict, indent =4)
         return HttpResponse(response, content_type="application/json")
-
 
     if output_format:
         if output_format not in ("json", "csv", "html"):
