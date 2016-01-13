@@ -3,31 +3,66 @@
 
 from django.contrib.auth.decorators import login_required
 from django.conf.urls import patterns, include, url
-from views import *
+from .views import *
 
 urlpatterns = patterns('',
 
-    
-    url(r'^api/(?P<slug>[^/]+)$',
-         write_to_collection_httpauth, name="djmongo_api_write_to_collection"),
+    #Call the write API
+    url(r'^api/httpauth/(?P<slug>[^/]+)$',
+         write_to_collection_httpauth, name="djmongo_api_write_to_collection_with_httpauth"),
 
     url(r'^api/ip/(?P<slug>[^/]+)$',
          write_to_collection_ip_auth, name="djmongo_api_write_to_collection_with_ip"),
     
-    url(r'^browse-ip-write-apis/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
+    
+    #Browse existing APIS in the UI
+    url(r'^ip/browse-write-apis/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
                 login_required(browse_ip_write_apis),
                 name="djmongo_browse_ip_write_apis_w_params"),
   
-    url(r'^browse-httpauth-write-apis/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
+    url(r'^httpauth/browse-write-apis/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
                 login_required(browse_httpauth_write_apis),
                 name="djmongo_browse_httpauth_write_apis_w_params"),
     
-    url(r'^browse-ip-write-apis$',
+    url(r'^ip/browse-write-apis$',
                 login_required(browse_ip_write_apis),
                 name="djmongo_browse_ip_write_apis"),
   
-    url(r'^browse-httpauth-write-apis$',
+    url(r'^httpauth/browse-write-apis$',
                 login_required(browse_httpauth_write_apis),
                 name="djmongo_browse_httpauth_write_apis"),
+    #Create new APIs --------------------------------------------
+    url(r'^httpauth/create-write-api/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
+                login_required(create_httpauth_write_api),
+                name="djmongo_create_httpauth_write_api_w_params"),
+    
+    url(r'^ip/create-write-api$',
+                login_required(create_ip_write_api),
+                name="djmongo_create_ip_write_api"),
+  
+    url(r'^httpauth/create-write-api$',
+                login_required(create_httpauth_write_api),
+                name="djmongo_create_httpauth_write_api"),
 
+    url(r'^ip/create-write-api/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
+                login_required(create_ip_write_api),
+                name="djmongo_create_ip_write_api_w_params"),
+  
+    #Edit existing write APIs ---------------------
+    url(r'^ip/edit-write-api/(?P<slug>[^/]+)$',
+                login_required(edit_ip_write_api),
+                name="djmongo_edit_ip_write_api"),
+  
+    url(r'^httpauth/edit-write-api/(?P<slug>[^/]+)$',
+                login_required(edit_httpauth_write_api),
+                name="djmongo_edit_httpauth_write_api"),    
+    
+    #Delete existing write APIs ----------------------
+    url(r'^ip/delete-write-api/(?P<slug>[^/]+)$',
+                login_required(delete_ip_write_api),
+                name="djmongo_delete_ip_write_api"),
+                               
+    url(r'^httpauth/delete-write-api/(?P<slug>[^/]+)$',
+                login_required(delete_httpauth_write_api),
+                name="djmongo_delete_httpauth_write_api"),     
     )

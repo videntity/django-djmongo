@@ -1,18 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # vim: ai ts=4 sts=4 et sw=4
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 import os, uuid, json, sys
 from django.conf import settings
+from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
-from ..decorators import json_login_required, ip_verification_required, kickout_400, kickout_404, kickout_500, kickout_401
-from django.http import HttpResponse
+from ..decorators import (json_login_required, ip_verification_required,
+                          kickout_400, kickout_404, kickout_500, kickout_401)
+from django.http import HttpResponse, HttpResponseRedirect
 from collections import OrderedDict
 from ..mongoutils import write_mongo
 from jsonschema import validate
+from django.core.urlresolvers import reverse
 from jsonschema.exceptions import ValidationError
-from models import WriteAPIHTTPAuth, WriteAPIIP
-# Create your views here.
+from .models import WriteAPIHTTPAuth, WriteAPIIP
+from .forms import (WriteAPIHTTPAuthForm, WriteAPIHTTPAuthDeleteForm,
+                    WriteAPIIPDeleteForm, WriteAPIIPForm)
+from django.utils.translation import ugettext_lazy as _
 
 
 @csrf_exempt
@@ -119,18 +124,180 @@ def browse_ip_write_apis(request, database_name=None, collection_name=None):
     context = {'name':name, 'wapis': wapis,
                'database_name': database_name,
                'collection_name': collection_name}
-    return render(request,'djmongo/console/display-write-apis.html', context)
+    return render(request,'djmongo/console/browse-ip-write-apis.html', context)
 
 def browse_httpauth_write_apis(request, database_name=None, collection_name=None):
     name = "Write APIs Using HTTPAuth Authentication" 
     if database_name and collection_name:
-        wapis = WriteAPIHTTPAuth.objects.filter(database_name=database_name, collection_name=collection_name)
+        wapis = WriteAPIHTTPAuth.objects.filter(database_name=database_name,
+                                                collection_name=collection_name)
     else:
         wapis = WriteAPIHTTPAuth.objects.all()
     context = {'name':name, 'wapis': wapis,
                'database_name': database_name,
                'collection_name': collection_name}
-    return render(request,'djmongo/console/display-write-apis.html', context)
+    return render(request,'djmongo/console/browse-httpauth-write-apis.html', context)
 
 
-   
+def create_httpauth_write_api(request, database_name=None, collection_name=None):
+    name = _("Create an HTTP Auth Write API")
+    if request.method == 'POST':
+        form = WriteAPIHTTPAuthForm(request.POST)
+        if form.is_valid():
+            a = form.save(commit = False)
+            a.created_by = request.user
+            a.save()
+            msg = _('The HTTP Auth write API for %s was created.') % (a.slug)
+            messages.success(request, msg)
+            
+            return HttpResponseRedirect(reverse('djmongo_browse_httpauth_write_apis_w_params',
+                                                args = (database_name, collection_name)))
+        else:
+            #The form is invalid
+             messages.error(request,_("Please correct the errors in the form."))
+             context = {'form': form, 'name':name}
+             return render( request,'djmongo/console/generic/bootstrapform.html',
+                          context)
+                                                    
+    #this is a GET
+    idata ={'database_name': database_name,
+            'collection_name': collection_name}
+    context= {'name':name,
+              'form': WriteAPIHTTPAuthForm(initial=idata)
+              }
+    return render(request, 'djmongo/console/generic/bootstrapform.html',context,)
+
+def create_ip_write_api(request, database_name=None, collection_name=None):
+    name = _("Create an IP-based Write API")
+    if request.method == 'POST':
+        form = WriteAPIIPForm(request.POST)
+        if form.is_valid():
+            a = form.save(commit = False)
+            a.created_by = request.user
+            a.save()
+            msg = _('The IP-based write API for %s was created.') % (a.slug)
+            messages.success(request, msg)
+            return HttpResponseRedirect(reverse('djmongo_browse_ip_write_apis_w_params',
+                                                args = (database_name, collection_name)))
+        else:
+            #The form is invalid
+             messages.error(request,_("Please correct the errors in the form."))
+             context = {'form': form, 'name':name}
+             return render( request,'djmongo/console/generic/bootstrapform.html',
+                          context)
+                                            
+    #this is a GET
+    idata ={'database_name': database_name,
+            'collection_name': collection_name}
+    context= {'name':name,
+              'form': WriteAPIIPForm(initial=idata)
+              }
+    return render(request, 'djmongo/console/generic/bootstrapform.html',context,)
+
+def edit_httpauth_write_api(request, slug):
+    a = get_object_or_404(WriteAPIHTTPAuth, slug=slug)
+    name = _("Edit HTTP Auth Write API")
+    if request.method == 'POST':
+        form = WriteAPIHTTPAuthForm(request.POST, instance=a)
+        if form.is_valid():
+            a = form.save(commit = False)
+            a.created_by = request.user
+            a.save()
+            msg = _('The HTTP Auth API for %s was updated.') % (slug)
+            messages.success(request, msg)
+            return HttpResponseRedirect(reverse('djmongo_browse_httpauth_write_apis_w_params',
+                                                args = (a.database_name, a.collection_name)))
+        else:
+            #The form is invalid
+             messages.error(request,_("Please correct the errors in the form."))
+             context = {'form': form, 'name':name}
+             return render( request,'djmongo/console/generic/bootstrapform.html',
+                          context)        
+    #this is a GET
+    context= {'name':name,
+              'form': WriteAPIHTTPAuthForm(instance =a)
+              }
+    return render(request, 'djmongo/console/generic/bootstrapform.html',context,)
+    
+
+def edit_ip_write_api(request, slug):
+    a = get_object_or_404(WriteAPIHTTPAuth, slug=slug)
+    name = _("Edit IP-based Write API")
+    if request.method == 'POST':
+        form = WriteAPIIPForm(request.POST, instance=a)
+        if form.is_valid():
+            a = form.save(commit = False)
+            a.created_by = request.user
+            a.save()
+            msg = _('The IP-based API for %s was updated.') % (slug)
+            messages.success(request, msg)
+            return HttpResponseRedirect(reverse('djmongo_browse_ip_write_apis_w_params',
+                                                args = (a.database_name, a.collection_name)))
+        else:
+            #The form is invalid
+             messages.error(request,_("Please correct the errors in the form."))
+             context = {'form': form, 'name':name}
+             return render( request,'djmongo/console/generic/bootstrapform.html',
+                          context)
+                                            
+    #this is a GET
+    context= {'name':name,
+              'form': WriteAPIIPForm(instance =a)
+              }
+    return render(request, 'djmongo/console/generic/bootstrapform.html',context,)
+
+def delete_httpauth_write_api(request, slug):
+    name = _("Delete HTTP Auth Write API")
+    if request.method == 'POST':
+        form = WriteAPIHTTPAuthDeleteForm(request.POST)
+        if form.is_valid():
+            a = WriteAPIHTTPAuth.objects.get(slug = slug)
+            database_name = a.database_name
+            collection_name = a.collection_name
+            a.delete()
+            msg = _('The HTTP Auth API for %s was deleted.') % (slug)
+            messages.success(request, msg)
+            return HttpResponseRedirect(reverse('djmongo_browse_httpauth_write_apis_w_params',
+                                                args = (database_name, collection_name)))
+        else:
+            #The form is invalid
+             messages.error(request,_("Please correct the errors in the form."))
+             context = {'form': form, 'name':name}
+             return render( request,'djmongo/console/generic/bootstrapform.html',
+                          context)
+                                            
+            
+    #this is a GET
+    context= {'name':name,
+              'form': WriteAPIHTTPAuthDeleteForm()
+              }
+    return render(request, 'djmongo/console/generic/bootstrapform.html',context,)
+
+def delete_ip_write_api(request, slug):
+    name = _("Delete IP-based Write API")
+    if request.method == 'POST':
+        form = WriteAPIIPDeleteForm(request.POST)
+        if form.is_valid():
+            a = WriteAPIIP.objects.get(slug = slug)
+            database_name = a.database_name
+            collection_name = a.collection_name
+            a.delete()
+            msg = _('The IP-based API for %s was deleted.') % (slug)
+            messages.success(request, msg)
+            return HttpResponseRedirect(reverse('djmongo_browse_ip_write_apis_w_params',
+                                                args = (database_name, collection_name)))
+        else:
+            #The form is invalid
+             messages.error(request,_("Please correct the errors in the form."))
+             context = {'form': form, 'name':name}
+             return render( request,'djmongo/console/generic/bootstrapform.html',
+                          context)
+                                            
+            
+    #this is a GET
+    context= {'name':name,
+              'form': WriteAPIIPDeleteForm()
+              }
+    return render(request, 'djmongo/console/generic/bootstrapform.html',context,)
+
+

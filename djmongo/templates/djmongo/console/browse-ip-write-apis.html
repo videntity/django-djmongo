@@ -9,14 +9,14 @@
       
       <div class="row">
               <div class="col-lg-12">
-                  <h1>{% trans "HTTPAuth-Based Write APIs" %}</h1>
+                  <h1>{% trans "IP-Based Write APIs" %}</h1>
               </div>
       </div>
 
  <div class="row">
       <div class="col-lg-12">
-           <a class="btn pull-right btn-primary btn-large" href="{% url 'djmongo_create_httpauth_write_api_w_params' database_name collection_name   %}">
-            <i class="icon-plus-sign icon-white"></i> {% trans "Create an HTTP Auth-based Write API in " %} {{database_name}}/{{collection_name}}
+           <a class="btn pull-right btn-primary btn-large" href="{% url 'djmongo_create_ip_write_api_w_params' database_name collection_name   %}">
+            <i class="icon-plus-sign icon-white"></i> {% trans "Create an IP-based Write API in " %} {{database_name}}/{{collection_name}}
             </a>
            
        </div>
@@ -32,7 +32,7 @@
 <tr>
       <th>Slug</th>
       <th>Created By</th>
-      <th>Groups</th>
+      <th>IPs</th>
       <th>Database</th>
       <th>Collection</th>
       <th>API URL</th>
@@ -48,16 +48,16 @@
 <tr class="success">
 <td>{{a.slug}}</td>
 <td>{{a.created_by.first_name}}  {{a.created_by.last_name}}  ({{a.created_by.user}})</td>
-<td>{{a.allgroups}}</td>
+<td>{{a.from_ip}}</td>
 <td>{{a.database_name}}</td>
 <td>{{a.collection_name}}</td>
-<td><pre>{% url 'djmongo_api_write_to_collection_with_httpauth' a.slug %}</pre></td>
+<td><pre>{% url 'djmongo_api_write_to_collection_with_ip' a.slug %}</pre></td>
 <td>
                  
-  <a class="btn pull-left btn-primary btn-xs" href="{% url 'djmongo_edit_httpauth_write_api' a.slug %}">
+  <a class="btn pull-left btn-primary btn-xs" href="{% url 'djmongo_edit_ip_write_api' a.slug %}">
          <i class="icon-edit  icon-white"></i> Edit</a>
             
-   <a class="btn pull-left btn-danger btn-xs" href="{% url 'djmongo_delete_httpauth_write_api' a.slug %}">
+   <a class="btn pull-left btn-danger btn-xs" href="{% url 'djmongo_delete_ip_write_api' a.slug %}">
          <i class="icon-remove-sign  icon-white"></i> Delete</a>
 </td>
 
