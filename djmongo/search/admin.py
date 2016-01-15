@@ -1,12 +1,7 @@
 from django.contrib import admin
-from models import SavedSearch, DatabaseAccessControl, Aggregation
-
-class AggregationAdmin(admin.ModelAdmin):
-    list_display = ('slug', 'user','database_name',
-                    'collection_name', 'output_collection_name', 'creation_date')
+from .models import SavedSearch, DatabaseAccessControl
 
 
-admin.site.register(Aggregation, AggregationAdmin)
 
 
 class SavedSearchAdmin(admin.ModelAdmin):

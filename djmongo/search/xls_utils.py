@@ -8,7 +8,7 @@ from django.http import HttpResponse
 from datetime import datetime
 from collections import OrderedDict
 import csv, string
-from ..mongoutils import get_collection_keys, get_collection_labels, build_non_observational_key
+from ..mongoutils import get_collection_keys
 
 def flatten_results(keylist, listresults, exclude=()):
 

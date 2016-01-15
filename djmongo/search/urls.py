@@ -10,12 +10,7 @@ from .views import *
 
 urlpatterns = patterns('',
 
-   
-    url(r'^run-aggregation/(?P<slug>\S+)$',
-                    run_aggregation_by_slug,
-                    name="djmongo_run_aggregation_by_slug"),
-    
-    
+       
     url(r'^saved-search/(?P<slug>\S+)$',
                     login_required(run_saved_search_by_slug),
                     name="djmongo_run_saved_search_by_slug"),
@@ -37,45 +32,22 @@ urlpatterns = patterns('',
                     name="djmongo_create_saved_search_w_params"),
     
     
-    url(r'^edit-saved-aggregation/(?P<slug>\S+)$',
-                    login_required(edit_saved_aggregation_by_slug),
-                    name="djmongo_edit_saved_aggregation_by_slug"),
-    
-    url(r'^delete-saved-aggregation/(?P<slug>\S+)$',
-                    login_required(delete_saved_aggregation_by_slug),
-                    name="djmongo_delete_saved_aggregation_by_slug"),
-    
 
-    url(r'^create-saved-aggregation/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
-                   login_required(create_saved_aggregation),
-                    name="djmongo_create_saved_aggregation_w_params"),
-
-    
-    url(r'^complex-search/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
-                    login_required(complex_search), name="djmongo_complex_search"),
-    
 
     url(r'^database-access-control/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
         login_required(database_access_control),
         name="djmongo_database_access_control"),
     
-    url(r'^browse-saved-aggregations/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
-                login_required(browse_saved_aggregations),
-                name="djmongo_browse_saved_aggregations_w_params"),
+
     
     url(r'^browse-saved-searches/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
                 login_required(browse_saved_searches),
                 name="djmongo_browse_saved_searches_w_params"),
     
     # Unsupported/Experimental
-    url(r'^build-keys', login_required(build_keys),
-                    name="djmongo_search_build_keys"),
-     # Unsupported/Experimental
-    url(r'^custom-report', login_required(custom_report),
-                   name="djmongo_custom_report"),
-     # Unsupported/Experimental
-    url(r'^data-dictionary', login_required(data_dictionary),
-                    name="djmongo_data_dictionary"),
+    url(r'^build-keys/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
+                    login_required(build_keys),
+                    name="djmongo_build_keys"),
 
 
     #API CALLS ------------------------------------------------------------------
@@ -114,9 +86,6 @@ urlpatterns = patterns('',
     url(r'^api/saved-search/(?P<slug>\S+)$',
         json_login_required(run_saved_search_by_slug),
         name="djmongo_api_run_saved_search_by_slug"),
-    
-    url(r'^api/complex-search/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
-        json_login_required(complex_search), name="djmongo_api_complex_search"),
     
 
     url(r'^(?P<database_name>[^/]+)/(?P<collection_name>[^.]+).json$',

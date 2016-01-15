@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand, CommandError, NoArgsCommand
 import datetime
 import calendar
 import json
-from djmongo.search.models import Aggregation
+from djmongo.aggregations.models import Aggregation
 from djmongo.mongoutils import run_aggregation_pipeline
 
 class Command(NoArgsCommand):

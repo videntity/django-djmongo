@@ -4,29 +4,24 @@
 import os, uuid, json
 from django.conf import settings
 from ..decorators import check_database_access
-from django.shortcuts import render_to_response,  get_object_or_404
+from django.shortcuts import render,  get_object_or_404
 from django.contrib import messages
-from django.http import HttpResponse, Http404, HttpResponseRedirect
-from django.contrib.auth.models import User
-from django.template import RequestContext
-from django.core.context_processors import csrf
-from django.views.decorators.csrf import csrf_exempt
-from datetime import datetime, timedelta
+from django.http import HttpResponse, HttpResponseRedirect
+from datetime import datetime
 from django.core.urlresolvers import reverse
-from .forms import SavedSearchForm, ComplexSearchForm, AggregationForm, DatabaseAccessControlForm
-from ..mongoutils import query_mongo, to_json, normalize_results
-from .models import SavedSearch, Aggregation, DatabaseAccessControl
+from .forms import SavedSearchForm, DatabaseAccessControlForm
+from ..mongoutils import query_mongo, to_json, normalize_results, build_keys_with_mapreduce
+from .models import SavedSearch, DatabaseAccessControl
 from .xls_utils import convert_to_csv, convert_to_rows
-from django.db import IntegrityError
 from django.utils.translation import ugettext_lazy as _
 import shlex
 
 
-def build_keys(request):
+def build_keys(request, database_name, collection_name):
     """Perform the map/reduce to refresh the keys form. The display the custom report screen"""
-    x = build_keys_with_mapreduce()
+    x = build_keys_with_mapreduce(database_name, collection_name)
     messages.success(request, _("Successfully completed MapReduce operation. Key rebuild for custom report complete."))
-    return HttpResponseRedirect(reverse("djmongo_home"))
+    return HttpResponseRedirect(reverse("djmongo_show_dbs"))
 
 
 
@@ -60,48 +55,6 @@ def prepare_search_results(request, database_name, collection_name,
                          sort=sort, return_keys=return_keys)
     return result
     
-
-@csrf_exempt
-def custom_report(request, database_name, collection_name):
-    ckeys = get_collection_keys()
-
-    if request.method == 'POST':
-        form = KeysForm(ckeys, get_collection_labels(), request.POST)
-        if form.is_valid():
-            return_keys=[]
-            data = form.cleaned_data
-            for k,v in data.items():
-                if v==True:
-                    return_keys.append(k)
-
-            q = massage_dates(json.loads(data['query']))
-
-            if data['outputformat']=="xls":
-                return search_xls(request, collection=None, return_keys=return_keys,
-                                   query=json.loads(data['query']))
-            
-            elif data['outputformat']=="csv":
-                return search_csv(request, collection=None, return_keys=return_keys,
-                                   query=json.loads(data['query']))
-
-            else:
-                return search_json(request, collection=None, return_keys=return_keys,
-                                   query=json.loads(data['query']))
-        else:
-
-            return render_to_response('search/select-keys.html', {'form': form},
-                RequestContext(request))
-
-    #Get the distinct keys from the collection
-    ckeys = get_collection_keys()
-
-    #get the labels
-    label_dict = get_collection_labels()
-
-    return render_to_response('djmongo/console/select-keys.html',
-         {'form': KeysForm(ckeys, label_dict),}, RequestContext(request))
-
-
 
 @check_database_access
 def search_json(request, database_name, collection_name,
@@ -177,42 +130,13 @@ def search_html(request, database_name, collection_name,
         context ={"rows": convert_to_rows(keylist, listresults),
                   "timestamp": timestamp}
         
-        return render_to_response('djmongo/console/html-table.html',
-                              RequestContext(request, context,))   
+        return render(request,'djmongo/console/html-table.html',
+                              context)   
 
     else:
         jsonresults=to_json(result)
         return HttpResponse(jsonresults, status=int(result['code']),
                             content_type="application/json")
-
-
-
-@csrf_exempt
-def data_dictionary(request):
-
-    if request.method == 'POST':
-        form = DataDictionaryForm(request.POST)
-        if form.is_valid():
-            data = form.save()
-
-            if data['outputformat']=="xls":
-                pass
-                #return convert_labels_to_xls(data)
-
-            else:
-                response = json.dumps(data['labels'], indent =4)
-                return HttpResponse(response, status=200,
-                                    content_type="application/json")
-        else:
-            #The form contained errors.
-            return render_to_response('search/data-dictionary.html',
-                                 {'form': form}, RequestContext(request))
-
-    #A GET
-    return render_to_response('search/data-dictionary.html',
-         {'form': DataDictionaryForm()}, RequestContext(request))
-
-
 
 
 
@@ -345,40 +269,6 @@ def run_saved_search_by_slug(request, slug, output_format=None, skip=0,
     return HttpResponse(response, content_type="application/json")
 
 
-def create_saved_aggregation(request, database_name=None,
-                collection_name=None):
-    name = _("Create a Saved Aggregation")
-    if request.method == 'POST':
-        form = AggregationForm(request.POST)
-        if form.is_valid():
-            sa = form.save(commit = False)
-            sa.user = request.user
-            sa.save()
-                
-            return HttpResponseRedirect(reverse('djmongo_browse_saved_aggregations_w_params',
-                                        args=(sa.database_name, sa.collection_name )))
-        else:
-            #The form is invalid
-             messages.error(request,_("Please correct the errors in the form."))
-             return render_to_response('djmongo/console/generic/bootstrapform.html',
-                                            {'form': form,
-                                             'name':name},
-                                            RequestContext(request))
-            
-   #this is a GET
-    idata ={'database_name': database_name,
-            'collection_name': collection_name}
-    
-    
-    context= {'name':name,
-              'form': AggregationForm(initial=idata)
-              }
-    return render_to_response('djmongo/console/generic/bootstrapform.html',
-                             RequestContext(request, context,))
-    
-
-
-
 def database_access_control(request, database_name, collection_name):
     name = _("Database Access Control")
     
@@ -394,18 +284,17 @@ def database_access_control(request, database_name, collection_name):
         else:
             #The form is invalid
              messages.error(request,_("Please correct the errors in the form."))
-             return render_to_response('djmongo/console/generic/bootstrapform.html',
+             return render(request,'djmongo/console/generic/bootstrapform.html',
                                             {'form': form,
                                              'name':name,
-                                             },
-                                            RequestContext(request))
+                                             })
             
    #this is a GET
     context= {'name':name,
               'form': DatabaseAccessControlForm(instance=dac)
               }
-    return render_to_response('djmongo/console/generic/bootstrapform.html',
-                             RequestContext(request, context,))
+    return render(request,'djmongo/console/generic/bootstrapform.html',
+                             context)
 
 
 def create_saved_search(request, database_name=None,
@@ -424,11 +313,10 @@ def create_saved_search(request, database_name=None,
         else:
             #The form is invalid
              messages.error(request,_("Please correct the errors in the form."))
-             return render_to_response('djmongo/console/generic/bootstrapform.html',
+             return render(request,'djmongo/console/generic/bootstrapform.html',
                                             {'form': form,
                                              'name':name,
-                                             },
-                                            RequestContext(request))
+                                             })
             
    #this is a GET
     idata ={'database_name': database_name,
@@ -438,8 +326,8 @@ def create_saved_search(request, database_name=None,
     context= {'name':name,
               'form': SavedSearchForm(initial=idata)
               }
-    return render_to_response('djmongo/console/generic/bootstrapform.html',
-                             RequestContext(request, context,))
+    return render(request,'djmongo/console/generic/bootstrapform.html',
+                             context)
     
 
 def delete_saved_search_by_slug(request, slug):
@@ -451,13 +339,7 @@ def delete_saved_search_by_slug(request, slug):
                                         args=(ss.database_name, ss.collection_name )))
 
 
-def delete_saved_aggregation_by_slug(request, slug):
-    name = _("Edit Saved Search")
-    ss = get_object_or_404(SavedSearch,  slug=slug, user=request.user)
-    ss.delete()
-    messages.success(request,_("Saved aggregation deleted."))
-    return HttpResponseRedirect(reverse('djmongo_browse_saved_searches_w_params',
-                                        args=(ss.database_name, ss.collection_name )))
+
 
 
 def edit_saved_search_by_slug(request, slug):
@@ -476,46 +358,27 @@ def edit_saved_search_by_slug(request, slug):
         else:
             #The form is invalid
              messages.error(request,_("Please correct the errors in the form."))
-             return render_to_response('generic/bootstrapform.html',
+             return render(request,'generic/bootstrapform.html',
                                             {'form': form,
                                              'name':name,
-                                             },
-                                            RequestContext(request))
+                                             })
             
    #this is a GET
     context= {'name':name,
               'form': SavedSearchForm(instance = ss)
               }
-    return render_to_response('djmongo/console/generic/bootstrapform.html',
-                             RequestContext(request, context,))
+    return render(request,'djmongo/console/generic/bootstrapform.html',
+                             context)
 
 
 def delete_saved_search_by_slug(request, slug):
-    name = _("Edit Saved Search")
+    name = _("Delete Saved Search")
     ss = get_object_or_404(SavedSearch,  slug=slug)
     ss.delete()
     messages.success(request,_("Saved search deleted."))
     return HttpResponseRedirect(reverse('djmongo_browse_saved_searches_w_params',
                                         args=(ss.database_name, ss.collection_name )))
 
-
-def run_aggregation_by_slug(request, slug):
-    name = _("Execute Aggregation")
-    sa = get_object_or_404(Aggregation,  slug=slug)
-    sa.execute_now = True
-    sa.save()
-    messages.success(request,_("Saved aggregation executed."))
-    return HttpResponseRedirect(reverse('djmongo_browse_saved_aggregations_w_params',
-                                        args=(sa.database_name, sa.collection_name )))
-
-
-def delete_saved_aggregation_by_slug(request, slug):
-    name = _("Edit Saved Search")
-    ss = get_object_or_404(Aggregation,  slug=slug)
-    ss.delete()
-    messages.success(request,_("Saved aggregation deleted."))
-    return HttpResponseRedirect(reverse('djmongo_browse_saved_aggregations_w_params',
-                                        args=(ss.database_name, ss.collection_name )))
 
 
 def edit_saved_aggregation_by_slug(request, slug):
@@ -534,95 +397,18 @@ def edit_saved_aggregation_by_slug(request, slug):
         else:
             #The form is invalid
              messages.error(request,_("Please correct the errors in the form."))
-             return render_to_response('generic/bootstrapform.html',
+             return render(request,'generic/bootstrapform.html',
                                             {'form': form,
                                              'name':name,
-                                             },
-                                            RequestContext(request))
+                                             })
             
    #this is a GET
     context= {'name':name,
               'form': AggregationForm(instance = ss)
               }
-    return render_to_response('djmongo/console/generic/bootstrapform.html',
-                             RequestContext(request, context,))
+    return render(request,'djmongo/console/generic/bootstrapform.html',
+                              context)
 
-
-def complex_search(request, database_name,collection_name,
-                        sort=None, skip=0, limit=200, return_keys=()):
-    name = _("Run a Complex Search")
-    if request.method == 'POST':
-        form = ComplexSearchForm(request.POST)
-        if form.is_valid():
-            query = form.cleaned_data['query']
-            limit = form.cleaned_data['limit']
-            sort = form.cleaned_data['sort']
-            try:
-                query = json.loads(query)
-                
-                if sort:
-                    sort = json.loads(sort)
-
-            except ValueError:
-                #Quert was not valid JSON ------------------
-                response_dict = {}
-                response_dict['num_results']=0
-                response_dict['code']=400
-                response_dict['type']="Error"
-                response_dict['results']=[]
-                response_dict['message']="Your query was not valid JSON."
-                response = json.dumps(response_dict, indent =4)
-                return HttpResponse(response, status=int(response_dict['code']),
-                                    content_type="application/json")
-            #Query was valid JSON    
-            if form.cleaned_data['output_format']=="json":
-                return search_json(request, query = query, sort=sort, limit=limit, skip=skip)
-            if form.cleaned_data['output_format']=="csv":
-                return search_csv(request, query = query, sort=sort, limit=limit, skip=skip)
-            if form.cleaned_data['output_format']=="html":
-                return search_html(request, query = query, sort=sort, limit=limit, skip=skip)
-            
-            #these next line "should" never execute, but here just in case.
-            response_dict = {}
-            response_dict['num_results']=0
-            response_dict['code']=500
-            response_dict['type']="Error"
-            response_dict['results']=[]
-            response_dict['message']="Oops somthing has gone wrong.  Please contact a systems administrator"
-            response = json.dumps(response_dict, indent =4)
-            return HttpResponse(response, status=int(response_dict['code']),
-                                    content_type="application/json")
-            
-
-        else:
-            #The form is invalid
-             messages.error(request,_("Please correct the errors in the form."))
-             return render_to_response('djmongo/console/generic/bootstrapform.html',
-                                            {'form': form,
-                                             'name':name,
-                                             },
-                                            RequestContext(request))
-            
-   #this is a GET
-    
-    #if the database and collection are not identified, use the main one
-    # defined in settings.
-    if not database_name or collection_name:
-        idata ={'database_name': settings.MONGO_DB_NAME,
-           'collection_name': settings.MONGO_MASTER_COLLECTION,
-           }
-    else:
-        idata ={'database_name': database_name,
-             'collection_name': collection_name,
-             }
-    idata['output_format'] = 'json'
-    idata['query']="{}"
-    
-    context= {'name':name,
-              'form': ComplexSearchForm(initial=idata)
-              }
-    return render_to_response('djmongo/console/generic/bootstrapform.html',
-                             RequestContext(request, context,))
 
 def browse_saved_searches(request, database_name, collection_name):
      
@@ -630,14 +416,5 @@ def browse_saved_searches(request, database_name, collection_name):
     context = {"savedsearches": savedsearches,
                'database_name': database_name,
                'collection_name': collection_name}
-    return render_to_response('djmongo/console/display-saved-searches.html',
-                              RequestContext(request, context,))
-
-def browse_saved_aggregations(request, database_name, collection_name):
-     
-    savedaggs = Aggregation.objects.filter(database_name=database_name, collection_name=collection_name)
-    context = {"savedaggs": savedaggs,
-               'database_name': database_name,
-               'collection_name': collection_name}
-    return render_to_response('djmongo/console/display-saved-aggregations.html',
-                              RequestContext(request, context,))
+    return render(request,'djmongo/console/display-saved-searches.html',
+                    context)

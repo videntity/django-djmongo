@@ -79,7 +79,12 @@ $('.dropdown-toggle').dropdown();
              
              <li> <a  target=_blank href="{% url 'djmongo_search_csv_w_params' d.name c %}">
                    <i class="fa fa-search"></i> {% trans "Simple CSV Search" %}</a></li>
-             
+            
+            <li role="presentation" class="divider"></li>  
+            
+            <li> <a  target=_blank href="{% url 'djmongo_build_keys' d.name c %}">
+                   <i class="fa fa-key"></i> {% trans "Build a collection of just keys" %}</a></li>
+            
             <li role="presentation" class="divider"></li> 
             <li><a  href="{% url 'djmongo_create_document_in_collection_w_params' d.name  c %}">
                    <i class="fa fa-plus-circle"></i> {% trans "Create a Document..." %}</a></li>
