@@ -1,5 +1,5 @@
 from django.contrib import admin
-from models import DataImport
+from .models import DataImport
 
 
 class DataImportAdmin(admin.ModelAdmin):

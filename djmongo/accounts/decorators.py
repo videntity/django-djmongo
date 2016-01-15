@@ -15,7 +15,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.conf import settings
 from django.contrib.auth import authenticate, login
-from utils import authorize, unauthorized_json_response, user_permissions
+from .utils import authorize, unauthorized_json_response, user_permissions
 
 
 def json_login_required(func):

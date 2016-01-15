@@ -452,46 +452,6 @@ def get_collection_keys(database_name, collection_name):
 
 
 
-def get_collection_labels(database_name, collection_name):
-    l=[]
-    try:
-        mconnection     = MongoClient(settings.MONGO_HOST, settings.MONGO_PORT)
-        db              = mconnection[database_name]
-        collection      = db[collection_name]
-
-        result = collection.find_one({})
-
-        label_dict = OrderedDict((x, y) for x, y in result['labels'])
-
-        return label_dict
-    except:
-        print "Error reading from Mongo!", str(sys.exc_info())
-        return {}
-
-def get_labels_tuple(database_name, collection_name):
-    l=[]
-    try:
-        mconnection     = MongoClient(settings.MONGO_HOST, settings.MONGO_PORT)
-        db              = mconnection[database_name]
-        collection      = db[collection_name]
-
-        dbresult = collection.find_one({})
-
-        labels = dbresult['labels']
-
-        result=[]
-        result.append(("Name", "Label"))
-
-        for i in labels:
-            result.append(tuple(i))
-
-        return result
-    except:
-        print "Error reading from Mongo!", str(sys.exc_info())
-        return {}
-
-
-
 def build_keys_with_mapreduce(database_name, collection_name):
     map= Code("function() { "
               "    for (var key in this)"

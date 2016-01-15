@@ -1,6 +1,5 @@
 from django.contrib import admin
-from models import Permission
-from models import SocialGraph
+from .models import Permission, SocialGraph
 
 admin.site.register(Permission)
 

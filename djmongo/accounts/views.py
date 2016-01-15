@@ -9,9 +9,9 @@ from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from django.db.utils import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
-from forms import *
+from .forms import *
 from decorators import json_login_required, access_required
-from models import SocialGraph
+from .models import SocialGraph
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import messages
 from django.contrib.auth.forms import SetPasswordForm

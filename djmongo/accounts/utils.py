@@ -4,9 +4,9 @@
 
 import json, string, random
 from django.contrib.auth import login, authenticate
-from httpauth import HttpBasicAuthentication
+from .httpauth import HttpBasicAuthentication
 from django.http import HttpResponse
-from models import Permission
+from .models import Permission
 from datetime import date
 
 def random_string(length=6, alphabet=string.letters+string.digits):

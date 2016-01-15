@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from django.conf.urls import patterns, include, url
-from views import *
+from .views import *
 from django.views.generic import TemplateView
 from decorators import json_login_required
 from django.contrib.auth.decorators import login_required
