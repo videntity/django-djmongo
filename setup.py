@@ -13,7 +13,7 @@ setup(
     packages=['djmongo', 'djmongo.console',
               'djmongo.accounts', 'djmongo.accounts.migrations',
               'djmongo.aggregations', 'djmongo.aggregations.migrations',
-              'djmongo.write' 'djmongo.write.migrations',,
+              'djmongo.write', 'djmongo.write.migrations',
               'djmongo.management.commands',
               'djmongo.management',
               'djmongo.search', 'djmongo.search.migrations',
