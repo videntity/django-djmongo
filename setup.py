@@ -17,7 +17,7 @@ setup(
               'djmongo.management.commands',
               'djmongo.management',
               'djmongo.search', 'djmongo.search.migrations',
-              'djmongo.dataimport', 'djmongo.data-import.migrations', ],
+              'djmongo.dataimport', 'djmongo.dataimport.migrations', ],
     include_package_data=True,
     license='GPL2',
     description='A reusable Django application providing a web interface for MongoDB and a RESTFul API Toolkit.',
