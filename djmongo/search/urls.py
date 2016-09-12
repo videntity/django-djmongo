@@ -4,11 +4,11 @@
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from ..decorators import json_login_required
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from .views import *
 
 
-urlpatterns = patterns('',
+urlpatterns = [  
 
        
     url(r'^saved-search/(?P<slug>\S+)$',
@@ -31,8 +31,6 @@ urlpatterns = patterns('',
                     login_required(create_saved_search),
                     name="djmongo_create_saved_search_w_params"),
     
-    
-
 
     url(r'^database-access-control/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
         login_required(database_access_control),
@@ -100,4 +98,4 @@ urlpatterns = patterns('',
             search_html, name="djmongo_search_html_w_params"),
 
 
-    )
+    ]

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from .views import *
 from django.views.generic import TemplateView
 from decorators import json_login_required
@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 
 
 
-urlpatterns = patterns('',
+urlpatterns = [  
 
 
     #API Calls (these return JSON). ------------------------------------------
@@ -30,4 +30,4 @@ urlpatterns = patterns('',
     url(r'logout', simple_logout,  name='logout'),
 
 
-    )
+    ]

@@ -4,10 +4,10 @@
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from ..decorators import json_login_required
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from views import *
 
-urlpatterns = patterns('',
+urlpatterns = [  
 
     url(r'^$', login_required(showdbs), name="djmongo_show_dbs"),
     
@@ -64,4 +64,4 @@ urlpatterns = patterns('',
     url(r'^api/create-collection/(?P<database_name>[^/]+)$',
          json_login_required(create_collection), name="djmongo_api_create_collection"),    
 
-    )
+    ]

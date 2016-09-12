@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib.auth.decorators import login_required
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from .views import *
 
 
-urlpatterns = patterns('',
+urlpatterns = [  
    
     url(r'^run-aggregation/(?P<slug>\S+)$',
                     run_aggregation_by_slug,
@@ -27,4 +27,4 @@ urlpatterns = patterns('',
     url(r'^create-saved-aggregation/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
                    login_required(create_saved_aggregation),
                     name="djmongo_create_saved_aggregation_w_params"),
-)
+]

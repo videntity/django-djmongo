@@ -9,14 +9,15 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-djmongo',
-    version='0.7.5.6',
+    version='0.7.5.8',
     packages=['djmongo', 'djmongo.console',
-              'djmongo.accounts',
-              'djmongo.aggregations',
-              'djmongo.write',
+              'djmongo.accounts', 'djmongo.accounts.migrations',
+              'djmongo.aggregations', 'djmongo.aggregations.migrations',
+              'djmongo.write' 'djmongo.write.migrations',,
               'djmongo.management.commands',
               'djmongo.management',
-              'djmongo.search','djmongo.dataimport' ],
+              'djmongo.search', 'djmongo.search.migrations',
+              'djmongo.dataimport', 'djmongo.data-import.migrations', ],
     include_package_data=True,
     license='GPL2',
     description='A reusable Django application providing a web interface for MongoDB and a RESTFul API Toolkit.',
@@ -25,7 +26,7 @@ setup(
     author='Alan Viars',
     author_email='sales@videntity.com',
     install_requires=[
-        'django>=1.8.1', 'pymongo', 'django-widget-tweaks',
+        'pymongo', 'django-widget-tweaks',
         'django-bootstrap-form',
         'django-cors-headers', 'jdt', 'jsonschema',
         'django-localflavor' ],
@@ -40,5 +41,3 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
 )
-
-

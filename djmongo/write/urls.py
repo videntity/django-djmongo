@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib.auth.decorators import login_required
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from .views import *
 
-urlpatterns = patterns('',
+urlpatterns = [  
 
     #Call the write API
     url(r'^api/httpauth/(?P<slug>[^/]+)$',
@@ -65,4 +65,4 @@ urlpatterns = patterns('',
     url(r'^httpauth/delete-write-api/(?P<slug>[^/]+)$',
                 login_required(delete_httpauth_write_api),
                 name="djmongo_delete_httpauth_write_api"),     
-    )
+    ]

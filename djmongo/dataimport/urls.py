@@ -6,11 +6,11 @@ from django.contrib.auth.decorators import login_required
 from  django.views.generic.base import TemplateView
 from django.views.decorators.csrf import csrf_exempt
 from ..decorators import json_login_required
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from .views import *
 
 
-urlpatterns = patterns('',
+urlpatterns = [  
     url(r'^view$', login_required(previous_data_imports),
         name="djmongo_previous_data_imports"),
     
@@ -39,5 +39,4 @@ urlpatterns = patterns('',
     url(r'^$', TemplateView.as_view(template_name='djmongo/console/import-home.html'),
         name="djmongo_import_home"),
     
-    
-    )
+    ]
