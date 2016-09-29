@@ -20,28 +20,23 @@ $('.dropdown-toggle').dropdown();
    <div class="row">
               
 
-       <table class="table table-condensed">
-       
-          
+       <table class="table table-striped">
+      
        <thead>
        <tr>
-       <th>Database</th>
-       <th>Collections</th>
-       
+         <th><h1>Databases</h1></th>
+         <th><h1>Collections</h2></th>
        </tr>
        </thead>
         
        <tbody>
-       
-       
        {% for d in dbs %}
-       
        <tr>
        <td>
-       
+       <h2>{{d.name}}</h2>
        <div class="btn-group">
-           <a class="btn pull-left dropdown-toggle btn-info btn-large" data-toggle="dropdown" href="#">
-           {{d.name}}
+           <a class="btn dropdown-toggle btn-default btn-large" data-toggle="dropdown" href="#">
+          Database
            <span class="caret"></span>
            </a>
            <ul class="dropdown-menu">
@@ -55,79 +50,186 @@ $('.dropdown-toggle').dropdown();
                
               </ul>
             </div>
-       
-       
        </td>
        <td>
            {% for c in d.collections %}
+          <h2>{{c}}</h2>
            <div class="btn-group">
-           <a class="btn pull-left dropdown-toggle btn-info btn-large" data-toggle="dropdown" href="#">
-           {{c}}
-           <span class="caret"></span>
-           </a>
-           <ul class="dropdown-menu">
-
-             <li> <a href="{% url 'djmongo_database_access_control' d.name c %}">
-                   <i class="fa fa-unlock"></i> {% trans "Read Access Control" %}</a></li>
-             
-            <li role="presentation" class="divider"></li>  
-             <li> <a  target=_blank href="{% url 'djmongo_search_json_w_params' d.name c %}">
-                   <i class="fa fa-search"></i> {% trans "Simple JSON Search" %}</a></li>
-             
-             <li> <a  target=_blank href="{% url 'djmongo_search_html_w_params' d.name c %}">
-                   <i class="fa fa-search"></i> {% trans "Simple HTML Search" %}</a></li>
-             
-             <li> <a  target=_blank href="{% url 'djmongo_search_csv_w_params' d.name c %}">
-                   <i class="fa fa-search"></i> {% trans "Simple CSV Search" %}</a></li>
-            
-            <li role="presentation" class="divider"></li>  
-            
-            <li> <a  target=_blank href="{% url 'djmongo_build_keys' d.name c %}">
-                   <i class="fa fa-key"></i> {% trans "Build a collection of just keys" %}</a></li>
-            
-            <li role="presentation" class="divider"></li> 
+           <div class="btn">
+            <a class="btn dropdown-toggle btn-default btn-large" data-toggle="dropdown" href="#">
+            Collection
+            <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+     
+            <li> <a  href="{% url 'djmongo_drop_collection' d.name c %}"">
+                    <i class="fa fa-warning"></i> {% trans "Drop Collection..." %} </a></li>
             <li><a  href="{% url 'djmongo_create_document_in_collection_w_params' d.name  c %}">
                    <i class="fa fa-plus-circle"></i> {% trans "Create a Document..." %}</a></li>
             
             <li><a  href="{% url 'djmongo_update_document_in_collection_w_params' d.name c %}">
                    <i class="fa fa-retweet"></i> {% trans "Update a Document..." %}</a></li>
-            
-            <li> <a href="{% url 'djmongo_previous_data_imports_w_params' d.name c %}">
-                   <i class="fa fa-angle-double-right"></i> {% trans "Import Data..." %}</a></li>
-       
+
             <li><a  href="{% url 'djmongo_ensure_index' d.name c %}">
                    <i class="fa fa-fighter-jet"></i> {% trans "Create an Index..." %}</a></li>
-       
-            <li role="presentation" class="divider"></li>
-              <li> <a  href="{% url 'djmongo_browse_saved_searches_w_params' d.name c %}">
-                   <i class="fa fa-search"></i> {% trans "Saved Searches..." %}</a>
-             </li>
-              <li> <a  href="{% url 'djmongo_browse_saved_aggregations_w_params' d.name c %}">
-                   <i class="fa fa-cogs"></i> {% trans "Saved Aggregations..." %}</a>
-             </li>
+                         
+            </ul>
+          </div>
+          <div class="btn">
+            <a class="btn dropdown-toggle btn-default btn-large" data-toggle="dropdown" href="#">
+            API Setup
+            <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+ 
+ 
+                   <li> <a href="{% url 'djmongo_setup_get_public' d.name c %}">
+                     <i class="fa fa-search"></i> {% trans "Setup HTTP GET API without Auth (i.e. Public)..." %}</a>
+                   </li>
+ 
+                  <li> <a href="{% url 'djmongo_setup_get_httpauth' d.name c %}">
+                   <i class="fa fa-seaerch"></i> {% trans "Setup HTTP GET API with HTTPAuth..." %}</a>
+                  </li>
+                  
+                  <li role="presentation" class="divider"></li>
+                   <li> <a  href="{% url 'djmongo_browse_saved_searches_w_params' d.name c %}">
+                    <i class="fa fa-search"></i> {% trans "Setup Custom HTTP GET API..." %}</a>
+                   </li>
+                  
+                  <li role="presentation" class="divider"></li> 
             
-            <li role="presentation" class="divider"></li>
+                  <li> <a  href="{% url 'djmongo_browse_httpauth_write_apis_w_params' d.name c %}"">
+                   <i class="fa fa-pencil"></i> {% trans "Setup HTTP POST API with HTTPAuth..." %} </a>
+                  </li>
+           
+                  <li> <a  href="{% url 'djmongo_browse_ip_write_apis_w_params' d.name c %}"">
+                   <i class="fa fa-pencil"></i> {% trans "Setup HTTP POST API with IP Auth..." %} </a>
+                  </li>
+            </ul>
+          </div>
+          
+            <div class="btn">
+           <a class="btn pull-left dropdown-toggle btn-default btn-large" data-toggle="dropdown" href="#">
+           Enterprise
+           <span class="caret"></span>
+           </a>
+            <ul class="dropdown-menu">
 
-       
-            <li> <a  href="{% url 'djmongo_drop_collection' d.name c %}"">
-                   <i class="fa fa-warning"></i> {% trans "Drop Collection" %} </a></li>
-           
-            <li role="presentation" class="divider"></li>
+             <li> <a  target=_blank href="{% url 'djmongo_build_keys' d.name c %}">
+                    <i class="fa fa-key"></i> {% trans "Build Key Collection" %}</a></li>
+ 
 
-       
-            <li> <a  href="{% url 'djmongo_browse_httpauth_write_apis_w_params' d.name c %}"">
-                   <i class="fa fa-pencil"></i> {% trans "HTTPAuth Write APIs..." %} </a></li>
+               <li> <a  href="{% url 'djmongo_browse_saved_aggregations_w_params' d.name c %}">
+                  <i class="fa fa-cogs"></i> {% trans "Schedule Aggregations..." %}</a>
+              </li>
+
+            </ul>
+           </div>
+
+            </ul>
+          </div>   
+          
+            
+
            
-            <li> <a  href="{% url 'djmongo_browse_ip_write_apis_w_params' d.name c %}"">
-                   <i class="fa fa-pencil"></i> {% trans "IP-Based Write APIs..." %} </a></li>
            
-           </ul>
            </div>
            <br><br>
-                    
-                
-                
+     
+            <table class="table table-condensed">
+           <thead>
+           <tr>
+           <th>AUTH METHOD</th>
+           <th>HTTP METHOD</th>
+           <th>Endpoint</th>
+           <th>Actions</th>
+           </tr>
+             </thead>
+           <tbody>
+           
+          {% for a in d.read_public_list %}  
+                {% ifequal a.collection_name c %}
+                   <tr>
+                   <th>None</th>
+                   <th><pre>GET</pre></th>
+                   <th><pre>{% url 'djmongo_api_public_search_json_w_params' d.name c %}|csv|html</pre></th>
+                   <th>
+                     <div class="btn-group-justified">
+                        <a href="{% url 'djmongo_api_public_search_json_w_params' d.name c %}" >
+                        <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> JSON</button>
+                        </a>
+                        
+                        <a href="{% url 'djmongo_api_public_search_csv_w_params' d.name c %}" >
+                        <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> CSV</button>
+                        </a>
+                        
+                        <a href="{% url 'djmongo_api_public_search_html_w_params' d.name c %}" >
+                        <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> HTML</button>
+                        </a>
+                        
+                        <a href="{% url 'djmongo_setup_get_public' d.name c %}" >
+                        <button type="button" class="btn btn-warning btn-xs"> <i class="fa fa-edit"></i> Edit..</button>
+                        </a>
+                        
+                  
+                        <a href="{% url 'djmongo_api_public_search_html_w_params' d.name c %}" >
+                        <button type="button" class="btn btn-danger btn-xs"> <i class="fa fa-eraser"></i> Delete...</button>
+                        </a>
+                        
+                     </div>
+                     
+                     </th>
+                   </tr>   
+                {% endifequal %}
+          {% endfor %}
+          
+      
+           {% for a in d.read_http_auth_list %}  
+            {% ifequal a.collection_name c %}
+               <tr>
+               <th>HTTP Auth</th>
+               <th><pre>GET</pre></th>
+               <th><pre>{% url 'djmongo_api_httpauth_search_json_w_params' d.name c %}|csv|html</pre></th>
+               <th>
+                  <div class="btn-group-justified">
+                        <a href="{% url 'djmongo_api_httpauth_search_json_w_params' d.name c %}" >
+                        <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> JSON</button>
+                        </a>
+                        
+                        <a href="{% url 'djmongo_api_httpauth_search_csv_w_params' d.name c %}" >
+                        <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> CSV</button>
+                        </a>
+                        
+                        <a href="{% url 'djmongo_api_httpauth_search_html_w_params' d.name c %}" >
+                        <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> HTML</button>
+                        </a>
+                        
+                        <a href="{% url 'djmongo_setup_get_httpauth' d.name c %}" >
+                        <button type="button" class="btn btn-warning btn-xs"> <i class="fa fa-edit"></i> Edit..</button>
+                        </a>
+                        
+                  
+                        <a href="{% url 'djmongo_api_httpauth_search_html_w_params' d.name c %}" >
+                        <button type="button" class="btn btn-danger btn-xs"> <i class="fa fa-eraser"></i> Delete...</button>
+                        </a>
+                        
+                     </div>
+                  
+                  
+                  
+               </th>
+               </tr>   
+            {% endifequal %}
+         {% endfor %}
+       
+            </tbody>
+           
+           </table>   
+     
+     
            {% endfor %}
+        
+
        </td>
        </tr>
        {% endfor %}
