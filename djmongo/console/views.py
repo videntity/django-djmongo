@@ -2,138 +2,141 @@
 # -*- coding: utf-8 -*-
 # vim: ai ts=4 sts=4 et sw=4
 import json
-from django.conf import settings
-from django.shortcuts import render_to_response, get_list_or_404
+from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.template import RequestContext
-from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext_lazy as _
-from .utils import (show_dbs, mongodb_drop_collection, mongodb_drop_database,
-                mongodb_clear_collection, mongodb_ensure_index, mongo_delete_json_util,
-                mongo_create_json_util)
-from .forms import EnsureIndexForm, DeleteForm, DocumentForm, CreateDatabaseForm, LoginForm
+from .utils import (
+    show_dbs,
+    mongodb_drop_collection,
+    mongodb_drop_database,
+    mongo_delete_json_util,
+    mongo_create_json_util)
+from .forms import (EnsureIndexForm, DeleteForm, DocumentForm,
+                    CreateDatabaseForm, ConfirmDropForm)
 from bson.objectid import ObjectId
-from django.contrib.auth import authenticate, login, logout
 from collections import OrderedDict
-import sys
+from ..write.models import WriteAPIHTTPAuth, WriteAPIIP
+from ..search.models import DatabaseAccessControl, PublicReadAPI
 
 def showdbs(request):
     
     dbs = show_dbs()
-    cleaned_dbs =[]
+    cleaned_dbs = []
     if not dbs:
-          messages.error(request, "Unable to connect to MongoDB. Check that it is running and accessible.")
+        messages.error(
+            request,
+            _("""Unable to connect to MongoDB.
+              Check that it is running and accessible."""))
     else:
         for i in dbs:
-            #only keep non-system DBs.
-            if i.get('name','')!='admin' and i.get('name','')!='local':
+            read_public_list = []
+            read_http_auth_list = []
+            write_http_auth_list = []
+            write_ip_auth_list = []
+            for c in i['collections']:
+                # API Lists based on auth type.                
+                
+                read_public_list += PublicReadAPI.objects.filter(database_name = i.get('name', ''),
+                                                   collection_name = c)
+                read_http_auth_list += DatabaseAccessControl.objects.filter(database_name = i.get('name', ''),
+                                                   collection_name = c)
+                write_http_auth_list += WriteAPIHTTPAuth.objects.filter(database_name = i.get('name', ''),
+                                                   collection_name = c)
+                write_ip_auth_list += WriteAPIIP.objects.filter(database_name = i.get('name', ''),
+                                                   collection_name = c)
+                
+            i['read_public_list'] = read_public_list
+            i['read_http_auth_list'] = read_http_auth_list
+            i['write_http_auth_list'] = write_http_auth_list
+            i['write_ip_auth_list'] = write_ip_auth_list
+            # only keep non-system DBs.
+            if i.get('name', '') != 'admin' and i.get('name', '') != 'local':
                 cleaned_dbs.append(i)
-
+           
+    print(cleaned_dbs)
+    
     if dbs and not cleaned_dbs:
-        messages.info(request, "You have no databases to work on. Please create one.")
-    context = { "dbs": cleaned_dbs }
-    return render_to_response('djmongo/console/showdbs.html',
-                              RequestContext(request, context,))
-
-
-
-def simple_logout(request):
-    logout(request)
-    messages.success(request, _("Logged out successfully."))
-    return HttpResponseRedirect(reverse('djmongo_login'))
-
-
-def simple_login(request):
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            user=authenticate(username=username, password=password)
-
-            if user is not None:
-                if user.is_active:
-                    login(request,user)
-
-                    next = request.GET.get('next','')
-                    if next:
-                        #If a next is in the URL, then go there
-                        return HttpResponseRedirect(next)
-                    #otherwise just go to home.
-                    return HttpResponseRedirect(reverse('djmongo_show_dbs'))
-                else:
-                   #The user exists but is_active=False
-                   messages.error(request,
-                        _("Your account is inactive so you may not log in."))
-
-                   return render_to_response('djmongo/console/login2.html',
-                                            {'form': form},
-                                            RequestContext(request))
-            else:
-                messages.error(request, _("Invalid username or password."))
-
-                return render_to_response('djmongo/console/login2.html',
-                                    {'form': form},
-                                    RequestContext(request))
-
-        else:
-         return render_to_response('djmongo/console/login2.html',
-                              RequestContext(request, {'form': form}))
-    #this is a GET
-    return render_to_response('djmongo/console/login2.html',
-                              {'form': LoginForm()},
-                              context_instance = RequestContext(request))
-
+        messages.info(
+            request,
+            _("""You have no databases to work on. Please create one."""))
+    context = {"dbs": cleaned_dbs}
+    return render(request, 'djmongo/console/showdbs.html', context)
 
 
 def drop_collection(request, database_name, collection_name):
-    response = mongodb_drop_collection(database_name, collection_name)
-    print response
-    if response:
-        errormsg = _("ERROR", response)
-        messages.error(request,errormsg)
-
-        return HttpResponseRedirect(reverse('djmongo_show_dbs'))
-    else:
-        messages.success(request,_("The collection was deleted."))
-        return HttpResponseRedirect(reverse('djmongo_show_dbs'))
-
+    """Drop Collection"""
+    name = """Retype "%s" to drop the collection""" % (collection_name)
+    if request.method == 'POST':
+        form = ConfirmDropForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['name'] 
+            if name != collection_name:
+               messages.error(request, _('The name did not match. \
+                                         Drop operation aborted'))
+               return HttpResponseRedirect(reverse('djmongo_drop_collection',
+                                                   args=(database_name, collection_name)))
+           
+            response = mongodb_drop_collection(database_name, collection_name)
+            if response:
+                errormsg = _("ERROR", response)
+                messages.error(request, errormsg)
+                return HttpResponseRedirect(reverse('djmongo_show_dbs'))
+            else:
+                messages.success(request, _("The collection was deleted."))
+                return HttpResponseRedirect(reverse('djmongo_show_dbs'))
+        else:
+            # The form is invalid
+            messages.error(
+                request, _("Please correct the errors in the form."))
+            return render(request,
+                          'djmongo/console/generic/bootstrapform.html',
+                          {'form': form, 'name': name})
+    # This is a GET
+    context = {'name': name,
+                   'form': ConfirmDropForm(
+                       initial={}) }
+    return render(request, 'djmongo/console/generic/bootstrapform.html',
+                      context)
 
 
 def drop_database(request, database_name):
-    """Drop a MongoDB database"""
+    name = """Retype "%s" to drop the database""" % (database_name)
+    if request.method == 'POST':
+        form = ConfirmDropForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['name'] 
+            if name != database_name:
+               messages.error(request, _('The name did not match. \
+                                         Drop operation aborted.'))
+               return HttpResponseRedirect(reverse('show_dbs'))
+           
+            response = mongodb_drop_database(database_name)
+            if response:
+                errormsg = _("ERROR", response)
+                messages.error(request, errormsg)
+                return HttpResponseRedirect(reverse('djmongo_show_dbs'))
+            else:
+                messages.success(request, _("The database was deleted."))
+                return HttpResponseRedirect(reverse('djmongo_show_dbs'))
+        else:
+            # The form is invalid
+            messages.error(
+                request, _("Please correct the errors in the form."))
+            return render(request,
+                          'djmongo/console/generic/bootstrapform.html',
+                          {'form': form, 'name': name})
+    # This is a GET
+    context = {'name': name,
+                   'form': ConfirmDropForm(
+                       initial={}) }
+    return render(request, 'djmongo/console/generic/bootstrapform.html',
+                      context)
+    
 
-    response = mongodb_drop_database(database_name)
-    #print response
-    if response:
-        errormsg = _("ERROR", response)
-        messages.error(request,errormsg)
-        return HttpResponseRedirect(reverse('djmongo_show_dbs'))
-    else:
-        messages.success(request,_("The database was deleted."))
-        return HttpResponseRedirect(reverse('djmongo_show_dbs'))
 
-
-
-def clear_collection(request, database_name, collection_name):
-    """Clear a MongoDB database collection"""
-    response = mongodb_clear_collection(database_name, collection_name)
-    print response
-
-    if response:
-        errormsg = _("ERROR", response)
-        messages.error(request,errormsg)
-
-        return HttpResponseRedirect(reverse('djmongo_show_dbs'))
-    else:
-        messages.success(request,_("All records were removed from the collection."))
-        return HttpResponseRedirect(reverse('djmongo_show_dbs'))
-
-
-
-def simple_ensure_index(request,  database_name, collection_name):
+def simple_ensure_index(request, database_name, collection_name):
     """Ensure a MongoDB index on a particular field name"""
     name = "Ensure a MongoDB index on a particular field name"
 
@@ -142,28 +145,26 @@ def simple_ensure_index(request,  database_name, collection_name):
 
         if form.is_valid():
             result = form.save(database_name, collection_name)
-            messages.success(request,_("Index created successfully"))
+            messages.success(request,
+                             _("Index for %s created successfully" % result))
             return HttpResponseRedirect(reverse('djmongo_show_dbs'))
         else:
-            #The form is invalid
-            messages.error(request,_("Please correct the errors in the form."))
-            return render_to_response('djmongo/console/generic/bootstrapform.html',
-                                           {'form': form,
-                                            'name':name,
-                                            },
-                                           RequestContext(request))
+            # The form is invalid
+            messages.error(
+                request, _("Please correct the errors in the form."))
+            return render(request,
+                          'djmongo/console/generic/bootstrapform.html',
+                          {'form': form, 'name': name})
 
     else:
-        #this is a GET
-
-        context= {'name':name,
-                'form': EnsureIndexForm(
-                            initial = {"database_name":   database_name,
-                                       "collection_name": collection_name})
-        }
-        return render_to_response('djmongo/console/generic/bootstrapform.html',
-                              RequestContext(request, context,))
-
+        # this is a GET
+        context = {'name': name,
+                   'form': EnsureIndexForm(
+                       initial={"database_name": database_name,
+                                "collection_name": collection_name})
+                   }
+        return render(request, 'djmongo/console/generic/bootstrapform.html',
+                      context)
 
 
 def create_new_database(request):
@@ -175,74 +176,72 @@ def create_new_database(request):
 
         if form.is_valid():
             result = form.save()
-            if result.has_key("error"):
-                messages.error(request,"The database creation operation failed.")
-                messages.error(request,result["error"])
+            if "error" in result:
+                messages.error(
+                    request, "The database creation operation failed.")
+                messages.error(request, result["error"])
             else:
-                messages.success(request,"Database created.")
+                messages.success(request, "Database created.")
             return HttpResponseRedirect(reverse('djmongo_show_dbs'))
         else:
-            #The form is invalid
-            messages.error(request,_("Please correct the errors in the form."))
-            return render_to_response('djmongo/console/generic/bootstrapform.html',
-                                           {'form': form,
-                                            'name':name,
-                                            },
-                                           RequestContext(request))
+            # The form is invalid
+            messages.error(
+                request, _("Please correct the errors in the form."))
+            return render(request,
+                          'djmongo/console/generic/bootstrapform.html',
+                          {'form': form,
+                           'name': name})
 
     else:
-        #this is a GET
-
-        context= {'name':name,
-                'form': CreateDatabaseForm(
-                            initial = {"initial_document": '{ "foo" : "bar" }'
-                                       })
-        }
-        return render_to_response('djmongo/console/generic/bootstrapform.html',
-                              RequestContext(request, context,))
-
+        # this is a GET
+        context = {'name': name,
+                   'form': CreateDatabaseForm(
+                       initial={"initial_document": '{ "foo" : "bar" }'
+                                })
+                   }
+        return render(request, 'djmongo/console/generic/bootstrapform.html',
+                      context)
 
 
 def create_collection(request, database_name):
-    """Create a new mongo collection by adding a single document."""
-    name = "Create a new collection"
+    """Create a new MongoDB collection by adding a single document."""
+    name = "Create a New Collection"
 
     if request.method == 'POST':
         form = CreateDatabaseForm(request.POST)
 
         if form.is_valid():
             result = form.save()
-            if result.has_key("error"):
-                messages.error(request,"The database creation operation failed.")
-                messages.error(request,result["error"])
+            if "error" in result:
+                messages.error(
+                    request, _("The database creation operation failed."))
+                messages.error(request, result["error"])
             else:
-                messages.success(request,"Collection created.")
+                messages.success(request, "Collection created.")
             return HttpResponseRedirect(reverse('djmongo_show_dbs'))
         else:
-            #The form is invalid
-            messages.error(request,_("Please correct the errors in the form."))
-            return render_to_response('djmongo/console/generic/bootstrapform.html',
-                                           {'form': form,
-                                            'name':name,
-                                            },
-                                           RequestContext(request))
+            # The form is invalid
+            messages.error(
+                request, _("Please correct the errors in the form."))
+            return render(request,
+                          'djmongo/console/generic/bootstrapform.html',
+                          {'form': form, 'name': name})
 
     else:
-        #this is a GET
-
-        context= {'name':name,
-                'form': CreateDatabaseForm(
-                            initial = {"initial_document": '{ "foo" : "bar" }',
-                                       "database_name": database_name})
-        }
-        return render_to_response('djmongo/console/generic/bootstrapform.html',
-                              RequestContext(request, context,))
-
+        # this is a GET
+        context = {'name': name,
+                   'form': CreateDatabaseForm(
+                       initial={"initial_document": '{ "foo" : "bar" }',
+                                "database_name": database_name})
+                   }
+        return render(request, 'djmongo/console/generic/bootstrapform.html',
+                      context)
 
 
-def remove_data_from_collection(request,  database_name, collection_name):
+def remove_data_from_collection(request, database_name, collection_name):
 
-    name = _("Delete select information from a MongoDB Collection based on a query")
+    name = _("""Delete select information from a MongoDB Collection
+             based on a query""")
 
     if request.method == 'POST':
         form = DeleteForm(request.POST)
@@ -250,77 +249,70 @@ def remove_data_from_collection(request,  database_name, collection_name):
             query = form.cleaned_data['query']
             just_one = form.cleaned_data['just_one']
 
-            #run the delete
-            results = mongo_delete_json_util(query, database_name=database_name,
-                                             collection_name=collection_name,
-                                             just_one=just_one)
+            # run the delete
+            results = mongo_delete_json_util(
+                query,
+                database_name=database_name,
+                collection_name=collection_name,
+                just_one=just_one)
 
-            #convert to json and respond.
-            results_json = json.dumps(results, indent =4)
+            # convert to json and respond.
+            results_json = json.dumps(results, indent=4)
             return HttpResponse(results_json, status=int(results['code']),
-                                    content_type="application/json")
+                                content_type="application/json")
         else:
-            #The form is invalid
-             messages.error(request,_("Please correct the errors in the form."))
-             return render_to_response('djmongo/console/generic/bootstrapform.html',
-                                            {'form': form,
-                                             'name':name,
-                                             },
-                                            RequestContext(request))
+            # The form is invalid
+            messages.error(
+                request, _("Please correct the errors in the form."))
+            return render(request,
+                          'djmongo/console/generic/bootstrapform.html',
+                          {'form': form, 'name': name})
 
-    #this is a GET
-    idata ={'database_name': database_name,
-             'collection_name': collection_name,
-             }
+    # this is a GET
+    idata = {'database_name': database_name,
+             'collection_name': collection_name}
 
-
-    context= {'name':name,
-              'form': DeleteForm(initial=idata)
-              }
-    return render_to_response('djmongo/console/generic/bootstrapform.html',
-                              RequestContext(request, context,))
+    context = {'name': name,
+               'form': DeleteForm(initial=idata)}
+    return render(request, 'djmongo/console/generic/bootstrapform.html',
+                  context)
 
 
-
-def create_document_in_collection(request, database_name,collection_name):
+def create_document_in_collection(request, database_name, collection_name):
     name = _("Create a Document from JSON")
 
     if request.method == 'POST':
         form = DocumentForm(request.POST)
         if form.is_valid():
             document = form.cleaned_data['document']
-            #create the document
+            # create the document
             results = mongo_create_json_util(document,
                                              database_name=database_name,
                                              collection_name=collection_name)
 
-            #convert to json and respond.
-            results_json = json.dumps(results, indent = 4)
+            # convert to json and respond.
+            results_json = json.dumps(results, indent=4)
             return HttpResponse(results_json,
                                 status=int(results['code']),
                                 content_type="application/json")
         else:
-            #The form is invalid
-             messages.error(request,_("Please correct the errors in the form."))
-             return render_to_response('djmongo/console/generic/bootstrapform.html',
-                                            {'form': form,
-                                             'name':name,
-                                             },
-                                            RequestContext(request))
-    #this is a GET
-    idata ={'database_name': database_name,
-             'collection_name': collection_name,
-             }
+            # The form is invalid
+            messages.error(
+                request, _("Please correct the errors in the form."))
+            return render(request,
+                          'djmongo/console/generic/bootstrapform.html',
+                          {'form': form,
+                           'name': name})
+    # this is a GET
+    idata = {'database_name': database_name,
+             'collection_name': collection_name}
 
-    context= {'name':name,
-              'form': DocumentForm(initial=idata)
-              }
-    return render_to_response('djmongo/console/generic/bootstrapform.html',
-                              RequestContext(request, context,))
+    context = {'name': name, 'form': DocumentForm(initial=idata)}
+    return render(request, 'djmongo/console/generic/bootstrapform.html',
+                  context)
 
 
-
-def update_document_in_collection(request,  database_name, collection_name):
+def update_document_in_collection(request, database_name, collection_name):
     name = _("Update a Document from JSON")
 
     if request.method == 'POST' or request.method == 'PUT':
@@ -328,56 +320,51 @@ def update_document_in_collection(request,  database_name, collection_name):
         if form.is_valid():
             document = form.cleaned_data['document']
             doc = json.loads(document, object_pairs_hook=OrderedDict)
-            if not doc.has_key("_id") and not doc.has_key("id"):
-                result = { "code":    400,
-                           "type":    "Error",
-                           "message": "Updates must include either id or _id." }
-                results_json = json.dumps(result, indent = 4)
+            if "_id" not in doc and "id" not in doc:
+                result = {"code": 400, "type": "Error", "message": _(
+                    "Updates must include either id or _id.")}
+                results_json = json.dumps(result, indent=4)
                 return HttpResponse(results_json, status=result['code'],
                                     content_type="application/json")
 
-            if doc.has_key("_id") and doc.has_key("id"):
-                result = { "code":    400,
-                           "type":    "Error",
-                           "message": "Updates cannot contain both id and _id" }
-                results_json = json.dumps(result, indent = 4)
-                return HttpResponse(results_json, status=result[code],
+            if "_id" in doc and "id" in doc:
+                result = {"code": 400, "type": "Error", "message": _(
+                    "Updates cannot contain both id and _id")}
+                results_json = json.dumps(result, indent=4)
+                return HttpResponse(results_json, status=result['code'],
                                     content_type="application/json")
 
-            if doc.has_key("id"):
+            if "id" in doc:
                 doc["_id"] = ObjectId(doc["id"])
                 del doc["id"]
 
-            if doc.has_key("_id"):
+            if "_id" in doc:
                 doc["_id"] = ObjectId(doc["_id"])
 
+            # run the update
+            results = mongo_create_json_util(
+                document,
+                database_name=database_name,
+                collection_name=collection_name,
+                update=True)
 
-            #run the update
-            results = mongo_create_json_util(document, database_name=database_name,
-                                             collection_name=collection_name,
-                                             update=True)
-
-            #convert to json and respond.
-            results_json = json.dumps(results, indent = 4)
+            # convert to json and respond.
+            results_json = json.dumps(results, indent=4)
             return HttpResponse(results_json, status=int(results['code']),
-                                    content_type="application/json")
+                                content_type="application/json")
         else:
-            #The form is invalid
-             messages.error(request,_("Please correct the errors in the form."))
-             return render_to_response('djmongo/console/generic/bootstrapform.html',
-                                            {'form': form,
-                                             'name':name,
-                                             },
-                                            RequestContext(request))
+            # The form is invalid
+            messages.error(
+                request, _("Please correct the errors in the form."))
+            return render(request,
+                          'djmongo/console/generic/bootstrapform.html',
+                          {'form': form, 'name': name})
 
-    #this is a GET
-    idata ={'database_name': database_name,
-             'collection_name': collection_name,
-             }
+    # this is a GET
+    idata = {'database_name': database_name,
+             'collection_name': collection_name}
 
-
-    context= {'name':name,
-              'form': DocumentForm(initial=idata)
-              }
-    return render_to_response('djmongo/console/generic/bootstrapform.html',
-                              RequestContext(request, context,))
+    context = {'name': name,
+               'form': DocumentForm(initial=idata)}
+    return render(request, 'djmongo/console/generic/bootstrapform.html',
+                  context)

@@ -24,34 +24,27 @@
                 </li>
                 
                 <li><a href="{% url 'admin:search_savedsearch_changelist' %}">
-                    <i class="fa fa-search"></i> All Saved Searches</a>
+                    <i class="fa fa-search"></i> Saved Searches (Django Admin)</a>
                 </li>
 
                 <li><a href="{% url 'admin:aggregations_aggregation_changelist' %}">
-                    <i class="fa fa-cogs"></i> All Aggegations</a>
+                    <i class="fa fa-cogs"></i> Aggregations (Django Admin)</a>
                 </li>                                
-                
-                <li><a href="{% url 'admin:search_databaseaccesscontrol_changelist' %}">
-                        <i class="fa fa-unlock"></i> Database Access Control</a>
-                </li>
                                 
                 <li><a href="{% url 'admin:auth_user_changelist' %}">
-                        <i class="fa fa-user"></i> Users</a>
+                        <i class="fa fa-user"></i> Users (Django Admin)</a>
                 </li>
                 
                 <li><a href="{% url 'admin:auth_group_changelist' %}">
-                        <i class="fa fa-users"></i> </i> Groups</a>
+                        <i class="fa fa-users"></i> </i> Groups (Django Admin)</a>
                 </li>
-                
-                
-                
                 
         
               </ul>
             </li>
             {% endif %} 
             
-           <li><a target="_blank" href="https://github.com/hhsidealab/djmongo">Help</a></li>
+           <li><a target="_blank" href="https://github.com/videntity/django-djmongo">Help</a></li>
            
               {% if user.is_authenticated %}
                  <li><a href="{% url 'djmongo_logout' %}">Logout</a></li>
