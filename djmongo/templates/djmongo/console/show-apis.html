@@ -1,0 +1,277 @@
+{% extends "djmongo/console/base.html" %}
+{% block Content %}
+
+{% load i18n %}
+
+
+<div class="container">
+      
+
+      <div class="row">
+              <div class="col-lg-12">
+                  <h1>{% trans "APIs Defined for" %} {{database_name}}/{{collection_name}}</h1>
+              </div>
+      </div>
+     
+      
+      <div class="row">
+              <div class="col-lg-12">
+                  <h2>Simple Read APIs with No Auth (Public)</h2>
+              </div>
+      </div>
+      <div class="row">
+		 <div class="col-lg-12">    
+			  <table class="table">
+   
+
+			  <thead>
+					 <tr>
+							<th>Slug (Name)</th>
+							<th>HTTP Method</th>
+							<th>Endpoint</th>
+							<th>Actions</th>
+					 </tr>
+			  </thead>
+ 
+			  <tbody>
+
+
+			  {% for a in simple_public_read_apis %}
+			  
+			  <tr class="success">
+					 <td>{{a.slug}}</td>
+					 <td><pre>GET</pre></td>
+					 <td><pre>{% url 'djmongo_api_public_simple_search' database_name collection_name  'json'%}|csv|html</pre></td>
+							<td>
+						  
+								   <div class="btn-group-justified">
+									  <a href="{% url 'djmongo_api_public_simple_search' database_name collection_name 'json' %}" >
+									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> JSON</button>
+									  </a>
+									  
+									  <a href="{% url 'djmongo_api_public_simple_search' database_name collection_name 'csv' %}" >
+									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> CSV</button>
+									  </a>
+									  
+									  <a href="{% url 'djmongo_api_public_simple_search' database_name collection_name 'html' %}" >
+									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> HTML</button>
+									  </a>
+									  
+									  <a href="{% url 'djmongo_edit_simple_public_read_api' a.slug %}" >
+									  <button type="button" class="btn btn-warning btn-xs"> <i class="fa fa-edit"></i> Edit..</button>
+									  </a>
+									  
+									  <a href="{% url 'djmongo_delete_simple_public_read_api' a.slug %}" >
+									  <button type="button" class="btn btn-danger btn-xs"> <i class="fa fa-eraser"></i> Delete...</button>
+									  </a>
+									  
+								   </div>
+							</td>
+			  </tr>
+			  {% endfor %}
+
+	   </tbody>
+
+    </table>
+
+   </div>    
+    
+ </div>
+
+      <div class="row">
+              <div class="col-lg-12">
+                  <h2>Simple Read APIs with HTTPAuth</h2>
+              </div>
+      </div>
+      <div class="row">
+		 <div class="col-lg-12">    
+			  <table class="table">
+   
+
+			  <thead>
+					 <tr>
+							<th>Slug (Name)</th>
+							<th>HTTP Method</th>
+							<th>Groups</th>
+							<th>Endpoint</th>
+							<th>Actions</th>
+					 </tr>
+			  </thead>
+ 
+			  <tbody>
+
+
+			  {% for a in simple_httpauth_read_apis %}
+			  
+			  <tr class="success">
+					 <td>{{a.slug}}</td>
+					 <td><pre>GET</pre></td>
+					 <td>{% for g in a.groups.all %}
+					 {{g.name}}<br>
+					 {% endfor %}
+					 </td>
+					 <td><pre>{% url 'djmongo_api_httpauth_simple_search' database_name collection_name 'json' %}|csv|html</pre></td>
+							<td>
+						  
+								   <div class="btn-group-justified">
+									  <a href="{% url 'djmongo_api_httpauth_simple_search' database_name collection_name 'json' %}" >
+									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> JSON</button>
+									  </a>
+									  
+									  <a href="{% url 'djmongo_api_httpauth_simple_search' database_name collection_name 'csv' %}" >
+									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> CSV</button>
+									  </a>
+									  
+									  <a href="{% url 'djmongo_api_httpauth_simple_search' database_name collection_name 'html'%}" >
+									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> HTML</button>
+									  </a>
+									  
+									  <a href="{% url 'djmongo_edit_simple_httpauth_read_api' a.slug %}" >
+									  <button type="button" class="btn btn-warning btn-xs"> <i class="fa fa-edit"></i> Edit..</button>
+									  </a>
+									  
+									  <a href="{% url 'djmongo_delete_simple_httpauth_read_api' a.slug %}" >
+									  <button type="button" class="btn btn-danger btn-xs"> <i class="fa fa-eraser"></i> Delete...</button>
+									  </a>
+									  
+								   </div>
+							</td>
+			  </tr>
+			  {% endfor %}
+
+	   </tbody>
+
+    </table>
+
+   </div>    
+    
+ </div>	  
+
+
+      <div class="row">
+              <div class="col-lg-12">
+                  <h2>Custom Read APIs with No Auth (Public)</h2>
+              </div>
+      </div>
+      <div class="row">
+		 <div class="col-lg-12">    
+			  <table class="table">
+   
+
+			  <thead>
+					 <tr>
+							<th>Slug (Name)</th>
+							<th>HTTP Method</th>
+							<th>Endpoint</th>
+							<th>Actions</th>
+					 </tr>
+			  </thead>
+ 
+			  <tbody>
+
+
+			  {% for a in custom_public_read_apis %}
+			  
+			  <tr class="success">
+					 <td>{{a.slug}}</td>
+					 <td><pre>GET</pre></td>
+					 <td><pre>{% url 'djmongo_run_custom_public_read_api_by_slug' a.slug %}</pre></td>
+							<td>
+						  
+								   <div class="btn-group-justified">
+									  <a href="{% url 'djmongo_run_custom_public_read_api_by_slug' a.slug%}" >
+									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> Run</button>
+									  </a>
+									  
+									  
+									  <a href="{% url 'djmongo_edit_custom_public_read_api' a.slug %}" >
+									  <button type="button" class="btn btn-warning btn-xs"> <i class="fa fa-edit"></i> Edit..</button>
+									  </a>
+									  
+									  <a href="{% url 'djmongo_delete_custom_public_read_api' a.slug %}" >
+									  <button type="button" class="btn btn-danger btn-xs"> <i class="fa fa-eraser"></i> Delete...</button>
+									  </a>
+									  
+								   </div>
+							</td>
+			  </tr>
+			  {% endfor %}
+
+	   </tbody>
+
+    </table>
+
+   </div>    
+    
+ </div>	  
+
+
+
+ <div class="row">
+              <div class="col-lg-12">
+                  <h2>Custom Read APIs with HTTPAuth</h2>
+              </div>
+      </div>
+      <div class="row">
+		 <div class="col-lg-12">    
+			  <table class="table">
+   
+
+			  <thead>
+					 <tr>
+							<th>Slug (Name)</th>
+							<th>HTTP Method</th>
+							<th>Groups</th>
+							<th>Endpoint</th>
+							<th>Actions</th>
+					 </tr>
+			  </thead>
+ 
+			  <tbody>
+
+
+			  {% for a in custom_httpauth_read_apis %}
+			  
+			  <tr class="success">
+					 <td>{{a.slug}}</td>
+					 <td><pre>GET</pre></td>
+					 <td>{% for g in a.groups.all %}
+					 {{g.name}}<br>
+					 {% endfor %}
+					 </td>
+					 <td><pre>{% url 'djmongo_run_custom_httpauth_read_api_by_slug' a.slug %}</pre></td>
+							<td>
+						  
+								   <div class="btn-group-justified">
+									  <a href="{% url 'djmongo_run_custom_httpauth_read_api_by_slug' a.slug%}" >
+									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> Run</button>
+									  </a>
+									  
+									  
+									  <a href="{% url 'djmongo_edit_custom_httpauth_read_api' a.slug %}" >
+									  <button type="button" class="btn btn-warning btn-xs"> <i class="fa fa-edit"></i> Edit..</button>
+									  </a>
+									  
+									  <a href="{% url 'djmongo_delete_custom_httpauth_read_api' a.slug %}" >
+									  <button type="button" class="btn btn-danger btn-xs"> <i class="fa fa-eraser"></i> Delete...</button>
+									  </a>
+									  
+								   </div>
+							</td>
+			  </tr>
+			  {% endfor %}
+
+	   </tbody>
+
+    </table>
+
+   </div>    
+    
+ </div>	  
+
+
+
+	  
+</div>
+
+{% endblock %}

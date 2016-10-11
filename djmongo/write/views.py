@@ -6,7 +6,7 @@ import json
 import sys
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
-from ..decorators import (json_login_required, ip_verification_required,
+from ..decorators import (httpauth_login_required, ip_verification_required,
                           kickout_400, kickout_404, kickout_500)
 from django.http import HttpResponse, HttpResponseRedirect
 from collections import OrderedDict
@@ -21,7 +21,7 @@ from django.utils.translation import ugettext_lazy as _
 
 
 @csrf_exempt
-@json_login_required
+@httpauth_login_required
 def write_to_collection_httpauth(request, slug):
     try:
         wapi = WriteAPIHTTPAuth.objects.get(slug=slug)
@@ -106,7 +106,7 @@ def write_to_collection_ip_auth(request, slug):
         # Check if request body is JSON ------------------------
         try:
             j = json.loads(request.body, object_pairs_hook=OrderedDict)
-            if not isinstance(j, type({})):
+            if not isinstance(j, type(OrderedDict())):
                 kickout_400(
                     "The request body did not contain a JSON object i.e. {}.")
         except:

@@ -5,7 +5,7 @@
 
 """
     Decorator to check for credentials before responding on API requests.
-    REsponse with JSON instead of standard login redirect.
+    Response with JSON instead of standard login redirect.
 """
 
 import urlparse
@@ -15,16 +15,16 @@ from functools import update_wrapper, wraps
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 from utils import authorize, unauthorized_json_response, json_response_400, json_response_404
-from search.models import DatabaseAccessControl, PublicReadAPI
+from search.models import HTTPAuthReadAPI, PublicReadAPI
 from write.models import WriteAPIIP
 import shlex
 import json
 
 
-def json_login_required(func):
+def httpauth_login_required(func):
     """
         Put this decorator before your view to check if the user is logged in
-        and return a JSON 401 error if he/she is not.
+        via httpauth and return a JSON 401 error if he/she is not.
     """
 
     def wrapper(request, *args, **kwargs):
@@ -118,10 +118,6 @@ def check_public_ok(func):
 
 
 
-
-
-
-
 def check_read_httpauth_access(func):
     """
         Call after login decorator.
@@ -136,48 +132,47 @@ def check_read_httpauth_access(func):
 
         try:
             # Check to see if we have a matching record in DB access.
-            dac = DatabaseAccessControl.objects.get(
+            dac = HTTPAuthReadAPI.objects.get(
                 database_name=database_name, collection_name=collection_name)
-        except DatabaseAccessControl.DoesNotExist:
+        except HTTPAuthReadAPI.DoesNotExist:
             return HttpResponse(unauthorized_json_response(),
                                 content_type="application/json")
 
-        if not dac.is_public:
-            dac_groups = dac.groups.all()
-            user_groups = request.user.groups.all()
+        dac_groups = dac.groups.all()
+        user_groups = request.user.groups.all()
 
-           # allowedgroups
-            in_group = False
-            group = None
-            for dg in dac_groups:
-                if dg in user_groups:
-                    in_group = True
-                    group = dg
+       # allowedgroups
+        in_group = False
+        group = None
+        for dg in dac_groups:
+            if dg in user_groups:
+                in_group = True
+                group = dg
 
-            if not in_group:
-                message = "NOT-IN-GROUP: You do not have access to this collection. Please see your system administrator."
+        if not in_group:
+            message = "NOT-IN-GROUP: You do not have access to this collection. Please see your system administrator."
 
-                body = {"code": 400,
-                        "message": message,
-                        "errors": [message, ]}
-                return HttpResponse(json.dumps(body, indent=4, ),
-                                    content_type="application/json")
+            body = {"code": 400,
+                    "message": message,
+                    "errors": [message, ]}
+            return HttpResponse(json.dumps(body, indent=4, ),
+                                content_type="application/json")
 
-            # If search keys have been limitied...
-            if dac.search_keys:
-                search_key_list = shlex.split(dac.search_keys)
-                keys = []
-                for k in request.GET.keys():
+        # If search keys have been limitied...
+        if dac.search_keys:
+            search_key_list = shlex.split(dac.search_keys)
+            keys = []
+            for k in request.GET.keys():
 
-                    if k not in search_key_list:
-                        message = "Search key %s  is not allowed." % (k)
+                if k not in search_key_list:
+                    message = "Search key %s  is not allowed." % (k)
 
-                        body = {"code": 400,
-                                "message": k,
-                                "errors": [message, ]}
+                    body = {"code": 400,
+                            "message": k,
+                            "errors": [message, ]}
 
-                        return HttpResponse(json.dumps(body, indent=4, ),
-                                            content_type="application/json")
+                    return HttpResponse(json.dumps(body, indent=4, ),
+                                        content_type="application/json")
 
         return func(request, *args, **kwargs)
 
