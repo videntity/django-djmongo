@@ -9,8 +9,8 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-djmongo',
-    version='0.7.5.9',
-    packages=['djmongo', 'djmongo.console',
+    version='0.7.6.0',
+    packages=['djmongo', 'djmongo.console', 'djmongo.console.migrations'
               'djmongo.accounts', 'djmongo.accounts.migrations',
               'djmongo.aggregations', 'djmongo.aggregations.migrations',
               'djmongo.write', 'djmongo.write.migrations',
@@ -37,6 +37,8 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
