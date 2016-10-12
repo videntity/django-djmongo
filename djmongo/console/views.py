@@ -58,8 +58,7 @@ def show_apis(request, database_name, collection_name):
 def showdbs(request):
     
     dbs = show_dbs()
-    print(json.dumps(dbs, indent=4))
-    
+    # print(json.dumps(dbs, indent=4))
     cleaned_dbs = []
     if not dbs:
         messages.error(
