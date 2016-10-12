@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # vim: ai ts=4 sts=4 et sw=4
 from django.contrib import admin
-from models import WriteAPIHTTPAuth, WriteAPIIP, WriteAPIoAuth2
+from .models import WriteAPIHTTPAuth, WriteAPIIP, WriteAPIoAuth2
 
 
 class WriteAPIHTTPAuthAdmin(admin.ModelAdmin):

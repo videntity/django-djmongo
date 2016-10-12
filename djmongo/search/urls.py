@@ -90,7 +90,6 @@ urlpatterns = [
 
    
     # Edit ----------------------------------------
-    
     url(r'^simple/public/edit-api/(?P<slug>[^/]+)$',
         login_required(edit_simple_public_read_api),
         name="djmongo_edit_simple_public_read_api"),
@@ -111,7 +110,6 @@ urlpatterns = [
 
     
     # Delete --------------------------------------
-
     url(r'^simple/public/delete-api/(?P<slug>[^/]+)$',
         login_required(delete_simple_public_read_api),
         name="djmongo_delete_simple_public_read_api"),

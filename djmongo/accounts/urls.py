@@ -7,7 +7,7 @@ from .views import (api_test_credentials, simple_logout, simple_login,
                     user_password, api_user_create, api_read_user,
                     api_delete_user, api_user_update, user_create,
                     user_update)
-from decorators import json_login_required
+from .decorators import json_login_required
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 

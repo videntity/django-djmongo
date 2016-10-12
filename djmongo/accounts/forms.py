@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class LoginForm(forms.Form):
-    email = forms.EmailField(label=_("Email"))
+    username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput,
                                label=_("Password"))
     required_css_class = 'required'

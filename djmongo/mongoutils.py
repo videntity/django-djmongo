@@ -124,8 +124,8 @@ def query_mongo(
         response_dict['results'] = l
 
     except:
-        print "Error reading from Mongo"
-        print str(sys.exc_info())
+        print("Error reading from Mongo")
+        print(str(sys.exc_info()))
         response_dict['num_results'] = 0
         response_dict['code'] = 500
         response_dict['type'] = "Error"
@@ -183,8 +183,8 @@ def query_mongo_sort_decend(
         response_dict['results'] = l
 
     except:
-        print "Error reading from Mongo"
-        print str(sys.exc_info())
+        print("Error reading from Mongo")
+        print(str(sys.exc_info()))
         response_dict['num_results'] = 0
         response_dict['code'] = 500
         response_dict['type'] = "Error"
@@ -456,7 +456,7 @@ def get_collection_keys(database_name, collection_name):
         else:
             return sorted(l)
     except:
-        print "Error.", str(sys.exc_info())
+        print("Error.", str(sys.exc_info()))
         return []
 
 

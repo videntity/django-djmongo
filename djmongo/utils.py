@@ -10,16 +10,6 @@ from django.http import HttpResponse
 from datetime import date
 
 
-def random_string(length=6, alphabet=string.letters + string.digits):
-    """
-    Return a random string of given length and alphabet.
-
-    Default alphabet is url-friendly (base62).
-    This method lifted from @shazow - thanx man.
-    """
-    return ''.join([random.choice(alphabet) for i in xrange(length)])
-
-
 def authorize(request):
     a = HttpBasicAuthentication()
     if a.is_authenticated(request):
@@ -71,22 +61,3 @@ def json_response_500(error=""):
             }
     body = json.dumps(body, indent=4, )
     return body
-
-
-def normalize_phone_number(pn):
-    try:
-        pn = str(pn)
-    except:
-        return None
-    if len(pn) != 10 and len(pn) != 11:
-        return None
-    try:
-        x = int(pn)
-    except:
-        return None
-
-    if len(pn) == 10:
-        pn = "+1%s" % (pn)
-    if len(pn) == 11:
-        pn = "+%s" % (pn)
-    return pn

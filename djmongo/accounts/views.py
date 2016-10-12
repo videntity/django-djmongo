@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from .forms import (LoginForm, UserCreationForm, UserUpdateForm,
                     APIUserUpdateForm, APIUserCreationForm)
-from decorators import json_login_required, access_required
+from .decorators import json_login_required, access_required
 from .models import SocialGraph
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import messages
@@ -98,7 +98,7 @@ def api_delete_user(request, email):
 
 @login_required
 def user_create(request):
-    print request.user
+    print(request.user)
 
     name = _("Create User Account")
     if request.method == 'POST':

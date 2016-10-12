@@ -8,15 +8,14 @@
     Response with JSON instead of standard login redirect.
 """
 
-import urlparse
 from django.conf import settings
 from collections import OrderedDict
 from functools import update_wrapper, wraps
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
-from utils import authorize, unauthorized_json_response, json_response_400, json_response_404
-from search.models import HTTPAuthReadAPI, PublicReadAPI
-from write.models import WriteAPIIP
+from .utils import authorize, unauthorized_json_response, json_response_400, json_response_404
+from .search.models import HTTPAuthReadAPI, PublicReadAPI
+from .write.models import WriteAPIIP
 import shlex
 import json
 
