@@ -8,5 +8,4 @@ write code. For beginners, you may find it helpfult to start a sample project
 with Djmongo already configured. https://github.com/videntity/djmsample 
 
 
-See https://github.com/videntity/django-djmongo/wiki/Installation for 
-installation instructions.
+See the [Wiki](https://github.com/videntity/django-djmongo/wiki/Installation) page for installation and further documentation.
