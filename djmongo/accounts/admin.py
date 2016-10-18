@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # vim: ai ts=4 sts=4 et sw=4
 from django.contrib import admin
-from .models import Permission, SocialGraph
+from .models import SocialGraph, Permission
 
 admin.site.register(Permission)
 

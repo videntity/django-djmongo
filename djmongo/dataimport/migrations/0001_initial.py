@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
             name='DataImport',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('file1', models.FileField(upload_to=apps.djmongo.dataimport.models.update_import_filename, verbose_name=b'File to be imported')),
+                ('file1', models.FileField(upload_to=djmongo.dataimport.models.update_import_filename, verbose_name=b'File to be imported')),
                 ('input_format', models.CharField(choices=[(b'csv', b'Comma Seperated Value (.csv)')], default=b'csv', max_length=4)),
                 ('delete_collection_before_import', models.BooleanField(default=False)),
                 ('status', models.CharField(default=b'New', editable=False, max_length=10, verbose_name=b'Status')),
