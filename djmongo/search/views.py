@@ -520,8 +520,8 @@ def create_simple_public_read_api(request, database_name, collection_name):
 
             return HttpResponseRedirect(
                 reverse('djmongo_show_apis',
-                        args=(ss.database_name,
-                              ss.collection_name)))
+                        args=(database_name,
+                              collection_name)))
         else:
             # The form is invalid
             messages.error(
