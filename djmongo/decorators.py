@@ -7,7 +7,8 @@
     Decorator to check for credentials before responding on API requests.
     Response with JSON instead of standard login redirect.
 """
-
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from django.conf import settings
 from collections import OrderedDict
 from functools import update_wrapper, wraps
