@@ -65,7 +65,7 @@ def prepare_search_results(request, database_name,
     return result
 
 
-def simple_search(request, database_name, collection_name, output_type,
+def simple_search(request, database_name, collection_name, slug, output_type,
                 skip=0, limit=getattr(settings, 'MONGO_LIMIT', 200),
                 sort=None, return_keys=(),
                 query={}):
@@ -199,7 +199,7 @@ def run_custom_public_read_api_by_slug(
         200)):
     error = False
     response_dict = {}
-    ss = get_object_or_404(CustomPublicReadAPI, slug=slug)
+    ss = get_object_or_404(CustomPublicReadAPI,slug=slug)
 
     query = ss.query
     type_mapper = json.loads(ss.type_mapper)
@@ -641,9 +641,10 @@ def create_custom_api(request, auth_type, database_name, collection_name,
 
 
 
-def edit_simple_public_read_api(request, slug):
+def edit_simple_public_read_api(request, database_name, collection_name, slug):
     name = _("Edit Simple Read API with No Auth (Public)")
-    ss = get_object_or_404(PublicReadAPI, slug=slug)
+    ss = get_object_or_404(PublicReadAPI, database_name=database_name,
+                           collection_name=collection_name, slug=slug)
 
     if request.method == 'POST':
         form = PublicReadAPIForm(request.POST, instance=ss)
@@ -671,9 +672,10 @@ def edit_simple_public_read_api(request, slug):
                   context)
 
 
-def edit_simple_httpauth_read_api(request, slug):
+def edit_simple_httpauth_read_api(request, database_name, collection_name, slug):
     name = _("Edit Simple Read API with HTTP Auth")
-    ss = get_object_or_404(HTTPAuthReadAPI, slug=slug)
+    ss = get_object_or_404(HTTPAuthReadAPI, database_name=database_name,
+                           collection_name=collection_name, slug=slug)
 
     if request.method == 'POST':
         form = HTTPAuthReadAPIForm(request.POST, instance=ss)
@@ -700,9 +702,10 @@ def edit_simple_httpauth_read_api(request, slug):
     return render(request, 'djmongo/console/generic/bootstrapform.html',
                   context)
 
-def edit_custom_public_read_api(request, slug):
+def edit_custom_public_read_api(request, database_name, collection_name, slug):
     name = _("Edit Custom Read API with No Auth (Public)")
-    ss = get_object_or_404(CustomPublicReadAPI, slug=slug)
+    ss = get_object_or_404(CustomPublicReadAPI, datbase_name=database_name,
+                           collection_name=collection_name, slug=slug)
 
     if request.method == 'POST':
         form = CustomPublicReadAPIForm(request.POST, instance=ss)
@@ -728,9 +731,10 @@ def edit_custom_public_read_api(request, slug):
     return render(request, 'djmongo/console/generic/bootstrapform.html',
                   context)
 
-def edit_custom_httpauth_read_api(request, slug):
+def edit_custom_httpauth_read_api(request, database_name, collection_name, slug):
     name = _("Edit Custom HTTPAuth Read API")
-    ss = get_object_or_404(CustomHTTPAuthReadAPI, slug=slug)
+    ss = get_object_or_404(CustomHTTPAuthReadAPI, datbase_name=database_name,
+                           collection_name=collection_name, slug=slug)
 
     if request.method == 'POST':
         form = CustomHTTPAuthReadAPIForm(request.POST, instance=ss)
@@ -759,18 +763,20 @@ def edit_custom_httpauth_read_api(request, slug):
     return render(request, 'djmongo/console/generic/bootstrapform.html',
                   context)
 
-def delete_custom_public_read_api(request, slug):
+def delete_custom_public_read_api(request, database_name, collection_name, slug):
     """Delete CustomPublicReadAPI"""
-    ss = get_object_or_404(CustomPublicReadAPI, slug=slug)
+    ss = get_object_or_404(CustomPublicReadAPI, datbase_name=database_name,
+                           collection_name=collection_name, slug=slug)
     ss.delete()
     messages.success(request, _("Custom Public Read API deleted."))
     return HttpResponseRedirect(
         reverse('djmongo_show_apis',
                 args=(ss.database_name, ss.collection_name)))
 
-def delete_custom_httpauth_read_api(request, slug):
+def delete_custom_httpauth_read_api(request, database_name, collection_name, slug):
     """Delete CustomHTTPAuthReadAPI"""
-    ss = get_object_or_404(CustomHTTPAuthReadAPI, slug=slug)
+    ss = get_object_or_404(CustomHTTPAuthReadAPI, datbase_name=database_name,
+                           collection_name=collection_name, slug=slug)
     ss.delete()
     messages.success(request, _("Custom HTTPAuth Read API deleted."))
     return HttpResponseRedirect(
@@ -778,9 +784,10 @@ def delete_custom_httpauth_read_api(request, slug):
                 args=(ss.database_name, ss.collection_name)))
 
 
-def delete_simple_public_read_api(request, slug):
+def delete_simple_public_read_api(request, database_name, collection_name, slug):
     """Delete Simple PublicReadAPI"""
-    ss = get_object_or_404(PublicReadAPI, slug=slug)
+    ss = get_object_or_404(PublicReadAPI, datbase_name=database_name,
+                           collection_name=collection_name, slug=slug)
     ss.delete()
     messages.success(request, _("Simple Public Read API deleted."))
     return HttpResponseRedirect(
@@ -788,9 +795,10 @@ def delete_simple_public_read_api(request, slug):
                 args=(ss.database_name, ss.collection_name)))
 
 
-def delete_simple_httpauth_read_api(request, slug):
+def delete_simple_httpauth_read_api(request, database_name, collection_name, slug):
     """Delete Simple PublicReadAPI"""
-    ss = get_object_or_404(HTTPAuthReadAPI, slug=slug)
+    ss = get_object_or_404(HTTPAuthReadAPI, database_name=datbase_name,
+                           collection_name=collection_name, slug=slug)
     ss.delete()
     messages.success(request, _("Simple HTTP Auth Read API deleted."))
     return HttpResponseRedirect(

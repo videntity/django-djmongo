@@ -10,7 +10,7 @@ from .views import delete_httpauth_write_api, delete_ip_write_api
 from .views import edit_httpauth_write_api, edit_ip_write_api
 urlpatterns = [
 
-    # Call the write API
+    # Call / Run the write API
     url(r'^api/httpauth/(?P<slug>[^/]+)$',
         write_to_collection_httpauth,
         name="djmongo_api_write_to_collection_with_httpauth"),

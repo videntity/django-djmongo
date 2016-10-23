@@ -25,7 +25,7 @@ from .views import browse_custom_httpauth_read_apis
 urlpatterns = [
     # Run Read APIs ------------------------
 
-    url(r'^api/public/(?P<database_name>[^/]+)/(?P<collection_name>[^.]+).(?P<output_type>[^/]+)$',
+    url(r'^api/public/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/(?P<slug>[^.]+).(?P<output_type>[^/]+)$',
         simple_search, name="djmongo_api_public_simple_search"),
     
     
@@ -41,7 +41,7 @@ urlpatterns = [
     #     check_public_ok(search_html), name="djmongo_api_public_search_html"),
    
     
-    url(r'^api/httpauth/(?P<database_name>[^/]+)/(?P<collection_name>[^.]+).(?P<output_type>[^/]+)$',
+    url(r'^api/httpauth/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/(?P<slug>[^.]+).(?P<output_type>[^/]+)$',
         httpauth_login_required(check_read_httpauth_access(simple_search)),
         name="djmongo_api_httpauth_simple_search"),
 
@@ -90,11 +90,11 @@ urlpatterns = [
 
    
     # Edit ----------------------------------------
-    url(r'^simple/public/edit-api/(?P<slug>[^/]+)$',
+    url(r'^simple/public/edit-api/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/(?P<slug>[^/]+)$',
         login_required(edit_simple_public_read_api),
         name="djmongo_edit_simple_public_read_api"),
     
-    url(r'^simple/httpauth/edit-api/(?P<slug>[^/]+)$',
+    url(r'^simple/httpauth/edit-api/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/(?P<slug>[^/]+)$',
         login_required(edit_simple_httpauth_read_api),
         name="djmongo_edit_simple_httpauth_read_api"),
     
@@ -110,11 +110,11 @@ urlpatterns = [
 
     
     # Delete --------------------------------------
-    url(r'^simple/public/delete-api/(?P<slug>[^/]+)$',
+    url(r'^simple/public/delete-api/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/(?P<slug>[^/]+)$',
         login_required(delete_simple_public_read_api),
         name="djmongo_delete_simple_public_read_api"),
 
-    url(r'^simple/httpauth/delete-api/(?P<slug>[^/]+)$',
+    url(r'^simple/httpauth/delete-api/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/(?P<slug>[^/]+)$',
         login_required(delete_simple_httpauth_read_api),
         name="djmongo_delete_simple_httpauth_read_api"),
     
