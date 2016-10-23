@@ -1,7 +1,3 @@
-NOTE: This software is derived from public domain software created by Alan 
-Viars as an HHS Fellow for the United States Government. Subsequent 
-modifications made  after May 15th 2015 are copyright of Alan Viars/Videntity 
-and licensed under the open source GPL version 2 license below. 
 Contact sales@videntity.com for commercial support or a commercial  
 licese.
 
