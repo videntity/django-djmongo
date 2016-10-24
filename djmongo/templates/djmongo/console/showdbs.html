@@ -15,17 +15,24 @@ $('.dropdown-toggle').dropdown();
 
 <div class="container">
       
-      
+      <br><br>
+      <div class="row">
+              <div class="col-lg-12">
+			<ol class="breadcrumb">
+			  <li><a href="{% url 'djmongo_show_dbs' %}">Home</a></li>
+			</ol>
+            </div>
+      </div>   
       
    <div class="row">
               
 
-       <table class="table table-striped">
+       <table class="table table-striped table-bordered">
       
        <thead>
        <tr>
-         <th><h1>Databases</h1></th>
-         <th><h1>Collections</h2></th>
+         <th><h2>Database</h2></th>
+         <th><h2>Collections</h2></th>
        </tr>
        </thead>
         
@@ -33,10 +40,9 @@ $('.dropdown-toggle').dropdown();
        {% for d in dbs %}
        <tr>
        <td>
-       <h2>{{d.name}}</h2>
        <div class="btn-group">
            <a class="btn dropdown-toggle btn-default btn-large" data-toggle="dropdown" href="#">
-          Database
+          {{ d.name }}
            <span class="caret"></span>
            </a>
            <ul class="dropdown-menu">
@@ -53,102 +59,54 @@ $('.dropdown-toggle').dropdown();
        </td>
        <td>
            {% for c in d.collections %}
-          <h2>{{c}}</h2>
            <div class="btn-group">
            <div class="btn">
             <a class="btn dropdown-toggle btn-default btn-large" data-toggle="dropdown" href="#">
-            Collection
+            {{c}}
             <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
      
-            <li> <a  href="{% url 'djmongo_drop_collection' d.name c %}"">
-                    <i class="fa fa-warning"></i> {% trans "Drop Collection..." %} </a></li>
-            <li><a  href="{% url 'djmongo_create_document_in_collection_w_params' d.name  c %}">
-                   <i class="fa fa-plus-circle"></i> {% trans "Create a Document..." %}</a></li>
-            
-            <li><a  href="{% url 'djmongo_update_document_in_collection_w_params' d.name c %}">
-                   <i class="fa fa-retweet"></i> {% trans "Update a Document..." %}</a></li>
+	           <li> <a href="{% url 'djmongo_show_apis' d.name c %}">
+                     <i class="fa fa-dashboard"></i> {% trans "API Dashboard" %}</a>
+                   </li>
+	             <li role="presentation" class="divider"></li> 
+                        <li><a  href="{% url 'djmongo_create_document_in_collection_w_params' d.name  c %}">
+                   <i class="fa fa-plus-circle"></i> {% trans "Create a Document" %}</a></li>
+						
+				            <li><a  href="{% url 'djmongo_update_document_in_collection_w_params' d.name c %}">
+                   <i class="fa fa-retweet"></i> {% trans "Update a Document" %}</a></li>
+			            <li><a  href="{% url 'djmongo_ensure_index' d.name c %}">
+                   <i class="fa fa-fighter-jet"></i> {% trans "Create an Index" %}</a></li>
+			
+			<li> <a  href="{% url 'djmongo_drop_collection' d.name c %}"">
+                    <i class="fa fa-warning"></i> {% trans "Drop Collection" %} </a></li>
 
-            <li><a  href="{% url 'djmongo_ensure_index' d.name c %}">
-                   <i class="fa fa-fighter-jet"></i> {% trans "Create an Index..." %}</a></li>
+            
+            <li role="presentation" class="divider"></li> 
+                  
+            
+            <li> <a  target=_blank href="{% url 'djmongo_build_keys' d.name c %}">
+                <i class="fa fa-key"></i> {% trans "Build Key Collection" %}</a></li>
+ 
+ 
+              <li>
+                  <a  href="{% url 'djmongo_import_csv_w_params' d.name c %}">
+                  <i class="fa fa-arrow-right"></i> {% trans "Import a CSV" %}</a>
+              </li>
+
+               <li> <a  href="{% url 'djmongo_browse_saved_aggregations_w_params' d.name c %}">
+                  <i class="fa fa-cogs"></i> {% trans "Schedule Aggregations" %}</a>
+              </li>
                          
             </ul>
           </div>
-          <div class="btn">
-            <a class="btn dropdown-toggle btn-default btn-large" data-toggle="dropdown" href="#">
-            API
-            <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu">
- 
-                    <li> <a href="{% url 'djmongo_show_apis' d.name c %}">
-                     <i class="fa fa-eye"></i> {% trans "Show APIs Already Configured..." %}</a>
-                   </li>
-                   <li role="presentation" class="divider"></li>
-                   <li> <a href="{% url 'djmongo_create_simple_api' 'public' d.name c %}">
-                     <i class="fa fa-search"></i> {% trans "Create Simple Read API with No Auth (Public)..." %}</a>
-                   </li>
- 
-                  <li> <a href="{% url 'djmongo_create_simple_api' 'httpauth' d.name c %}">
-                   <i class="fa fa-search"></i> {% trans "Create Simple Read API with Basic HTTP Auth..." %}</a>
-                  </li>
-                  
-                  <li role="presentation" class="divider"></li> 
-                  
-                  <li> <a href="{% url 'djmongo_create_custom_api' 'public' d.name c %}">
-                     <i class="fa fa-search"></i> {% trans "Create Custom Read API with No Auth (Public)..." %}</a>
-                   </li>
-
-                  <li> <a href="{% url 'djmongo_create_custom_api' 'httpauth'  d.name c %}">
-                   <i class="fa fa-search"></i> {% trans "Create Custom Read API with Basic HTTP Auth..." %}</a>
-                  </li>
-                  
-                  
-                  
-                  <li role="presentation" class="divider"></li> 
-            
-                  <li> <a  href="{% url 'djmongo_browse_httpauth_write_apis_w_params' d.name c %}"">
-                   <i class="fa fa-pencil"></i> {% trans "Create Write API with Basic HTTP Auth..." %} </a>
-                  </li>
-           
-                  <li> <a  href="{% url 'djmongo_browse_ip_write_apis_w_params' d.name c %}"">
-                   <i class="fa fa-pencil"></i> {% trans "Create Write API with IP Auth..." %} </a>
-                  </li>
-                  
-                  <li role="presentation" class="divider"></li>
-                  
-                   <li> <a  href="{% url 'djmongo_browse_browse_custom_httpauth_read_apis_w_params' d.name c %}">
-                    <i class="fa fa-pencil"></i> {% trans "Browse Custom Read APIs with HTTPAuth..." %}</a>
-                   </li>
-                  
-            </ul>
-          </div>
           
-            <div class="btn">
-           <a class="btn pull-left dropdown-toggle btn-default btn-large" data-toggle="dropdown" href="#">
-           Enterprise
-           <span class="caret"></span>
-           </a>
-            <ul class="dropdown-menu">
-
-             <li> <a  target=_blank href="{% url 'djmongo_build_keys' d.name c %}">
-                    <i class="fa fa-key"></i> {% trans "Build Key Collection" %}</a></li>
- 
-
-               <li> <a  href="{% url 'djmongo_browse_saved_aggregations_w_params' d.name c %}">
-                  <i class="fa fa-cogs"></i> {% trans "Schedule Aggregations..." %}</a>
-              </li>
-
-            </ul>
-           </div>
-                
-           </div>
-     
+          
            {% endfor %}
-        
+         </div> 
        {% endfor %}
-       
+       </table>
     </div> 
 </div>
 

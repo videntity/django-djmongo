@@ -15,11 +15,17 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='httpauthreadapi',
             name='slug',
-            field=models.SlugField(help_text=b'Give your API a unique name', max_length=100, unique=True),
+            field=models.SlugField(
+                help_text=b'Give your API a unique name',
+                max_length=100,
+                unique=True),
         ),
         migrations.AlterField(
             model_name='publicreadapi',
             name='slug',
-            field=models.SlugField(help_text=b'Give your API a unique name', max_length=100, unique=True),
+            field=models.SlugField(
+                help_text=b'Give your API a unique name',
+                max_length=100,
+                unique=True),
         ),
     ]

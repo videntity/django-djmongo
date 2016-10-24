@@ -53,7 +53,7 @@
 	   {{field.help_text}}
 	   
 	   
-	    {% if not field|field_type  = "booleanfield" %}
+	    {% if not field|field_type  == "booleanfield" %}
 			{{ field|attr:"class:form-control" }}
 		{% else %}	
 			{{field}}

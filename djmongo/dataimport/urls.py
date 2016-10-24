@@ -5,7 +5,7 @@
 from django.contrib.auth.decorators import login_required
 from django.views.generic.base import TemplateView
 from django.views.decorators.csrf import csrf_exempt
-from ..decorators import json_login_required
+from ..decorators import httpauth_login_required
 from django.conf.urls import url
 from .views import (previous_data_imports, delete_import,
                     import_data_file)
@@ -31,11 +31,11 @@ urlpatterns = [
         name="djmongo_import_csv_w_params"),
 
     # API calls ----------------------------------------------------------
-    url(r'^api/csv$', json_login_required(csrf_exempt(import_data_file)),
+    url(r'^api/csv$', httpauth_login_required(csrf_exempt(import_data_file)),
         name="djmongo_api_import_data_file"),
 
     url(r'^api/csv/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
-        json_login_required(csrf_exempt(import_data_file)),
+        httpauth_login_required(csrf_exempt(import_data_file)),
         name="djmongo_api_import_file_w_params"),
 
     url(r'^$',

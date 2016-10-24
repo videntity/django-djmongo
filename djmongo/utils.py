@@ -3,10 +3,7 @@
 # vim: ai ts=4 sts=4 et sw=4
 
 import json
-import string
-import random
-from django.contrib.auth import login, authenticate
-from django.http import HttpResponse
+from django.contrib.auth import login
 from datetime import date
 
 
@@ -36,7 +33,7 @@ def unauthorized_json_response(additional_info=None):
     return body
 
 
-def json_response_400(errors=""):
+def json_response_400(error=""):
     body = {"code": 400,
             "message": "Client Error",
             "errors": [error, ]
@@ -45,7 +42,7 @@ def json_response_400(errors=""):
     return body
 
 
-def json_response_404(errors=""):
+def json_response_404(error=""):
     body = {"code": 404,
             "message": "Not Found",
             "errors": [error, ]

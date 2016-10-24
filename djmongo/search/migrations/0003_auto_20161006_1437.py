@@ -16,12 +16,34 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='HTTPAuthReadAPI',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('database_name', models.CharField(max_length=256)),
-                ('collection_name', models.CharField(max_length=256)),
-                ('slug', models.SlugField(blank=True, help_text=b'Give your API a unique name', max_length=100)),
-                ('search_keys', models.TextField(blank=True, default=b'', help_text=b'The default, blank, returns\n                                                all keys. Providing a list of\n                                                keys, separated by whitespace,\n                                                limits the API search to only\n                                                these keys.', max_length=4096)),
-                ('groups', models.ManyToManyField(blank=True, related_name='djmongo_http_auth_read_api', to='auth.Group')),
+                ('id',
+                 models.AutoField(
+                     auto_created=True,
+                     primary_key=True,
+                     serialize=False,
+                     verbose_name='ID')),
+                ('database_name',
+                 models.CharField(
+                     max_length=256)),
+                ('collection_name',
+                 models.CharField(
+                     max_length=256)),
+                ('slug',
+                 models.SlugField(
+                     blank=True,
+                     help_text=b'Give your API a unique name',
+                     max_length=100)),
+                ('search_keys',
+                 models.TextField(
+                     blank=True,
+                     default=b'',
+                     help_text=b'The default, blank, returns\n                                                all keys. Providing a list of\n                                                keys, separated by whitespace,\n                                                limits the API search to only\n                                                these keys.',
+                     max_length=4096)),
+                ('groups',
+                 models.ManyToManyField(
+                     blank=True,
+                     related_name='djmongo_http_auth_read_api',
+                     to='auth.Group')),
             ],
             options={
                 'verbose_name': 'Search API using HTTPAuth',
@@ -30,7 +52,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='databaseaccesscontrol',
-            unique_together=set([]),
+            unique_together=set(
+                []),
         ),
         migrations.RemoveField(
             model_name='databaseaccesscontrol',
@@ -39,13 +62,19 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='publicreadapi',
             name='slug',
-            field=models.SlugField(blank=True, help_text=b'Give your API a unique name', max_length=100),
+            field=models.SlugField(
+                blank=True,
+                help_text=b'Give your API a unique name',
+                max_length=100),
         ),
         migrations.DeleteModel(
             name='DatabaseAccessControl',
         ),
         migrations.AlterUniqueTogether(
             name='httpauthreadapi',
-            unique_together=set([('database_name', 'collection_name')]),
+            unique_together=set(
+                [
+                    ('database_name',
+                     'collection_name')]),
         ),
     ]

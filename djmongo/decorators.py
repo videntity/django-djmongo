@@ -7,7 +7,8 @@
     Decorator to check for credentials before responding on API requests.
     Response with JSON instead of standard login redirect.
 """
-
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from django.conf import settings
 from collections import OrderedDict
 from functools import update_wrapper, wraps
@@ -94,7 +95,7 @@ def check_public_ok(func):
                     database_name=database_name, collection_name=collection_name)
             except PublicReadAPI.DoesNotExist:
                 return HttpResponse(unauthorized_json_response(),
-                                        content_type="application/json")
+                                    content_type="application/json")
 
             # If search keys have been limited...
             if pub_read_api.search_keys:
@@ -114,7 +115,6 @@ def check_public_ok(func):
         return func(request, *args, **kwargs)
 
     return update_wrapper(wrapper, func)
-
 
 
 def check_read_httpauth_access(func):

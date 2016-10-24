@@ -9,8 +9,8 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-djmongo',
-    version='0.7.6.0',
-    packages=['djmongo', 'djmongo.console', 'djmongo.console.migrations'
+    version='0.7.6.2',
+    packages=['djmongo', 'djmongo.console', 'djmongo.console.migrations',
               'djmongo.accounts', 'djmongo.accounts.migrations',
               'djmongo.aggregations', 'djmongo.aggregations.migrations',
               'djmongo.write', 'djmongo.write.migrations',
@@ -26,10 +26,10 @@ setup(
     author='Alan Viars',
     author_email='sales@videntity.com',
     install_requires=[
-        'pymongo', 'django-widget-tweaks',
+        'django==1.9.5', 'pymongo', 'django-widget-tweaks',
         'django-bootstrap-form',
         'django-cors-headers', 'jdt', 'jsonschema',
-        'django-localflavor' ],
+        'django-localflavor'],
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',

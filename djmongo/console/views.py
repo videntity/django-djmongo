@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 # vim: ai ts=4 sts=4 et sw=4
 import json
-import pprint
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
@@ -24,26 +23,24 @@ from ..search.models import (CustomHTTPAuthReadAPI, CustomPublicReadAPI,
 
 
 def show_apis(request, database_name, collection_name):
-    
+
     # Get all of the Read APIs
-    custom_httpauth_read_apis = CustomHTTPAuthReadAPI.objects.filter(database_name=database_name,
-                                               collection_name=collection_name)
-    custom_public_read_apis = CustomPublicReadAPI.objects.filter(database_name=database_name,
-                                               collection_name=collection_name)
-    
-    simple_public_read_apis = PublicReadAPI.objects.filter(database_name=database_name,
-                                               collection_name=collection_name)
-    simple_httpauth_read_apis = HTTPAuthReadAPI.objects.filter(database_name=database_name,
-                                               collection_name=collection_name)
-    
+    custom_httpauth_read_apis = CustomHTTPAuthReadAPI.objects.filter(
+        database_name=database_name, collection_name=collection_name)
+    custom_public_read_apis = CustomPublicReadAPI.objects.filter(
+        database_name=database_name, collection_name=collection_name)
+
+    simple_public_read_apis = PublicReadAPI.objects.filter(
+        database_name=database_name, collection_name=collection_name)
+    simple_httpauth_read_apis = HTTPAuthReadAPI.objects.filter(
+        database_name=database_name, collection_name=collection_name)
+
     # Get all of the Write APIs
     ip_write_apis = WriteAPIIP.objects.filter(database_name=database_name,
-                                               collection_name=collection_name)
-    httpauth_write_apis = WriteAPIHTTPAuth.objects.filter(database_name=database_name,
-                                               collection_name=collection_name)
-    
-    
-    
+                                              collection_name=collection_name)
+    httpauth_write_apis = WriteAPIHTTPAuth.objects.filter(
+        database_name=database_name, collection_name=collection_name)
+
     context = {"custom_httpauth_read_apis": custom_httpauth_read_apis,
                "custom_public_read_apis": custom_public_read_apis,
                "simple_public_read_apis": simple_public_read_apis,
@@ -55,8 +52,9 @@ def show_apis(request, database_name, collection_name):
     return render(request, 'djmongo/console/show-apis.html',
                   context)
 
+
 def showdbs(request):
-    
+
     dbs = show_dbs()
     # print(json.dumps(dbs, indent=4))
     cleaned_dbs = []
@@ -70,16 +68,15 @@ def showdbs(request):
             # only keep non-system DBs.
             if i.get('name', '') != 'admin' and i.get('name', '') != 'local':
                 cleaned_dbs.append(i)
-    
+
     if dbs and not cleaned_dbs:
         messages.info(
             request,
             _("""You have no databases to work on. Please create one."""))
-        
 
     #     #We have data so let's grab all APIs
     #     apis = []
-    #     
+    #
     #     # Get all of the APIs.
     #     for d in cleaned_dbs:
     #         for c in d['collections']:
@@ -89,55 +86,54 @@ def showdbs(request):
     #             # database name 0
     #             database_name = d['name']
     #             api.append(database_name)
-    #             
+    #
     #             # collection name 1
     #             api.append(c)
-    #             
+    #
     #             # API Type 2
     #             api.append('Basic')
-    #             
+    #
     #             # AuthType 3
     #             api.append("None")
-    #             
+    #
     #             # HTTP Method 4
     #             api.append("GET")
-    #             
+    #
     #             # Read Public
     #             read_public_list = PublicReadAPI.objects.filter(database_name = database_name,
     #                                                collection_name = c)
-    # 
-    #             
+    #
+    #
     #             database['apis'].append(api)
-    #             
+    #
     #             # HTTPAuth Read
     #             api = {}
     #             api['read_httpauth'] = HTTPAuthReadAPI.objects.filter(database_name = database_name,
     #                                                collection_name = c)
     #             database['apis'].append(api)
-    #             
+    #
     #             # Write Httpauth
     #             api = {}
     #             api['write_httpauth'] = WriteAPIHTTPAuth.objects.filter(database_name = database_name,
     #                                                collection_name = c)
     #             database['apis'].append(api)
-    #             
+    #
     #             # Write IP Auth
     #             api = {}
     #             api['write_ip_auth'] = WriteAPIIP.objects.filter(database_name = database_name,
     #                                                collection_name = c)
     #             database['apis'].append(api)
-    #             
+    #
     #             # Custom Read http Auth
     #             api = {}
     #             api['custom_read_httpauth'] = SavedSearch.objects.filter(database_name = database_name,
     #                                                collection_name = c)
     #             database['apis'].append(api)                #collection[c].append(api)
     #         apis.append(database)
-    #                         
+    #
     # pp = pprint.PrettyPrinter(indent=4)
     # pp.pprint(apis)
-    
-    
+
     context = {"dbs": cleaned_dbs}
     return render(request, 'djmongo/console/showdbs.html', context)
 
@@ -148,13 +144,17 @@ def drop_collection(request, database_name, collection_name):
     if request.method == 'POST':
         form = ConfirmDropForm(request.POST)
         if form.is_valid():
-            name = form.cleaned_data['name'] 
+            name = form.cleaned_data['name']
             if name != collection_name:
-               messages.error(request, _('The name did not match. \
+                messages.error(request, _('The name did not match. \
                                          Drop operation aborted'))
-               return HttpResponseRedirect(reverse('djmongo_drop_collection',
-                                                   args=(database_name, collection_name)))
-           
+                return HttpResponseRedirect(
+                    reverse(
+                        'djmongo_drop_collection',
+                        args=(
+                            database_name,
+                            collection_name)))
+
             response = mongodb_drop_collection(database_name, collection_name)
             if response:
                 errormsg = _("ERROR", response)
@@ -172,10 +172,10 @@ def drop_collection(request, database_name, collection_name):
                           {'form': form, 'name': name})
     # This is a GET
     context = {'name': name,
-                   'form': ConfirmDropForm(
-                       initial={}) }
+               'form': ConfirmDropForm(
+                   initial={})}
     return render(request, 'djmongo/console/generic/bootstrapform.html',
-                      context)
+                  context)
 
 
 def drop_database(request, database_name):
@@ -183,12 +183,12 @@ def drop_database(request, database_name):
     if request.method == 'POST':
         form = ConfirmDropForm(request.POST)
         if form.is_valid():
-            name = form.cleaned_data['name'] 
+            name = form.cleaned_data['name']
             if name != database_name:
-               messages.error(request, _('The name did not match. \
+                messages.error(request, _('The name did not match. \
                                          Drop operation aborted.'))
-               return HttpResponseRedirect(reverse('show_dbs'))
-           
+                return HttpResponseRedirect(reverse('show_dbs'))
+
             response = mongodb_drop_database(database_name)
             if response:
                 errormsg = _("ERROR", response)
@@ -206,11 +206,10 @@ def drop_database(request, database_name):
                           {'form': form, 'name': name})
     # This is a GET
     context = {'name': name,
-                   'form': ConfirmDropForm(
-                       initial={}) }
+               'form': ConfirmDropForm(
+                   initial={})}
     return render(request, 'djmongo/console/generic/bootstrapform.html',
-                      context)
-    
+                  context)
 
 
 def simple_ensure_index(request, database_name, collection_name):

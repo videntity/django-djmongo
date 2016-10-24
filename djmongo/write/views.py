@@ -136,6 +136,7 @@ def write_to_collection_ip_auth(request, slug):
 
 
 def browse_ip_write_apis(request, database_name=None, collection_name=None):
+    """Deprecated"""
     name = "Write APIs Using IP-based Authentication"
     if database_name and collection_name:
         wapis = WriteAPIIP.objects.filter(
@@ -156,6 +157,7 @@ def browse_httpauth_write_apis(
         request,
         database_name=None,
         collection_name=None):
+    """Deprecated"""
     name = "Write APIs Using HTTPAuth Authentication"
     if database_name and collection_name:
         wapis = WriteAPIHTTPAuth.objects.filter(
@@ -186,12 +188,9 @@ def create_httpauth_write_api(
             msg = _('The HTTP Auth write API for %s was created.') % (a.slug)
             messages.success(request, msg)
 
-            return HttpResponseRedirect(
-                reverse(
-                    'djmongo_browse_httpauth_write_apis_w_params',
-                    args=(
-                        database_name,
-                        collection_name)))
+            return HttpResponseRedirect(reverse('djmongo_show_apis',
+                                                args=(database_name,
+                                                      collection_name)))
         else:
             # The form is invalid
             messages.error(
@@ -226,11 +225,9 @@ def create_ip_write_api(request, database_name=None, collection_name=None):
             msg = _('The IP-based write API for %s was created.') % (a.slug)
             messages.success(request, msg)
             return HttpResponseRedirect(
-                reverse(
-                    'djmongo_browse_ip_write_apis_w_params',
-                    args=(
-                        database_name,
-                        collection_name)))
+                reverse('djmongo_show_apis',
+                        args=(database_name,
+                              collection_name)))
         else:
             # The form is invalid
             messages.error(

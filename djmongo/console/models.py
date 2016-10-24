@@ -21,6 +21,5 @@ class CreateHistory(models.Model):
         verbose_name_plural = _("Create Histories")
         unique_together = (('database_name', 'collection_name'),)
 
-
     def __str__(self):
         return "%s/%s" % (self.database_name, self.collection_name)

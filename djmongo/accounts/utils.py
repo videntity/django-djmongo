@@ -3,7 +3,6 @@
 # vim: ai ts=4 sts=4 et sw=4
 
 import json
-import string
 from django.contrib.auth import login
 from .httpauth import HttpBasicAuthentication
 from .models import Permission

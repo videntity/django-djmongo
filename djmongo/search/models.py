@@ -17,7 +17,8 @@ class CustomHTTPAuthReadAPI(models.Model):
     output_format = models.CharField(max_length=4,
                                      choices=OUTPUT_CHOICES,
                                      default="json")
-    slug = models.SlugField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=100,
+                            help_text="Give your API a unique name")
     query = models.TextField(max_length=2048, default="{}",
                              verbose_name="JSON Query")
     type_mapper = models.TextField(
@@ -57,15 +58,16 @@ class CustomHTTPAuthReadAPI(models.Model):
 
     def url(self):
         return reverse('run_saved_search_by_slug', args=(self.slug,))
-    
-    
+
+
 @python_2_unicode_compatible
 class CustomPublicReadAPI(models.Model):
 
     output_format = models.CharField(max_length=4,
                                      choices=OUTPUT_CHOICES,
                                      default="json")
-    slug = models.SlugField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=100,
+                            help_text="Give your API a unique name")
     query = models.TextField(max_length=2048, default="{}",
                              verbose_name="JSON Query")
     type_mapper = models.TextField(
@@ -111,7 +113,7 @@ class HTTPAuthReadAPI(models.Model):
 
     database_name = models.CharField(max_length=256)
     collection_name = models.CharField(max_length=256)
-    slug = models.SlugField(max_length=100, unique=True,
+    slug = models.SlugField(max_length=100,
                             help_text="Give your API a unique name")
     search_keys = models.TextField(max_length=4096, default="", blank=True,
                                    help_text="""The default, blank, returns
@@ -125,27 +127,30 @@ class HTTPAuthReadAPI(models.Model):
     class Meta:
         # get_latest_by = "creation_date"
         # ordering = ('-creation_date',)
-        unique_together = (('database_name', 'collection_name'), )
+        unique_together = (('database_name', 'collection_name', 'slug'), )
 
     def __str__(self):
         return "%s/%s" % (self.database_name, self.collection_name)
-    
+
     def json_url(self):
         return reverse('djmongo_api_public_search_json_w_params',
                        args=(self.database_name, self.collection_name))
+
     def csv_url(self):
         return reverse('djmongo_api_public_search_csv_w_params',
                        args=(self.database_name, self.collection_name))
+
     def html_url(self):
         return reverse('djmongo_api_public_search_html_w_params',
                        args=(self.database_name, self.collection_name))
-    
+
+
 @python_2_unicode_compatible
 class PublicReadAPI(models.Model):
 
     database_name = models.CharField(max_length=256)
     collection_name = models.CharField(max_length=256)
-    slug = models.SlugField(max_length=100, unique=True,
+    slug = models.SlugField(max_length=100,
                             help_text="Give your API a unique name")
     search_keys = models.TextField(max_length=4096, default="", blank=True,
                                    help_text="""The default, blank, returns
@@ -153,20 +158,23 @@ class PublicReadAPI(models.Model):
                                                 keys, separated by whitespace,
                                                 limits the API search to only
                                                 these keys.""")
+
     class Meta:
         # get_latest_by = "creation_date"
         # ordering = ('-creation_date',)
-        unique_together = (('database_name', 'collection_name'), )
+        unique_together = (('database_name', 'collection_name', 'slug'), )
 
     def __str__(self):
         return "%s/%s" % (self.database_name, self.collection_name)
-    
+
     def json_url(self):
         return reverse('djmongo_api_public_search_json_w_params',
                        args=(self.database_name, self.collection_name))
+
     def csv_url(self):
         return reverse('djmongo_api_public_search_csv_w_params',
                        args=(self.database_name, self.collection_name))
+
     def html_url(self):
         return reverse('djmongo_api_public_search_html_w_params',
                        args=(self.database_name, self.collection_name))
