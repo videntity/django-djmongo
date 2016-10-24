@@ -37,7 +37,6 @@ class CreateDatabaseForm(forms.Form):
     collection_name = forms.CharField()
     initial_document = forms.CharField(
         widget=forms.Textarea,
-        initial='{"foo":"bar"}',
         help_text="""You must create a document in order to
                      create a new database and collection""")
     required_css_class = 'required'
@@ -89,8 +88,7 @@ class DeleteForm(forms.Form):
 
 
 class DocumentForm(forms.Form):
-    document = forms.CharField(widget=forms.Textarea,
-                               initial='{"foo": "bar"}')
+    document = forms.CharField(widget=forms.Textarea)
     database_name = forms.CharField()
     collection_name = forms.CharField()
 
