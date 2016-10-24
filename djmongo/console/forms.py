@@ -11,6 +11,7 @@ class ConfirmDropForm(forms.Form):
     name = forms.CharField(max_length=256)
     required_css_class = 'required'
 
+
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=30, label=_("User"))
     password = forms.CharField(widget=forms.PasswordInput, max_length=30,

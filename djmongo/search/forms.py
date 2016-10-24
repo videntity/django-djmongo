@@ -5,7 +5,6 @@
 from django import forms
 from .models import (HTTPAuthReadAPI, PublicReadAPI,
                      CustomHTTPAuthReadAPI, CustomPublicReadAPI)
-from django.utils.translation import ugettext_lazy as _
 
 
 class HTTPAuthReadAPIForm(forms.ModelForm):
@@ -15,6 +14,7 @@ class HTTPAuthReadAPIForm(forms.ModelForm):
         fields = ('slug', 'database_name', 'collection_name',
                   'search_keys', 'groups')
     required_css_class = 'required'
+
 
 class PublicReadAPIForm(forms.ModelForm):
 
@@ -34,7 +34,8 @@ class CustomHTTPAuthReadAPIForm(forms.ModelForm):
                   'database_name', 'collection_name', 'output_format')
 
     required_css_class = 'required'
-    
+
+
 class CustomPublicReadAPIForm(forms.ModelForm):
 
     class Meta:

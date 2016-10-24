@@ -5,7 +5,6 @@ from django.conf import settings
 from django.http import HttpResponse
 from datetime import datetime
 from collections import OrderedDict
-from bson.objectid import ObjectId
 import csv
 import string
 from ..mongoutils import get_collection_keys
@@ -41,8 +40,8 @@ def flatten_results(keylist, listresults, exclude=()):
                             row[j] = str(i[j])
                         else:
                             row[j] = "".join(
-                                s for s in i[j].encode("ascii",
-                                                       errors="ignore") if s in string.printable)
+                                s for s in i[j].encode(
+                                    "ascii", errors="ignore") if s in string.printable)
                 else:
                     row[j] = ""
             else:

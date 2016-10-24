@@ -189,8 +189,8 @@ def create_httpauth_write_api(
             messages.success(request, msg)
 
             return HttpResponseRedirect(reverse('djmongo_show_apis',
-                        args=(database_name,
-                              collection_name)))
+                                                args=(database_name,
+                                                      collection_name)))
         else:
             # The form is invalid
             messages.error(

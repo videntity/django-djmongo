@@ -3,12 +3,9 @@
 # vim: ai ts=4 sts=4 et sw=4
 
 from django.conf import settings
-import os
 import json
 import sys
-import uuid
 import csv
-import pickle
 from datetime import datetime, date, time
 from bson.code import Code
 from bson.objectid import ObjectId
@@ -24,9 +21,9 @@ def run_aggregation_pipeline(database_name, collection_name, pipeline):
     db = mc[str(database_name)]
     collection = db[str(collection_name)]
 
-    #explain = db.command('aggregate', collection, pipeline=pipeline, explain=True)
+    # explain = db.command('aggregate', collection, pipeline=pipeline, explain=True)
     # print explain
-    agg_result = collection.aggregate(pipeline)
+    collection.aggregate(pipeline)
 
     # print agg_result
     result = True
@@ -45,7 +42,9 @@ def normalize_results(results_dict):
 
     for r in results_dict['results']:
         for k, v in r.items():
-            if isinstance(r[k], type(mydt)):
+            if isinstance(r[k], type(mydt)) or \
+               isinstance(r[k], type(myd)) or \
+               isinstance(r[k], type(myt)):
                 r[k] = v.__str__()
                 # print r[k]
     return results_dict
@@ -74,7 +73,7 @@ def query_mongo(
             settings,
             'MONGO_LIMIT',
             200),
-    cast_strings_to_integers=False,
+        cast_strings_to_integers=False,
         return_keys=()):
     """return a response_dict  with a list of search results"""
 

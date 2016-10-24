@@ -53,7 +53,7 @@ class DataImport(models.Model):
         return "%s by %s %s" % (self.title, self.user.first_name,
                                 self.user.last_name)
 
-    def save(self, commit = True, **kwargs):
+    def save(self, commit=True, **kwargs):
         self.status = "Processing"
 
         # Generate the slug if the record it was not already defined.
@@ -68,5 +68,5 @@ class DataImport(models.Model):
         self.response = json.dumps(result, indent=4)
         self.status = "Complete"
         # re-write db after complete
-        if commit: 
+        if commit:
             super(DataImport, self).save(**kwargs)

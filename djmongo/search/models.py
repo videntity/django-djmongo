@@ -58,8 +58,8 @@ class CustomHTTPAuthReadAPI(models.Model):
 
     def url(self):
         return reverse('run_saved_search_by_slug', args=(self.slug,))
-    
-    
+
+
 @python_2_unicode_compatible
 class CustomPublicReadAPI(models.Model):
 
@@ -131,17 +131,20 @@ class HTTPAuthReadAPI(models.Model):
 
     def __str__(self):
         return "%s/%s" % (self.database_name, self.collection_name)
-    
+
     def json_url(self):
         return reverse('djmongo_api_public_search_json_w_params',
                        args=(self.database_name, self.collection_name))
+
     def csv_url(self):
         return reverse('djmongo_api_public_search_csv_w_params',
                        args=(self.database_name, self.collection_name))
+
     def html_url(self):
         return reverse('djmongo_api_public_search_html_w_params',
                        args=(self.database_name, self.collection_name))
-    
+
+
 @python_2_unicode_compatible
 class PublicReadAPI(models.Model):
 
@@ -155,6 +158,7 @@ class PublicReadAPI(models.Model):
                                                 keys, separated by whitespace,
                                                 limits the API search to only
                                                 these keys.""")
+
     class Meta:
         # get_latest_by = "creation_date"
         # ordering = ('-creation_date',)
@@ -162,13 +166,15 @@ class PublicReadAPI(models.Model):
 
     def __str__(self):
         return "%s/%s" % (self.database_name, self.collection_name)
-    
+
     def json_url(self):
         return reverse('djmongo_api_public_search_json_w_params',
                        args=(self.database_name, self.collection_name))
+
     def csv_url(self):
         return reverse('djmongo_api_public_search_csv_w_params',
                        args=(self.database_name, self.collection_name))
+
     def html_url(self):
         return reverse('djmongo_api_public_search_html_w_params',
                        args=(self.database_name, self.collection_name))

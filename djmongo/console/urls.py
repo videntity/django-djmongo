@@ -15,7 +15,7 @@ from .views import (showdbs, create_new_database,
 urlpatterns = [
 
     url(r'^$', login_required(showdbs), name="djmongo_show_dbs"),
-    
+
     url(r'^show-apis/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)',
         login_required(show_apis), name="djmongo_show_apis"),
 

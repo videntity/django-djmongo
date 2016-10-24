@@ -29,7 +29,7 @@ setup(
         'django==1.9.5', 'pymongo', 'django-widget-tweaks',
         'django-bootstrap-form',
         'django-cors-headers', 'jdt', 'jsonschema',
-        'django-localflavor' ],
+        'django-localflavor'],
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',

@@ -9,16 +9,20 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
 from django.core.urlresolvers import reverse
 
+
 @python_2_unicode_compatible
 class WriteAPIHTTPAuth(models.Model):
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, blank=True, null=True)
-    groups = models.ManyToManyField(Group, blank=True,
-                                    related_name="djmongo_write_httpauth_groups",
-                                    help_text=_("Use ctrl to select multiple "
-                                                "groups. If no groups are "
-                                                "selected blank, any user may "
-                                                "access the API."))
+    groups = models.ManyToManyField(
+        Group,
+        blank=True,
+        related_name="djmongo_write_httpauth_groups",
+        help_text=_(
+            "Use ctrl to select multiple "
+            "groups. If no groups are "
+            "selected blank, any user may "
+            "access the API."))
     slug = models.SlugField(max_length=100, unique=True, help_text=_(
         "The slug is the unique part of the URL for your API."))
     database_name = models.CharField(max_length=100)
@@ -38,7 +42,7 @@ class WriteAPIHTTPAuth(models.Model):
 
     def url(self):
         return reverse('write_to_collection_httpauth', args=(self.slug,))
-        
+
     def __str__(self):
         return "%s" % (self.slug)
 
@@ -74,7 +78,6 @@ class WriteAPIIP(models.Model):
         verbose_name_plural = _("Write APIs with IP Address Auth")
         verbose_name = _("Write API with IP Address Auth")
 
-
     def allowable_ips(self):
         allowable_ips = self.from_ip.split(" ")
         return allowable_ips
@@ -105,7 +108,6 @@ class WriteAPIoAuth2(models.Model):
         ordering = ('-creation_date',)
         verbose_name_plural = "Write APIs with oAuth2 Auth"
         verbose_name = "Write API with oAuth2 Auth"
-
 
     def __str__(self):
         return "%s" % (self.slug)

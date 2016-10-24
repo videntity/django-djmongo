@@ -11,6 +11,7 @@ class CustomHTTPAuthReadAPIAdmin(admin.ModelAdmin):
                     'creation_date')
 admin.site.register(CustomHTTPAuthReadAPI, CustomHTTPAuthReadAPIAdmin)
 
+
 class CustomPublicReadAPIAdmin(admin.ModelAdmin):
     list_display = ('slug', 'collection_name', 'database_name',
                     'creation_date')
@@ -23,5 +24,5 @@ admin.site.register(HTTPAuthReadAPI, HTTPAuthReadAPIAdmin)
 
 
 class PublicReadAPIAdmin(admin.ModelAdmin):
-    list_display = ('slug','collection_name', 'database_name')
+    list_display = ('slug', 'collection_name', 'database_name')
 admin.site.register(PublicReadAPI, PublicReadAPIAdmin)
