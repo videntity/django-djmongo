@@ -263,11 +263,9 @@ def edit_httpauth_write_api(request, slug):
             msg = _('The HTTP Auth API for %s was updated.') % (slug)
             messages.success(request, msg)
             return HttpResponseRedirect(
-                reverse(
-                    'djmongo_browse_httpauth_write_apis_w_params',
-                    args=(
-                        a.database_name,
-                        a.collection_name)))
+                reverse('djmongo_show_apis',
+                        args=(database_name,
+                              collection_name)))
         else:
             # The form is invalid
             messages.error(
@@ -300,11 +298,9 @@ def edit_ip_write_api(request, slug):
             msg = _('The IP-based API for %s was updated.') % (slug)
             messages.success(request, msg)
             return HttpResponseRedirect(
-                reverse(
-                    'djmongo_browse_ip_write_apis_w_params',
-                    args=(
-                        a.database_name,
-                        a.collection_name)))
+                reverse('djmongo_show_apis',
+                        args=(database_name,
+                              collection_name)))
         else:
             # The form is invalid
             messages.error(
