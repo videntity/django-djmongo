@@ -468,23 +468,14 @@ def run_custom_httpauth_read_api_by_slug(
     return HttpResponse(response, content_type="application/json")
 
 
-def run_simple_httpauth_read_api_by_slug():
-    pass
-
-
-def run_simple_public_read_api_by_slug():
-    pass
-
 
 def create_simple_httpauth_read_api(request, database_name, collection_name):
-    name = _("Setup Simple Read API using HTTPAuth")
+    name = _("Create Simple Read API with Basic Auth")
 
-    dac, created = HTTPAuthReadAPI.objects.get_or_create(
-        database_name=database_name, collection_name=collection_name)
     if request.method == 'POST':
-        form = HTTPAuthReadAPIForm(request.POST, instance=dac)
+        form = HTTPAuthReadAPIForm(request.POST)
         if form.is_valid():
-            dac = form.save()
+            form.save()
             messages.success(
                 request, _("Record created/updated."))
 
@@ -502,22 +493,22 @@ def create_simple_httpauth_read_api(request, database_name, collection_name):
                            'name': name,
                            })
     # this is a GET
+    idata = {'database_name': database_name,
+             'collection_name': collection_name}
     context = {'name': name,
-               'form': HTTPAuthReadAPIForm(instance=dac)
+               'form': HTTPAuthReadAPIForm(initial=idata)
                }
     return render(request, 'djmongo/console/generic/bootstrapform.html',
                   context)
 
 
 def create_simple_public_read_api(request, database_name, collection_name):
-    name = _("Create Simple Read API with No Authentication (Public)")
+    name = _("Create Simple Read API with No Auth (Public)")
 
-    dac, created = PublicReadAPI.objects.get_or_create(
-        database_name=database_name, collection_name=collection_name)
     if request.method == 'POST':
-        form = PublicReadAPIForm(request.POST, instance=dac)
+        form = PublicReadAPIForm(request.POST)
         if form.is_valid():
-            dac = form.save()
+            form.save()
             messages.success(
                 request, _("Record created/updated."))
 
@@ -535,8 +526,10 @@ def create_simple_public_read_api(request, database_name, collection_name):
                            'name': name,
                            })
     # this is a GET
+    idata = {'database_name': database_name,
+             'collection_name': collection_name}
     context = {'name': name,
-               'form': PublicReadAPIForm(instance=dac)
+               'form': PublicReadAPIForm(initial=idata)
                }
     return render(request, 'djmongo/console/generic/bootstrapform.html',
                   context)
@@ -603,7 +596,7 @@ def create_custom_httpauth_read_api(
             'MONGO_LIMIT',
             200),
         return_keys=()):
-    name = _("Create a Custom Saved Search with HTTP Auth")
+    name = _("Create a Custom Saved Search with Basic Auth")
     if request.method == 'POST':
         form = CustomHTTPAuthReadAPIForm(request.POST)
         if form.is_valid():
@@ -693,7 +686,7 @@ def edit_simple_httpauth_read_api(
         database_name,
         collection_name,
         slug):
-    name = _("Edit Simple Read API with HTTP Auth")
+    name = _("Edit Simple Read API with Basic Auth")
     ss = get_object_or_404(HTTPAuthReadAPI, database_name=database_name,
                            collection_name=collection_name, slug=slug)
 
@@ -760,7 +753,7 @@ def edit_custom_httpauth_read_api(
         database_name,
         collection_name,
         slug):
-    name = _("Edit Custom HTTPAuth Read API")
+    name = _("Edit Custom Basic Auth Read API")
     ss = get_object_or_404(CustomHTTPAuthReadAPI, datbase_name=database_name,
                            collection_name=collection_name, slug=slug)
 
@@ -830,7 +823,7 @@ def delete_simple_public_read_api(
         collection_name,
         slug):
     """Delete Simple PublicReadAPI"""
-    ss = get_object_or_404(PublicReadAPI, datbase_name=database_name,
+    ss = get_object_or_404(PublicReadAPI, database_name=database_name,
                            collection_name=collection_name, slug=slug)
     ss.delete()
     messages.success(request, _("Simple Public Read API deleted."))

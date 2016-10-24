@@ -7,7 +7,6 @@ from ..decorators import check_read_httpauth_access, check_public_ok
 from django.conf.urls import url
 
 from .views import run_custom_public_read_api_by_slug, run_custom_httpauth_read_api_by_slug
-from .views import run_simple_httpauth_read_api_by_slug, run_simple_public_read_api_by_slug
 
 from .views import create_simple_api, create_custom_api
 
@@ -40,18 +39,6 @@ urlpatterns = [
     url(r'^api/custom/public/(?P<slug>\S+)$',
         run_custom_public_read_api_by_slug,
         name="djmongo_run_custom_public_read_api_by_slug"),
-
-
-    url(r'^api/simple/httpauth/(?P<slug>\S+)$',
-        httpauth_login_required(run_simple_httpauth_read_api_by_slug),
-        name="djmongo_run_simple_httpauth_read_api_by_slug"),
-
-    url(r'^api/simple/public/(?P<slug>\S+)$',
-        run_simple_public_read_api_by_slug,
-        name="djmongo_run_simple_public_read_api_by_slug"),
-
-
-
 
 
     # CRUD for Managing APIs
