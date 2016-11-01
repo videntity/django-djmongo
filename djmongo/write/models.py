@@ -28,7 +28,7 @@ class WriteAPIHTTPAuth(models.Model):
     database_name = models.CharField(max_length=100)
     collection_name = models.CharField(max_length=100)
     json_schema = models.TextField(
-        max_length=2048,
+        max_length=20480,
         default="{}",
         verbose_name="JSON Schema",
         help_text="""Default "{}", means no JSON Schema.""")
@@ -61,7 +61,7 @@ class WriteAPIIP(models.Model):
     database_name = models.CharField(max_length=100)
     collection_name = models.CharField(max_length=100)
     json_schema = models.TextField(
-        max_length=2048,
+        max_length=20480,
         default="{}",
         verbose_name="JSON Schema",
         help_text="""Default "{}", means no JSON Schema.""")
@@ -97,7 +97,7 @@ class WriteAPIoAuth2(models.Model):
     database_name = models.CharField(max_length=100)
     collection_name = models.CharField(max_length=100)
     json_schema = models.TextField(
-        max_length=2048,
+        max_length=20480,
         default="{}",
         verbose_name="JSON Schema",
         help_text="""Default "{}", means no JSON Schema.""")
