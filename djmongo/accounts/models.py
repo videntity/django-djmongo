@@ -17,7 +17,7 @@ PERMISSION_CHOICES = (('db-all', 'All MongoDB'),
 
 class Permission(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
-    permission_name = models.CharField(max_length=50,
+    permission_name = models.CharField(max_length=256,
                                        choices=PERMISSION_CHOICES)
 
     def __unicode__(self):

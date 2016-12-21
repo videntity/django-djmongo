@@ -2,5 +2,6 @@ from django.apps import AppConfig
 
 
 class DataImportConfig(AppConfig):
-    name = 'dataimport'
-    verbose_name = "Djmongo - API Toolkit"
+    name = 'apps.djmongo.dataimport'
+    lablel = 'dataimport'
+    verbose_name = "Djmongo Data Import"
