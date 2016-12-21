@@ -23,7 +23,6 @@ INPUT_CHOICES = (("csv", "Comma Separated Value (.csv)"),)
 @python_2_unicode_compatible
 class DataImport(models.Model):
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     file1 = models.FileField(upload_to=update_import_filename,
                              verbose_name="File to be Imported")
     input_format = models.CharField(max_length=3,

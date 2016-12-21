@@ -14,7 +14,8 @@ from ..mongoutils import write_mongo
 from jsonschema import validate
 from django.core.urlresolvers import reverse
 from jsonschema.exceptions import ValidationError
-from .models import WriteAPIHTTPAuth, WriteAPIIP
+from .models import WriteAPIHTTPAuth, WriteAPIIP, WriteAPIOAuth2
+
 from .forms import (WriteAPIHTTPAuthForm, WriteAPIHTTPAuthDeleteForm,
                     WriteAPIIPDeleteForm, WriteAPIIPForm)
 from django.utils.translation import ugettext_lazy as _
@@ -32,23 +33,26 @@ def write_to_collection_httpauth(request, slug):
     # ----------------------------------------------------
     if request.method == 'GET':
         try:
-            json_schema = json.loads(
-                wapi.json_schema, object_pairs_hook=OrderedDict)
+            od = OrderedDict()
+            od["http_methods"] = wapi.http_methods()
+            od["slug"] = wapi.slug
+            od["auth_method"] = "oauth2"
+            od["json_schema"] = json.loads(wapi.json_schema,
+                                           object_pairs_hook=OrderedDict)
+            od["readme"] =  wapi.readme_md
             return HttpResponse(
-                json.dumps(
-                    json_schema,
-                    indent=4),
+                json.dumps(od, indent=4),
                 content_type="application/json")
         except:
             return kickout_500("The JSON Schema did not contain valid JSON")
 
     # ----------------------------------------------------
-    if request.method == 'POST':
+    if request.method in ('POST', 'PUT'):
 
         # Check if request body is JSON ------------------------
         try:
             j = json.loads(request.body, object_pairs_hook=OrderedDict)
-            if not isinstance(j, type({})):
+            if not isinstance(j, type(OrderedDict())):
                 kickout_400(
                     "The request body did not contain a JSON object i.e. {}.")
         except:
@@ -61,7 +65,7 @@ def write_to_collection_httpauth(request, slug):
 
         except:
             return kickout_500(
-                "The JSON Schema on the server did not contain valid JSON")
+                "The JSON Schema on the server did not contain valid JSON.")
 
         # Check jsonschema
         if json_schema:
@@ -72,7 +76,11 @@ def write_to_collection_httpauth(request, slug):
                     str(sys.exc_info()[1][0]))
                 return kickout_400(msg)
         # write_to_mongo
-        response = write_mongo(j, wapi.database_name, wapi.collection_name)
+        
+        if request.method == "POST":
+            response = write_mongo(j, wapi.database_name, wapi.collection_name)
+        if request.method == "PUT":
+            response = write_mongo(j, wapi.database_name, wapi.collection_name, update=True)
         return HttpResponse(json.dumps(response, indent=4),
                             content_type="application/json")
 
@@ -87,21 +95,29 @@ def write_to_collection_ip_auth(request, slug):
         return kickout_404(
             "The API was not not found. Perhaps you need to define it?")
 
+
+    # Check if METHOD ALLOWED
+    if request.method != "GET" and request.method not in wapi.http_methods():
+        return kickout_404(
+            "The HTTP method %s is not allowed for this URL." % (request.method))
     # ----------------------------------------------------
     if request.method == 'GET':
         try:
-            json_schema = json.loads(
-                wapi.json_schema, object_pairs_hook=OrderedDict)
+            od = OrderedDict()
+            od["http_methods"] = wapi.http_methods()
+            od["slug"] = wapi.slug
+            od["auth_method"] = "oauth2"
+            od["json_schema"] = json.loads(wapi.json_schema,
+                                           object_pairs_hook=OrderedDict)
+            od["readme"] =  wapi.readme_md
             return HttpResponse(
-                json.dumps(
-                    json_schema,
-                    indent=4),
+                json.dumps(od, indent=4),
                 content_type="application/json")
         except:
             return kickout_500("The JSON Schema did not contain valid JSON")
 
     # ----------------------------------------------------
-    if request.method == 'POST':
+    if request.method in ('POST', 'PUT'):
 
         # Check if request body is JSON ------------------------
         try:
@@ -130,7 +146,12 @@ def write_to_collection_ip_auth(request, slug):
                     str(sys.exc_info()[1][0]))
                 return kickout_400(msg)
         # write_to_mongo
-        response = write_mongo(j, wapi.database_name, wapi.collection_name)
+        
+        if request.method =="POST":
+            response = write_mongo(j, wapi.database_name, wapi.collection_name)
+        elif request.method =="PUT":
+            response = write_mongo(j, wapi.database_name, wapi.collection_name, update=True)
+        
         return HttpResponse(json.dumps(response, indent=4),
                             content_type="application/json")
 
@@ -214,6 +235,9 @@ def create_httpauth_write_api(
     )
 
 
+
+
+
 def create_ip_write_api(request, database_name=None, collection_name=None):
     name = _("Create an IP-based Write API")
     if request.method == 'POST':
@@ -287,7 +311,7 @@ def edit_httpauth_write_api(request, slug):
 
 
 def edit_ip_write_api(request, slug):
-    a = get_object_or_404(WriteAPIHTTPAuth, slug=slug)
+    a = get_object_or_404(WriteAPIIP, slug=slug)
     name = _("Edit IP-based Write API")
     if request.method == 'POST':
         form = WriteAPIIPForm(request.POST, instance=a)

@@ -368,7 +368,7 @@
 									  
 									  
 									  <a href="{% url 'djmongo_api_write_to_collection_with_httpauth' a.slug %}" >
-									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-pied-piper-alt"></i> Run</button>
+									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-pied-piper-alt"></i> GET Info</button>
 									  </a>
 									  
 									  <a href="{% url 'djmongo_edit_httpauth_write_api' a.slug %}" >
@@ -395,7 +395,7 @@
             <div class="col-lg-12">
                   <h3><span class="label label-info">Auth: IP Address</span>
 				  <a class="btn pull-right btn-primary btn-large" href="{% url 'djmongo_create_ip_write_api_w_params' database_name collection_name %}">
-            <i class="fa fa-pencil-square-o icon-white"></i> Create POST: IP Address</a>
+            <i class="fa fa-pencil-square-o icon-white"></i> Create POST/PUT: IP Address</a>
 				  </h3>
               </div>
 
@@ -407,7 +407,8 @@
 			  <thead>
 					 <tr>
 							<th>Slug (Name)</th>
-							<th>HTTP Method</th>
+							<th>HTTP Methods</th>
+							<th>Scopes</th>
 							<th>Endpoint</th>
 							<th>Actions</th>
 					 </tr>
@@ -420,14 +421,15 @@
 			  
 			  <tr class="warning">
 					 <td>{{a.slug}}</td>
-					 <td><pre>POST</pre></td>
+					 <td><pre>{{a.http_methods}}</pre></td>
+					 
 					 <td><pre>{% url 'djmongo_api_write_to_collection_with_ip' a.slug %}</pre></td>
 							<td>
 						  
 								   <div class="btn-group-justified">
   
   									  <a href="{% url 'djmongo_api_write_to_collection_with_ip' a.slug %}" >
-									  <button type="button" class="btn btn-success btn-xs"> <i class="fa  fa-pied-piper-alt"></i> Edit</button>
+									  <button type="button" class="btn btn-success btn-xs"> <i class="fa  fa-pied-piper-alt"></i> GET Info</button>
 									  </a>
   
 									  <a href="{% url 'djmongo_edit_ip_write_api' a.slug %}" >
@@ -450,6 +452,70 @@
    </div>    
     
  </div>	 
+
+
+            <div class="col-lg-12">
+                  <h3><span class="label label-info">Auth: OAuth2</span>
+				  <a class="btn pull-right btn-primary btn-large" href="{% url 'djmongo_create_oauth2_write_api_w_params' database_name collection_name %}">
+            <i class="fa fa-pencil-square-o icon-white"></i> Create POST/PUT OAuth2</a>
+				  </h3>
+              </div>
+
+
+      <div class="row">
+		 <div class="col-lg-12">    
+			  <table class="table  table-striped table-bordered">
+   
+			  <thead>
+					 <tr>
+							<th>Slug (Name)</th>
+							<th>HTTP Methods</th>
+							<th>Scopes</th>
+							<th>Endpoint</th>
+							<th>Actions</th>
+					 </tr>
+			  </thead>
+ 
+			  <tbody>
+
+
+			  {% for a in oauth2_write_apis %}
+			  
+			  <tr class="warning">
+					 <td>{{a.slug}}</td>
+					 <td><pre>{{a.http_methods}}</pre></td>
+					 <td><pre>{{a.scopes}}</pre></td>
+					 <td><pre>{% url 'djmongo_api_write_to_collection_with_oauth2' a.slug %}</pre></td>
+							<td>
+						  
+								   <div class="btn-group-justified">
+  
+  									  <a href="{% url 'djmongo_api_write_to_collection_with_oauth2' a.slug %}" >
+									  <button type="button" class="btn btn-success btn-xs"> <i class="fa  fa-pied-piper-alt"></i> GET Info</button>
+									  </a>
+  
+									  <a href="{% url 'djmongo_edit_oauth2_write_api' a.slug %}" >
+									  <button type="button" class="btn btn-warning btn-xs"> <i class="fa fa-edit"></i> Edit</button>
+									  </a>
+									  
+									  <a href="{% url 'djmongo_delete_oauth2_write_api' a.slug %}" >
+									  <button type="button" class="btn btn-danger btn-xs"> <i class="fa fa-eraser"></i> Delete</button>
+									  </a>
+									  
+								   </div>
+							</td>
+			  </tr>
+			  {% endfor %}
+
+	   </tbody>
+
+    </table>
+
+   </div>    
+    
+ </div>	 
+
+
 
 
 

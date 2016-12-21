@@ -17,7 +17,7 @@ from .forms import (EnsureIndexForm, DeleteForm, DocumentForm,
                     CreateDatabaseForm, ConfirmDropForm)
 from bson.objectid import ObjectId
 from collections import OrderedDict
-from ..write.models import WriteAPIHTTPAuth, WriteAPIIP
+from ..write.models import WriteAPIHTTPAuth, WriteAPIIP, WriteAPIOAuth2
 from ..search.models import (CustomHTTPAuthReadAPI, CustomPublicReadAPI,
                              HTTPAuthReadAPI, PublicReadAPI)
 
@@ -41,11 +41,16 @@ def show_apis(request, database_name, collection_name):
     httpauth_write_apis = WriteAPIHTTPAuth.objects.filter(
         database_name=database_name, collection_name=collection_name)
 
+    oauth2_write_apis = WriteAPIOAuth2.objects.filter(
+        database_name=database_name, collection_name=collection_name)
+
+
     context = {"custom_httpauth_read_apis": custom_httpauth_read_apis,
                "custom_public_read_apis": custom_public_read_apis,
                "simple_public_read_apis": simple_public_read_apis,
                "simple_httpauth_read_apis": simple_httpauth_read_apis,
                "httpauth_write_apis": httpauth_write_apis,
+               "oauth2_write_apis": oauth2_write_apis,
                "ip_write_apis": ip_write_apis,
                'database_name': database_name,
                'collection_name': collection_name}
