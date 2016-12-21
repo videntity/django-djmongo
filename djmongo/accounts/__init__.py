@@ -1,1 +1,1 @@
-default_app_config = 'apps.djmongo.dataimport.apps.DataImportConfig'
+default_app_config = 'djmongo.accounts.apps.DJMAccountsConfig'

@@ -111,28 +111,22 @@ class WriteAPIIP(models.Model):
 
 
 @python_2_unicode_compatible
-class WriteAPIoAuth2(models.Model):
+class WriteAPIOAuth2(models.Model):
 
     created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, blank=True, null=True)
-    groups = models.ManyToManyField(Group, blank=True,
-                                    related_name="djmongo_write_oauth_groups")
-    
-    scopes = groups = models.ManyToManyField(Group, blank=True,
-                                    related_name="djmongo_write_oauth_groups")
-    
+        settings.AUTH_USER_MODEL, blank=True, null=True)    
+    scopes = models.CharField(max_length=1024, default="*", blank=True,
+                              help_text="Space delimited list of copes required. * means no scope is required.")
     http_post = models.BooleanField(default=True, blank=True)
     http_put = models.BooleanField(default=True, blank=True)
     slug = models.SlugField(max_length=100, unique=True)
     database_name = models.CharField(max_length=100)
     collection_name = models.CharField(max_length=100)
-    extField(
+    json_schema = models.TextField(
         max_length=20480,
         default="{}",
         verbose_name="JSON Schema",
         help_text="""Default "{}", means no JSON Schema.""")
-    
-    
     readme_md = models.TextField(max_length=4096, default="", blank=True)
     creation_date = models.DateField(auto_now_add=True)
 
