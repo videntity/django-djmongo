@@ -1,5 +1,4 @@
-Contact sales@videntity.com for commercial support or a commercial  
-licese.
+Contact sales@videntity.com for commercial support or a non-GPL license.
 
 
                     GNU GENERAL PUBLIC LICENSE
