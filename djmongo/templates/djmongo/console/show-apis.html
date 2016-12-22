@@ -312,7 +312,7 @@
    	       <div class="row">
 	           <div class="col-lg-12">
 			    
-						<h1>Write APIs (POST)</h1>
+						<h1>Write APIs (POST/PUT)</h1>
 					
 			    </div>
             </div>
@@ -321,7 +321,7 @@
             <div class="col-lg-12">
                   <h3><span class="label label-info">Auth: Basic</span>
 				  <a class="btn pull-right btn-primary btn-large" href="{% url 'djmongo_create_httpauth_write_api_w_params' database_name collection_name %}">
-            <i class="fa fa-pencil-square-o icon-white"></i> Create POST: Basic </a>
+            <i class="fa fa-pencil-square-o icon-white"></i> Create POST/PUT: Basic </a>
 				  </h3>
               </div>
    
@@ -353,7 +353,7 @@
 			  
 			  <tr class="warning">
 					 <td>{{a.slug}}</td>
-					 <td><pre>POST</pre></td>
+					 <td><pre>{{a.http_methods}}</pre></td>
 					 <td>{% for g in a.groups.all %}
 					 {{g.name}}<br>
 					 {% endfor %}
@@ -408,7 +408,7 @@
 					 <tr>
 							<th>Slug (Name)</th>
 							<th>HTTP Methods</th>
-							<th>Scopes</th>
+							<th>IP</th>
 							<th>Endpoint</th>
 							<th>Actions</th>
 					 </tr>
@@ -422,7 +422,7 @@
 			  <tr class="warning">
 					 <td>{{a.slug}}</td>
 					 <td><pre>{{a.http_methods}}</pre></td>
-					 
+					 <td><pre>{{a.from_ip}}</pre></td>
 					 <td><pre>{% url 'djmongo_api_write_to_collection_with_ip' a.slug %}</pre></td>
 							<td>
 						  
