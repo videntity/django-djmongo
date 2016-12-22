@@ -12,7 +12,8 @@ from django.utils.encoding import python_2_unicode_compatible
 
 def update_import_filename(instance, filename):
     path = "imports/"
-    format = instance.user.username + "-" + \
+    format = instance.database_name + "-" + \
+             instance.collection_name  + "-" + \
         str(uuid.uuid4())[0:5] + "-" + filename
     return os.path.join(path, format)
 
@@ -49,8 +50,7 @@ class DataImport(models.Model):
         ordering = ('-creation_date',)
 
     def __str__(self):
-        return "%s by %s %s" % (self.title, self.user.first_name,
-                                self.user.last_name)
+        return "%s/%s" % (self.database_name, self.collection_name)
 
     def save(self, commit=True, **kwargs):
         self.status = "Processing"

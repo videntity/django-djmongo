@@ -25,9 +25,7 @@ def import_data_file(request, database_name=None, collection_name=None):
     if request.method == 'POST':
         form = DataImportForm(request.POST, request.FILES)
         if form.is_valid():
-            di = form.save(commit=False)
-            di.user = request.user
-            di.save()
+            di = form.save()
             messages.success(request, _("The data was imported successfully."))
             return HttpResponseRedirect(reverse('djmongo_show_dbs'))
         else:
@@ -39,12 +37,11 @@ def import_data_file(request, database_name=None, collection_name=None):
                           {'form': form, 'name': name})
 
     # this is a GET
-
-    if database_name and collection_name:
-        idata = {'database_name': database_name,
-                 'collection_name': collection_name}
-    else:
-        idata = {}
+    idata ={}
+    if database_name:
+        idata['database_name'] = database_name
+    if collection_name:
+        idata['collection_name'] = collection_name
     messages.warning(
         request,
         _("""For large data imports use the command line utility csv2mongo.
