@@ -36,7 +36,7 @@ def write_to_collection_httpauth(request, slug):
             od = OrderedDict()
             od["http_methods"] = wapi.http_methods()
             od["slug"] = wapi.slug
-            od["auth_method"] = "oauth2"
+            od["auth_method"] = "httpauth"
             od["json_schema"] = json.loads(wapi.json_schema,
                                            object_pairs_hook=OrderedDict)
             od["readme"] =  wapi.readme_md
@@ -106,7 +106,7 @@ def write_to_collection_ip_auth(request, slug):
             od = OrderedDict()
             od["http_methods"] = wapi.http_methods()
             od["slug"] = wapi.slug
-            od["auth_method"] = "oauth2"
+            od["auth_method"] = "ip"
             od["json_schema"] = json.loads(wapi.json_schema,
                                            object_pairs_hook=OrderedDict)
             od["readme"] =  wapi.readme_md
