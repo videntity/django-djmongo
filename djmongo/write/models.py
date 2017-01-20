@@ -116,7 +116,7 @@ class WriteAPIOAuth2(models.Model):
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, blank=True, null=True)    
     scopes = models.CharField(max_length=1024, default="*", blank=True,
-                              help_text="Space delimited list of copes required. * means no scope is required.")
+                              help_text="Space delimited list of scopes required. * means no scope is required.")
     http_post = models.BooleanField(default=True, blank=True)
     http_put = models.BooleanField(default=True, blank=True)
     slug = models.SlugField(max_length=100, unique=True)
