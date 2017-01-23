@@ -62,11 +62,11 @@ urlpatterns = [
         login_required(edit_simple_httpauth_read_api),
         name="djmongo_edit_simple_httpauth_read_api"),
 
-    url(r'^custom/httpauth/edit-api/(?P<slug>\S+)$',
+    url(r'^custom/httpauth/edit-api/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/(?P<slug>\S+)$',
         login_required(edit_custom_httpauth_read_api),
         name="djmongo_edit_custom_httpauth_read_api"),
 
-    url(r'^custom/public/edit-api/(?P<slug>\S+)$',
+    url(r'^custom/public/edit-api/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/(?P<slug>\S+)$',
         login_required(edit_custom_public_read_api),
         name="djmongo_edit_custom_public_read_api"),
 
