@@ -719,7 +719,7 @@ def edit_simple_httpauth_read_api(
 
 def edit_custom_public_read_api(request, database_name, collection_name, slug):
     name = _("Edit Custom Read API with No Auth (Public)")
-    ss = get_object_or_404(CustomPublicReadAPI, datbase_name=database_name,
+    ss = get_object_or_404(CustomPublicReadAPI, database_name=database_name,
                            collection_name=collection_name, slug=slug)
 
     if request.method == 'POST':

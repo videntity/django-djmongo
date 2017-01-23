@@ -25,6 +25,9 @@ urlpatterns = [
     url(r'^csv$', login_required(import_data_file),
         name="djmongo_import_csv"),
 
+    url(r'^csv/(?P<database_name>[^/]+)$',
+        login_required(import_data_file),
+        name="djmongo_import_csv_w_db"),
 
     url(r'^csv/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
         login_required(import_data_file),

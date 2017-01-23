@@ -25,6 +25,9 @@ class WriteAPIHTTPAuth(models.Model):
             "access the API."))
     slug = models.SlugField(max_length=100, unique=True, help_text=_(
         "The slug is the unique part of the URL for your API."))
+    
+    http_post = models.BooleanField(default=True, blank=True)
+    http_put = models.BooleanField(default=True, blank=True)
     database_name = models.CharField(max_length=100)
     collection_name = models.CharField(max_length=100)
     json_schema = models.TextField(
@@ -32,7 +35,10 @@ class WriteAPIHTTPAuth(models.Model):
         default="{}",
         verbose_name="JSON Schema",
         help_text="""Default "{}", means no JSON Schema.""")
+    readme_md = models.TextField(max_length=4096, default="", blank=True)
     creation_date = models.DateField(auto_now_add=True)
+
+    
 
     class Meta:
         get_latest_by = "creation_date"
@@ -51,13 +57,22 @@ class WriteAPIHTTPAuth(models.Model):
         for g in self.groups.all():
             groups.append(g.name)
         return json.dumps(groups)
-
+    
+    def http_methods(self):
+        l = []
+        if self.http_post:
+            l.append("POST")
+        if self.http_put:
+            l.append("PUT")
+        return l
 
 @python_2_unicode_compatible
 class WriteAPIIP(models.Model):
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, blank=True, null=True)
     slug = models.SlugField(max_length=100, unique=True)
+    http_post = models.BooleanField(default=True, blank=True)
+    http_put = models.BooleanField(default=True, blank=True) 
     database_name = models.CharField(max_length=100)
     collection_name = models.CharField(max_length=100)
     json_schema = models.TextField(
@@ -70,6 +85,7 @@ class WriteAPIIP(models.Model):
                                help_text=_("Only accept requests from a IP in "
                                            "this list separated by whitespace "
                                            ". 0.0.0.0 means all."))
+    readme_md = models.TextField(max_length=4096, default="", blank=True)
     creation_date = models.DateField(auto_now_add=True)
 
     class Meta:
@@ -85,14 +101,24 @@ class WriteAPIIP(models.Model):
     def __str__(self):
         return "%s" % (self.slug)
 
+    def http_methods(self):
+        l = []
+        if self.http_post:
+            l.append("POST")
+        if self.http_put:
+            l.append("PUT")
+        return l
+
 
 @python_2_unicode_compatible
-class WriteAPIoAuth2(models.Model):
+class WriteAPIOAuth2(models.Model):
 
     created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, blank=True, null=True)
-    groups = models.ManyToManyField(Group, blank=True,
-                                    related_name="djmongo_write_oauth_groups")
+        settings.AUTH_USER_MODEL, blank=True, null=True)    
+    scopes = models.CharField(max_length=1024, default="*", blank=True,
+                              help_text="Space delimited list of scopes required. * means no scope is required.")
+    http_post = models.BooleanField(default=True, blank=True)
+    http_put = models.BooleanField(default=True, blank=True)
     slug = models.SlugField(max_length=100, unique=True)
     database_name = models.CharField(max_length=100)
     collection_name = models.CharField(max_length=100)
@@ -101,13 +127,22 @@ class WriteAPIoAuth2(models.Model):
         default="{}",
         verbose_name="JSON Schema",
         help_text="""Default "{}", means no JSON Schema.""")
+    readme_md = models.TextField(max_length=4096, default="", blank=True)
     creation_date = models.DateField(auto_now_add=True)
 
     class Meta:
         get_latest_by = "creation_date"
         ordering = ('-creation_date',)
-        verbose_name_plural = "Write APIs with oAuth2 Auth"
-        verbose_name = "Write API with oAuth2 Auth"
+        verbose_name_plural = "Write APIs with OAuth2 Auth"
+        verbose_name = "Write API with OAuth2 Auth"
 
     def __str__(self):
         return "%s" % (self.slug)
+    
+    def http_methods(self):
+        l = []
+        if self.http_post:
+            l.append("POST")
+        if self.http_put:
+            l.append("PUT")
+        return l

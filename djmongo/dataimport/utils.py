@@ -16,8 +16,9 @@ def bulk_csv_import_mongo(csvfile, database_name, collection_name,
 
     response_dict = {}
     try:
-        mc = MongoClient(host=settings.MONGO_HOST,
-                         port=settings.MONGO_PORT)
+        mongodb_client_url = getattr(settings, 'MONGODB_CLIENT',
+                                 'mongodb://localhost:27017/')
+        mc = MongoClient(mongodb_client_url,document_class=OrderedDict)
         db = mc[str(database_name)]
         collection = db[str(collection_name)]
 
