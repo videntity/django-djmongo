@@ -21,6 +21,31 @@ from ..write.models import WriteAPIHTTPAuth, WriteAPIIP, WriteAPIOAuth2
 from ..search.models import (CustomHTTPAuthReadAPI, CustomPublicReadAPI,
                              HTTPAuthReadAPI, PublicReadAPI)
 
+def api_wizard(request, database_name=None, collection_name=None):
+    pass
+
+
+def api_list(request):
+    # Get all of the Read APIs
+    custom_httpauth_read_apis = CustomHTTPAuthReadAPI.objects.all()
+    custom_public_read_apis = CustomPublicReadAPI.objects.all()
+    simple_public_read_apis = PublicReadAPI.objects.all()
+    simple_httpauth_read_apis = HTTPAuthReadAPI.objects.all()
+    # Get all of the Write APIs
+    ip_write_apis = WriteAPIIP.objects.all()
+    httpauth_write_apis = WriteAPIHTTPAuth.objects.all()
+    oauth2_write_apis = WriteAPIOAuth2.objects.all()
+    context = {"custom_httpauth_read_apis": custom_httpauth_read_apis,
+               "custom_public_read_apis": custom_public_read_apis,
+               "simple_public_read_apis": simple_public_read_apis,
+               "simple_httpauth_read_apis": simple_httpauth_read_apis,
+               "httpauth_write_apis": httpauth_write_apis,
+               "oauth2_write_apis": oauth2_write_apis,
+               "ip_write_apis": ip_write_apis}
+    return render(request, 'djmongo/console/api-list.html',
+                  context)
+
+
 
 def show_apis(request, database_name, collection_name):
 
