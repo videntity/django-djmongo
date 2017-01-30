@@ -1,3 +1,7 @@
+=======
+
+See https://github.com/videntity/django-djmongo/blob/master/README.md
+
 ==================================================
 Djmongo - A Drop-in Django Application for MongoDB
 ==================================================
