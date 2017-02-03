@@ -54,13 +54,13 @@ def api_list(request):
         not_empty = False
 
     # pdb.set_trace()
-    context = {"custom_httpauth_read_apis": custom_httpauth_read_apis,
-               "custom_public_read_apis": custom_public_read_apis,
-               "simple_public_read_apis": simple_public_read_apis,
-               "simple_httpauth_read_apis": simple_httpauth_read_apis,
-               "httpauth_write_apis": httpauth_write_apis,
-               "oauth2_write_apis": oauth2_write_apis,
-               "ip_write_apis": ip_write_apis,
+    context = {'apis': [custom_httpauth_read_apis,
+               custom_public_read_apis,
+               simple_public_read_apis,
+               simple_httpauth_read_apis,
+               httpauth_write_apis,
+               oauth2_write_apis,
+                        ip_write_apis],
                "not_empty": not_empty}
     return render(request, 'djmongo/console/api-list.html',
                   context)

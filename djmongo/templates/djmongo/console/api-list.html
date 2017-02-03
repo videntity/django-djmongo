@@ -35,8 +35,9 @@
                      <th>Actions</th>
                   </tr>
                </thead>
-               {% if simple_public_read_apis %} 
-               {% for a in simple_public_read_apis %}
+               {% for api in apis %}
+               {% if api %} 
+               {% for a in api %}
                <tbody>
                   <tr class="danger">
                      <td data-toggle="collapse" data-target="#{{a.slug}}" class="accordion-toggle"><button type="button" class="btn btn-primary">README</button></td>
@@ -44,7 +45,7 @@
                         <pre>{{a.slug}}</pre>
                      </td>
                      <td>
-                        <pre>GET</pre>
+                        <pre>{{a}}</pre>
                      </td>
                      <td>
                         <pre>None (Public)</pre>
@@ -101,6 +102,7 @@
               </tbody>
               {% endfor %}
               {% endif %}
+              {% endfor %}
             </table>
          </div>
       </div>
