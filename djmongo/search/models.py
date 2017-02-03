@@ -57,7 +57,7 @@ class CustomHTTPAuthReadAPI(models.Model):
         return "%s" % (self.slug)
 
     def url(self):
-        return reverse('run_saved_search_by_slug', args=(self.slug,))
+        return reverse('djmongo_run_custom_httpauth_read_api_by_slug', args=(self.slug,))
 
 
 @python_2_unicode_compatible
@@ -95,6 +95,7 @@ class CustomPublicReadAPI(models.Model):
     )
     database_name = models.CharField(max_length=100)
     collection_name = models.CharField(max_length=100)
+    readme_md = models.TextField(max_length=4096, default="", blank=True)
     creation_date = models.DateField(auto_now_add=True)
 
     class Meta:
@@ -105,8 +106,10 @@ class CustomPublicReadAPI(models.Model):
         return "%s" % (self.slug)
 
     def url(self):
-        return reverse('run_saved_search_by_slug', args=(self.slug,))
+        return reverse('djmongo_run_custom_public_read_api_by_slug', args=(self.slug,))
 
+    def http_methods(self):
+        return ['GET',]
 
 @python_2_unicode_compatible
 class HTTPAuthReadAPI(models.Model):
@@ -123,6 +126,8 @@ class HTTPAuthReadAPI(models.Model):
                                                 these keys.""")
     groups = models.ManyToManyField(
         Group, blank=True, related_name="djmongo_http_auth_read_api")
+    readme_md = models.TextField(max_length=4096, default="", blank=True)
+    creation_date = models.DateField(auto_now_add=True)
 
     class Meta:
         # get_latest_by = "creation_date"
@@ -132,18 +137,24 @@ class HTTPAuthReadAPI(models.Model):
     def __str__(self):
         return "%s/%s" % (self.database_name, self.collection_name)
 
+    def url(self):
+        return reverse('djmongo_api_httpauth_simple_search',
+                       args=(self.database_name, self.collection_name, self.slug, 'json'))
+
     def json_url(self):
-        return reverse('djmongo_api_public_search_json_w_params',
-                       args=(self.database_name, self.collection_name))
+        return reverse('djmongo_api_httpauth_simple_search',
+                       args=(self.database_name, self.collection_name, self.slug, 'json'))
 
     def csv_url(self):
-        return reverse('djmongo_api_public_search_csv_w_params',
-                       args=(self.database_name, self.collection_name))
+        return reverse('djmongo_api_httpauth_simple_search',
+                       args=(self.database_name, self.collection_name, self.slug, 'csv'))
 
     def html_url(self):
-        return reverse('djmongo_api_public_search_html_w_params',
-                       args=(self.database_name, self.collection_name))
+        return reverse('djmongo_api_httpauth_simple_search',
+                       args=(self.database_name, self.collection_name, self.slug, 'html'))
 
+    def http_methods(self):
+        return ['GET',]
 
 @python_2_unicode_compatible
 class PublicReadAPI(models.Model):
@@ -158,6 +169,8 @@ class PublicReadAPI(models.Model):
                                                 keys, separated by whitespace,
                                                 limits the API search to only
                                                 these keys.""")
+    readme_md = models.TextField(max_length=4096, default="", blank=True)
+    creation_date = models.DateField(auto_now_add=True)
 
     class Meta:
         # get_latest_by = "creation_date"
@@ -167,14 +180,62 @@ class PublicReadAPI(models.Model):
     def __str__(self):
         return "%s/%s" % (self.database_name, self.collection_name)
 
+    def url(self):
+        return reverse('djmongo_api_public_simple_search',
+                       args=(self.database_name, self.collection_name, self.slug, 'json'))
     def json_url(self):
-        return reverse('djmongo_api_public_search_json_w_params',
-                       args=(self.database_name, self.collection_name))
+        return reverse('djmongo_api_public_simple_search',
+                       args=(self.database_name, self.collection_name, self.slug, 'json'))
 
     def csv_url(self):
-        return reverse('djmongo_api_public_search_csv_w_params',
-                       args=(self.database_name, self.collection_name))
+        return reverse('djmongo_api_public_simple_search',
+                       args=(self.database_name, self.collection_name, self.slug,'csv'))
 
     def html_url(self):
-        return reverse('djmongo_api_public_search_html_w_params',
-                       args=(self.database_name, self.collection_name))
+        return reverse('djmongo_api_public_simple_search',
+                       args=(self.database_name, self.collection_name, self.slug, 'html'))
+    
+    def http_methods(self):
+        return ['GET',]
+
+@python_2_unicode_compatible
+class OAuth2ReadAPI(models.Model):
+
+    database_name = models.CharField(max_length=256)
+    collection_name = models.CharField(max_length=256)
+    slug = models.SlugField(max_length=100,
+                            help_text="Give your API a unique name")
+    search_keys = models.TextField(max_length=4096, default="", blank=True,
+                                   help_text="""The default, blank, returns
+                                                all keys. Providing a list of
+                                                keys, separated by whitespace,
+                                                limits the API search to only
+                                                these keys.""")
+    readme_md = models.TextField(max_length=4096, default="", blank=True)
+    creation_date = models.DateField(auto_now_add=True)
+    
+    class Meta:
+        # get_latest_by = "creation_date"
+        # ordering = ('-creation_date',)
+        unique_together = (('database_name', 'collection_name', 'slug'), )
+
+    def __str__(self):
+        return "%s/%s" % (self.database_name, self.collection_name)
+    
+    def url(self):
+        return reverse('djmongo_api_oauth2_simple_search',
+                       args=(self.database_name, self.collection_name, self.slug, 'json'))
+
+    def json_url(self):
+        return reverse('djmongo_api_oauth2_simple_search',
+                       args=(self.database_name, self.collection_name, self.slug, 'json'))
+
+    def csv_url(self):
+        return reverse('djmongo_api_oauth2_simple_search',
+                       args=(self.database_name, self.collection_name, self.slug, 'csv'))
+
+    def html_url(self):
+        return reverse('djmongo_api_oauth2_simple_search',
+                       args=(self.database_name, self.collection_name, self.slug, 'html'))
+    def http_methods(self):
+        return ['GET',]
