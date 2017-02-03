@@ -45,10 +45,10 @@
                         <pre>{{a.slug}}</pre>
                      </td>
                      <td>
-                        <pre>{{a}}</pre>
+                        <pre>{{a.http_methods}}</pre>
                      </td>
                      <td>
-                        <pre>None (Public)</pre>
+                        <pre>{{a.auth_method}}</pre>
                      </td>
                      <td>
                         <pre>{% url 'djmongo_api_public_simple_search' a.database_name a.collection_name a.slug 'json' %}|csv|html</pre>
@@ -91,7 +91,7 @@
                               <thead>
                                  <tr class="accordian-body collapse" id="{{a.slug}}">
                                     <td>
-                                       <p>{{a.read_me}}</p>
+                                       <p>{{a.readme_md}}</p>
                                     </td>
                                  </tr>
                               </thead>

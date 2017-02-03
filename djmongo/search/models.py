@@ -59,6 +59,8 @@ class CustomHTTPAuthReadAPI(models.Model):
     def url(self):
         return reverse('djmongo_run_custom_httpauth_read_api_by_slug', args=(self.slug,))
 
+    def auth_method(self):
+        return 'HTTP'
 
 @python_2_unicode_compatible
 class CustomPublicReadAPI(models.Model):
@@ -111,6 +113,9 @@ class CustomPublicReadAPI(models.Model):
     def http_methods(self):
         return ['GET',]
 
+    def auth_method(self):
+        return 'Public (NONE)'
+
 @python_2_unicode_compatible
 class HTTPAuthReadAPI(models.Model):
 
@@ -156,6 +161,9 @@ class HTTPAuthReadAPI(models.Model):
     def http_methods(self):
         return ['GET',]
 
+    def auth_method(self):
+        return 'HTTP'
+
 @python_2_unicode_compatible
 class PublicReadAPI(models.Model):
 
@@ -198,6 +206,9 @@ class PublicReadAPI(models.Model):
     def http_methods(self):
         return ['GET',]
 
+    def auth_method(self):
+        return 'Public (NONE)'
+     
 @python_2_unicode_compatible
 class OAuth2ReadAPI(models.Model):
 
@@ -239,3 +250,6 @@ class OAuth2ReadAPI(models.Model):
                        args=(self.database_name, self.collection_name, self.slug, 'html'))
     def http_methods(self):
         return ['GET',]
+
+    def auth_method(self):
+        return 'OAuth2'

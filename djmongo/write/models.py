@@ -66,6 +66,9 @@ class WriteAPIHTTPAuth(models.Model):
             l.append("PUT")
         return l
 
+    def auth_method(self):
+        return 'HTTP'
+
 @python_2_unicode_compatible
 class WriteAPIIP(models.Model):
     created_by = models.ForeignKey(
@@ -109,6 +112,8 @@ class WriteAPIIP(models.Model):
             l.append("PUT")
         return l
 
+    def auth_method(self):
+        return 'IP'
 
 @python_2_unicode_compatible
 class WriteAPIOAuth2(models.Model):
@@ -146,3 +151,6 @@ class WriteAPIOAuth2(models.Model):
         if self.http_put:
             l.append("PUT")
         return l
+
+    def auth_method(self):
+        return 'OAuth2'
