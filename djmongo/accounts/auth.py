@@ -29,7 +29,7 @@ class HTTPAuthBackend(object):
 
     def is_authenticated(self, request):
         auth_string = request.META.get('HTTP_AUTHORIZATION', None)
-        print "here"
+        print("here")
 
         if not auth_string:
             return False

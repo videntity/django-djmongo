@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # vim: ai ts=4 sts=4 et sw=4
 import json
+import pdb
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
@@ -35,13 +36,32 @@ def api_list(request):
     ip_write_apis = WriteAPIIP.objects.all()
     httpauth_write_apis = WriteAPIHTTPAuth.objects.all()
     oauth2_write_apis = WriteAPIOAuth2.objects.all()
+    if custom_httpauth_read_apis:
+        not_empty = True
+    elif custom_public_read_apis:
+        not_empty = True
+    elif simple_public_read_apis:
+        not_empty =  True
+    elif simple_httpauth_read_apis:
+        not_empty = True
+    elif ip_write_apis:
+        not_empty = True
+    elif httpauth_write_apis:
+        not_empty = True
+    elif oauth2_write_apis:
+        not_empty = True
+    else:
+        not_empty = False
+
+    # pdb.set_trace()
     context = {"custom_httpauth_read_apis": custom_httpauth_read_apis,
                "custom_public_read_apis": custom_public_read_apis,
                "simple_public_read_apis": simple_public_read_apis,
                "simple_httpauth_read_apis": simple_httpauth_read_apis,
                "httpauth_write_apis": httpauth_write_apis,
                "oauth2_write_apis": oauth2_write_apis,
-               "ip_write_apis": ip_write_apis}
+               "ip_write_apis": ip_write_apis,
+               "not_empty": not_empty}
     return render(request, 'djmongo/console/api-list.html',
                   context)
 
