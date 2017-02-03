@@ -203,9 +203,7 @@ def create_httpauth_write_api(
     if request.method == 'POST':
         form = WriteAPIHTTPAuthForm(request.POST)
         if form.is_valid():
-            a = form.save(commit=False)
-            a.created_by = request.user
-            a.save()
+            a = form.save()
             msg = _('The HTTP Auth write API for %s was created.') % (a.slug)
             messages.success(request, msg)
 
@@ -243,9 +241,7 @@ def create_ip_write_api(request, database_name=None, collection_name=None):
     if request.method == 'POST':
         form = WriteAPIIPForm(request.POST)
         if form.is_valid():
-            a = form.save(commit=False)
-            a.created_by = request.user
-            a.save()
+            a = form.save()
             msg = _('The IP-based write API for %s was created.') % (a.slug)
             messages.success(request, msg)
             return HttpResponseRedirect(
@@ -281,9 +277,7 @@ def edit_httpauth_write_api(request, slug):
     if request.method == 'POST':
         form = WriteAPIHTTPAuthForm(request.POST, instance=a)
         if form.is_valid():
-            a = form.save(commit=False)
-            a.created_by = request.user
-            a.save()
+            a = form.save()
             msg = _('The HTTP Auth API for %s was updated.') % (slug)
             messages.success(request, msg)
             return HttpResponseRedirect(
@@ -316,9 +310,7 @@ def edit_ip_write_api(request, slug):
     if request.method == 'POST':
         form = WriteAPIIPForm(request.POST, instance=a)
         if form.is_valid():
-            a = form.save(commit=False)
-            a.created_by = request.user
-            a.save()
+            a = form.save()
             msg = _('The IP-based API for %s was updated.') % (slug)
             messages.success(request, msg)
             return HttpResponseRedirect(
