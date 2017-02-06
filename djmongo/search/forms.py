@@ -12,7 +12,7 @@ class HTTPAuthReadAPIForm(forms.ModelForm):
     class Meta:
         model = HTTPAuthReadAPI
         fields = ('slug', 'database_name', 'collection_name',
-                  'search_keys', 'groups')
+                  'search_keys', 'groups','readme_md',)
     required_css_class = 'required'
 
 
@@ -20,8 +20,8 @@ class PublicReadAPIForm(forms.ModelForm):
 
     class Meta:
         model = PublicReadAPI
-        fields = ('slug', 'database_name', 'collection_name',
-                  'search_keys',)
+        fields = ('slug', 'database_name', 'collection_name', 
+                  'search_keys','readme_md',)
     required_css_class = 'required'
 
 
@@ -31,8 +31,7 @@ class CustomHTTPAuthReadAPIForm(forms.ModelForm):
         model = CustomHTTPAuthReadAPI
         fields = ('slug', 'query', 'group', 'type_mapper',
                   'return_keys', 'sort', 'default_limit',
-                  'database_name', 'collection_name', 'output_format')
-
+                  'database_name', 'collection_name', 'output_format', 'readme_md',)
     required_css_class = 'required'
 
 
@@ -42,6 +41,5 @@ class CustomPublicReadAPIForm(forms.ModelForm):
         model = CustomPublicReadAPI
         fields = ('slug', 'query', 'type_mapper',
                   'return_keys', 'sort', 'default_limit',
-                  'database_name', 'collection_name', 'output_format')
-
+                  'database_name', 'collection_name', 'output_format', 'readme_md',)
     required_css_class = 'required'

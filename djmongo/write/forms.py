@@ -17,9 +17,9 @@ class WriteAPIHTTPAuthForm(forms.ModelForm):
             'http_put',
             'database_name',
             'collection_name',
-            'readme_md',
             'groups',
-            'json_schema')
+            'json_schema',
+            'readme_md',)
     required_css_class = 'required'
     
     def clean_json_schema(self):
@@ -57,8 +57,8 @@ class WriteAPIIPForm(forms.ModelForm):
             'database_name',
             'collection_name',
             'from_ip',
-            'readme_md',
-            'json_schema')
+            'json_schema',
+            'readme_md',)
     required_css_class = 'required'
 
     def clean_json_schema(self):
@@ -96,8 +96,8 @@ class WriteAPIOAuth2Form(forms.ModelForm):
             'database_name',
             'collection_name',
             'scopes',
-            'readme_md',
-            'json_schema')
+            'json_schema',
+            'readme_md',)
     required_css_class = 'required'
 
     def clean_json_schema(self):
