@@ -9,16 +9,12 @@ from .views import simple_search
 from .views import run_custom_public_read_api_by_slug
 
 urlpatterns += [
-    
-        # url(r'^api/oauth2/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/(?P<slug>[^.]+).(?P<output_type>[^/]+)$',
-        # capability_protected_resource(simple_search), name="djmongo_api_oauth2_simple_search"),
-       
+           
         url(r'^api/oauth2/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/(?P<slug>[^.]+).(?P<output_type>[^/]+)$',
-        capability_protected_resource(simple_search), name="djmongo_api_oauth2_simple_search"),
-        
+        capability_protected_resource()(simple_search), name="djmongo_api_oauth2_simple_search"),
         
         url(r'^api/custom/oauth2/(?P<slug>\S+)$',
-        capability_protected_resource(run_custom_public_read_api_by_slug),
+        capability_protected_resource()(run_custom_public_read_api_by_slug),
         name="djmongo_run_custom_oauth2_read_api_by_slug"),
         
 ]

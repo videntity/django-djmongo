@@ -17,9 +17,9 @@ class WriteAPIHTTPAuthForm(forms.ModelForm):
             'http_put',
             'database_name',
             'collection_name',
+            'readme_md',
             'groups',
-            'json_schema',
-            'readme_md',)
+            'json_schema')
     required_css_class = 'required'
     
     def clean_json_schema(self):
@@ -57,8 +57,8 @@ class WriteAPIIPForm(forms.ModelForm):
             'database_name',
             'collection_name',
             'from_ip',
-            'json_schema',
-            'readme_md',)
+            'readme_md',
+            'json_schema')
     required_css_class = 'required'
 
     def clean_json_schema(self):
@@ -96,8 +96,8 @@ class WriteAPIOAuth2Form(forms.ModelForm):
             'database_name',
             'collection_name',
             'scopes',
-            'json_schema',
-            'readme_md',)
+            'readme_md',
+            'json_schema')
     required_css_class = 'required'
 
     def clean_json_schema(self):
@@ -122,6 +122,3 @@ class WriteAPIOAuth2DeleteForm(forms.Form):
         except WriteAPIOAuth2.DoesNotExist:
             raise forms.ValidationError(_('There is no API with that slug.'))
         return slug
-        
-
-
