@@ -51,11 +51,12 @@ def write_to_collection_httpauth(request, slug):
 
         # Check if request body is JSON ------------------------
         try:
-            j = json.loads(request.body, object_pairs_hook=OrderedDict)
+            j = json.loads(request.body.decode(), object_pairs_hook=OrderedDict)
             if not isinstance(j, type(OrderedDict())):
                 kickout_400(
                     "The request body did not contain a JSON object i.e. {}.")
         except:
+            print(str(sys.exc_info()))
             return kickout_400("The request body did not contain valid JSON.")
 
         # check json_schema is valid
@@ -64,6 +65,7 @@ def write_to_collection_httpauth(request, slug):
                 wapi.json_schema, object_pairs_hook=OrderedDict)
 
         except:
+            print(str(sys.exc_info()))
             return kickout_500(
                 "The JSON Schema on the server did not contain valid JSON.")
 
@@ -114,6 +116,7 @@ def write_to_collection_ip_auth(request, slug):
                 json.dumps(od, indent=4),
                 content_type="application/json")
         except:
+            print(str(sys.exc_info()))
             return kickout_500("The JSON Schema did not contain valid JSON")
 
     # ----------------------------------------------------
@@ -121,12 +124,13 @@ def write_to_collection_ip_auth(request, slug):
 
         # Check if request body is JSON ------------------------
         try:
-            j = json.loads(request.body, object_pairs_hook=OrderedDict)
+            j = json.loads(request.body.decode(), object_pairs_hook=OrderedDict)
             if not isinstance(j, type(OrderedDict())):
                 kickout_400(
                     "The request body did not contain a JSON object i.e. {}.")
         except:
-            return kickout_400("The request body did not contain valid JSON.")
+            print(str(sys.exc_info()))
+            return kickout_400("The request body did not contain valid JSON...")
 
         # check json_schema is valid
         try:
@@ -134,6 +138,7 @@ def write_to_collection_ip_auth(request, slug):
                 wapi.json_schema, object_pairs_hook=OrderedDict)
 
         except:
+            print(str(sys.exc_info()))
             return kickout_500(
                 "The JSON Schema on the server did not contain valid JSON")
 
