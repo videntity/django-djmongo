@@ -4,8 +4,6 @@
 from django.contrib.auth.decorators import login_required
 from django.conf.urls import url
 from .views import write_to_collection_httpauth, write_to_collection_ip_auth
-from .oauth_views import (write_to_collection_oauth2, create_oauth2_write_api,
-                          edit_oauth2_write_api, delete_oauth2_write_api)
 from .views import browse_ip_write_apis, browse_httpauth_write_apis
 from .views import create_httpauth_write_api, create_ip_write_api
 from .views import delete_httpauth_write_api, delete_ip_write_api
@@ -20,10 +18,6 @@ urlpatterns = [
     url(r'^api/ip/(?P<slug>[^/]+)$',
         write_to_collection_ip_auth,
         name="djmongo_api_write_to_collection_with_ip"),
-    
-    url(r'^api/oauth2/(?P<slug>[^/]+)$',
-        write_to_collection_oauth2,
-        name="djmongo_api_write_to_collection_with_oauth2"),
 
     # Browse existing APIS in the UI
     url(r'^ip/browse-write-apis/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
