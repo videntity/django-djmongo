@@ -48,6 +48,7 @@ class CustomHTTPAuthReadAPI(models.Model):
     database_name = models.CharField(max_length=100)
     collection_name = models.CharField(max_length=100)
     creation_date = models.DateField(auto_now_add=True)
+    readme_md = models.TextField(max_length=4096, default="", blank=True)
 
     class Meta:
         get_latest_by = "creation_date"

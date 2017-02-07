@@ -32,6 +32,7 @@ class CustomHTTPAuthReadAPIForm(forms.ModelForm):
         fields = ('slug', 'query', 'group', 'type_mapper',
                   'return_keys', 'sort', 'default_limit',
                   'database_name', 'collection_name', 'output_format', 'readme_md',)
+
     required_css_class = 'required'
 
 
@@ -42,4 +43,5 @@ class CustomPublicReadAPIForm(forms.ModelForm):
         fields = ('slug', 'query', 'type_mapper',
                   'return_keys', 'sort', 'default_limit',
                   'database_name', 'collection_name', 'output_format', 'readme_md',)
+
     required_css_class = 'required'
