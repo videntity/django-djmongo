@@ -6,7 +6,7 @@ import json
 import sys
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
-from ..decorators import (httpauth_login_required, ip_verification_required,
+from ..decorators import (httpauth_login_required, ip_write_verification_required,
                           kickout_400, kickout_404, kickout_500)
 from django.http import HttpResponse, HttpResponseRedirect
 from collections import OrderedDict
@@ -88,7 +88,7 @@ def write_to_collection_httpauth(request, slug):
 
 
 @csrf_exempt
-@ip_verification_required
+@ip_write_verification_required
 def write_to_collection_ip_auth(request, slug):
 
     try:

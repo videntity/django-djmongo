@@ -3,7 +3,7 @@
 # vim: ai ts=4 sts=4 et sw=4
 from django.contrib.auth.decorators import login_required
 from ..decorators import httpauth_login_required
-from ..decorators import check_read_httpauth_access, check_public_ok
+from ..decorators import check_read_httpauth_access, check_public_ok, ip_read_verification_required
 from django.conf.urls import url
 
 from .views import run_custom_public_read_api_by_slug, run_custom_httpauth_read_api_by_slug
@@ -25,11 +25,13 @@ urlpatterns = [
     url(r'^api/public/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/(?P<slug>[^.]+).(?P<output_type>[^/]+)$',
         check_public_ok(simple_search), name="djmongo_api_public_simple_search"),
 
-
-
     url(r'^api/httpauth/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/(?P<slug>[^.]+).(?P<output_type>[^/]+)$',
         httpauth_login_required(check_read_httpauth_access(simple_search)),
         name="djmongo_api_httpauth_simple_search"),
+
+    url(r'^api/ip/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/(?P<slug>[^.]+).(?P<output_type>[^/]+)$',
+        ip_read_verification_required(simple_search),
+        name="djmongo_api_ip_simple_search"),
 
 
     url(r'^api/custom/httpauth/(?P<slug>\S+)$',

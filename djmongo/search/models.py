@@ -187,7 +187,7 @@ class PublicReadAPI(models.Model):
         unique_together = (('database_name', 'collection_name', 'slug'), )
 
     def __str__(self):
-        return "%s/%s" % (self.database_name, self.collection_name)
+        return "%s/%s/%s" % (self.database_name, self.collection_name, self.slug)
 
     def url(self):
         return reverse('djmongo_api_public_simple_search',
@@ -208,8 +208,65 @@ class PublicReadAPI(models.Model):
         return ['GET',]
 
     def auth_method(self):
-        return 'Public (NONE)'
-     
+        return 'public'
+
+@python_2_unicode_compatible
+class IPReadAPI(models.Model):
+
+    database_name = models.CharField(max_length=256)
+    collection_name = models.CharField(max_length=256)
+    slug = models.SlugField(max_length=100,
+                            help_text="Give your API a unique name")
+    search_keys = models.TextField(max_length=4096, default="", blank=True,
+                                   help_text="""The default, blank, returns
+                                                all keys. Providing a list of
+                                                keys, separated by whitespace,
+                                                limits the API search to only
+                                                these keys.""")
+    from_ip = models.TextField(max_length=2048, default="127.0.0.1",
+                               verbose_name=_("From IPs"),
+                               help_text=_("Only accept requests from a IP in "
+                                           "this list separated by whitespace "
+                                           ". 0.0.0.0 means all."))
+    readme_md = models.TextField(max_length=4096, default="", blank=True)
+    creation_date = models.DateField(auto_now_add=True)
+
+    class Meta:
+        # get_latest_by = "creation_date"
+        # ordering = ('-creation_date',)
+        unique_together = (('database_name', 'collection_name', 'slug'), )
+    
+    def allowable_ips(self):
+        allowable_ips = self.from_ip.split(" ")
+        return allowable_ips
+
+    def __str__(self):
+        return "%s/%s/%s" % (self.database_name, self.collection_name, self.slug)
+
+    def url(self):
+        return reverse('djmongo_api_ip_simple_search',
+                       args=(self.database_name, self.collection_name, self.slug, 'json'))
+    def json_url(self):
+        return reverse('djmongo_api_ip_simple_search',
+                       args=(self.database_name, self.collection_name, self.slug, 'json'))
+
+    def csv_url(self):
+        return reverse('djmongo_api_ip_simple_search',
+                       args=(self.database_name, self.collection_name, self.slug,'csv'))
+
+    def html_url(self):
+        return reverse('djmongo_api_ip_simple_search',
+                       args=(self.database_name, self.collection_name, self.slug, 'html'))
+    
+    def http_methods(self):
+        return ['GET',]
+
+    def auth_method(self):
+        return 'ip'
+
+
+
+ 
 @python_2_unicode_compatible
 class OAuth2ReadAPI(models.Model):
 
@@ -232,7 +289,7 @@ class OAuth2ReadAPI(models.Model):
         unique_together = (('database_name', 'collection_name', 'slug'), )
 
     def __str__(self):
-        return "%s/%s" % (self.database_name, self.collection_name)
+        return "%s/%s/%s" % (self.database_name, self.collection_name, self.slug)
     
     def url(self):
         return reverse('djmongo_api_oauth2_simple_search',
@@ -253,4 +310,4 @@ class OAuth2ReadAPI(models.Model):
         return ['GET',]
 
     def auth_method(self):
-        return 'OAuth2'
+        return 'oauth2'

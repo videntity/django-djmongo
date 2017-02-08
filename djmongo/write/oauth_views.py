@@ -6,8 +6,7 @@ import json
 import sys
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
-from ..decorators import (httpauth_login_required, ip_verification_required,
-                          kickout_400, kickout_404, kickout_500)
+from ..decorators import (kickout_400, kickout_404, kickout_500)
 from django.http import HttpResponse, HttpResponseRedirect
 from collections import OrderedDict
 from ..mongoutils import write_mongo
@@ -17,12 +16,6 @@ from jsonschema.exceptions import ValidationError
 from .models import WriteAPIOAuth2
 from .forms import WriteAPIOAuth2Form, WriteAPIOAuth2DeleteForm
 from django.utils.translation import ugettext_lazy as _
-
-
-
-
-
-
 
 @csrf_exempt
 def write_to_collection_oauth2(request, slug):
@@ -99,7 +92,7 @@ def create_oauth2_write_api(
             a = form.save(commit=False)
             a.created_by = request.user
             a.save()
-            msg = _('The HTTP OAuth2 write API for %s was created.') % (a.slug)
+            msg = _('The OAuth2 write API for %s was created.') % (a.slug)
             messages.success(request, msg)
 
             return HttpResponseRedirect(reverse('djmongo_show_apis',

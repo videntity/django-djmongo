@@ -15,7 +15,7 @@ from functools import update_wrapper, wraps
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 from .utils import authorize, unauthorized_json_response, json_response_400, json_response_404
-from .search.models import HTTPAuthReadAPI, PublicReadAPI
+from .search.models import HTTPAuthReadAPI, PublicReadAPI, IPReadAPI
 from .write.models import WriteAPIIP
 import shlex
 import json
@@ -49,7 +49,7 @@ def httpauth_login_required(func):
     return update_wrapper(wrapper, func)
 
 
-def ip_verification_required(func):
+def ip_write_verification_required(func):
     """
         Put this decorator before your view to check if the function is coming from an IP on file
     """
@@ -57,11 +57,14 @@ def ip_verification_required(func):
     def wrapper(request, *args, **kwargs):
 
         slug = kwargs.get('slug', "")
+        database_name = kwargs.get('database_name', "")
+        collection_name = kwargs.get('collection_name', "")
         if not slug:
-            return kickoutt_404("Not found.", content_type="application/json")
+            return kickout_404("Not found.", content_type="application/json")
 
         try:
-            wip = WriteAPIIP.objects.get(slug=slug)
+            wip = WriteAPIIP.objects.get(slug=slug, database_name=database_name,
+                                         collection_name=collection_name)
             ip = get_client_ip(request)
             if ip not in wip.allowable_ips() and "0.0.0.0" not in wip.allowable_ips():
                 msg = "The IP %s is not authorized to make the API call." % (
@@ -69,6 +72,37 @@ def ip_verification_required(func):
                 return kickout_401(msg)
 
         except WriteAPIIP.DoesNotExist:
+            return HttpResponse(unauthorized_json_response(),
+                                content_type="application/json")
+
+        return func(request, *args, **kwargs)
+
+    return update_wrapper(wrapper, func)
+
+
+def ip_read_verification_required(func):
+    """
+        Put this decorator before your view to check if the function is coming from an IP on file
+    """
+
+    def wrapper(request, *args, **kwargs):
+
+        slug = kwargs.get('slug', "")
+        database_name = kwargs.get('database_name', "")
+        collection_name = kwargs.get('collection_name', "")
+        if not slug:
+            return kickout_404("Not found.", content_type="application/json")
+
+        try:
+            rip = IPReadAPI.objects.get(slug=slug, database_name=database_name,
+                                        collection_name=collection_name)
+            ip = get_client_ip(request)
+            if ip not in rip.allowable_ips() and "0.0.0.0" not in rip.allowable_ips():
+                msg = "The IP %s is not authorized to make the API call." % (
+                    ip)
+                return kickout_401(msg)
+
+        except IPReadAPI.DoesNotExist:
             return HttpResponse(unauthorized_json_response(),
                                 content_type="application/json")
 
@@ -86,13 +120,15 @@ def check_public_ok(func):
         default_to_open = getattr(settings, 'DEFAULT_TO_OPEN_READ', False)
         database_name = kwargs.get('database_name', "")
         collection_name = kwargs.get('collection_name', "")
+        slug = kwargs.get('slug', "")
         if not default_to_open:
             if not database_name or not collection_name:
                 return HttpResponse(unauthorized_json_response(),
                                     content_type="application/json")
             try:
-                pub_read_api = PublicReadAPI.objects.get(
-                    database_name=database_name, collection_name=collection_name)
+                pub_read_api = PublicReadAPI.objects.get(slug=slug,
+                                                         database_name=database_name,
+                                                         collection_name=collection_name)
             except PublicReadAPI.DoesNotExist:
                 return HttpResponse(unauthorized_json_response(),
                                     content_type="application/json")
@@ -125,14 +161,16 @@ def check_read_httpauth_access(func):
     def wrapper(request, *args, **kwargs):
         database_name = kwargs.get('database_name', "")
         collection_name = kwargs.get('collection_name', "")
+        slug = kwargs.get('slug', "")
         if not database_name or not collection_name:
             return HttpResponse(unauthorized_json_response(),
                                 content_type="application/json")
 
         try:
             # Check to see if we have a matching record in DB access.
-            dac = HTTPAuthReadAPI.objects.get(
-                database_name=database_name, collection_name=collection_name)
+            dac = HTTPAuthReadAPI.objects.get(slug=slug,
+                                              database_name=database_name,
+                                              collection_name=collection_name)
         except HTTPAuthReadAPI.DoesNotExist:
             return HttpResponse(unauthorized_json_response(),
                                 content_type="application/json")

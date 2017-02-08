@@ -67,7 +67,7 @@ class WriteAPIHTTPAuth(models.Model):
         return l
 
     def auth_method(self):
-        return 'HTTP'
+        return 'httpauth'
 
 @python_2_unicode_compatible
 class WriteAPIIP(models.Model):
@@ -113,7 +113,7 @@ class WriteAPIIP(models.Model):
         return l
 
     def auth_method(self):
-        return 'IP'
+        return 'ip'
 
 @python_2_unicode_compatible
 class WriteAPIOAuth2(models.Model):
@@ -153,4 +153,4 @@ class WriteAPIOAuth2(models.Model):
         return l
 
     def auth_method(self):
-        return 'OAuth2'
+        return 'oauth2'
