@@ -4,7 +4,7 @@
 from django.contrib import admin
 from .models import (PublicReadAPI, HTTPAuthReadAPI,
                      CustomHTTPAuthReadAPI, CustomPublicReadAPI,
-                     OAuth2ReadAPI, IPReadAPI)
+                     OAuth2ReadAPI, IPReadAPI, CustomIPReadAPI)
 
 
 class CustomHTTPAuthReadAPIAdmin(admin.ModelAdmin):
@@ -12,6 +12,10 @@ class CustomHTTPAuthReadAPIAdmin(admin.ModelAdmin):
                      'url')
 admin.site.register(CustomHTTPAuthReadAPI, CustomHTTPAuthReadAPIAdmin)
 
+class CustomIPReadAPIAdmin(admin.ModelAdmin):
+    list_display = ('slug', 'collection_name', 'database_name',
+                     'url')
+admin.site.register(CustomIPReadAPI, CustomIPReadAPIAdmin)
 
 class CustomPublicReadAPIAdmin(admin.ModelAdmin):
     list_display = ('slug', 'collection_name', 'database_name',

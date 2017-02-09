@@ -61,7 +61,73 @@ class CustomHTTPAuthReadAPI(models.Model):
         return reverse('djmongo_run_custom_httpauth_read_api_by_slug', args=(self.slug,))
 
     def auth_method(self):
-        return 'HTTP'
+        return 'httpauth'
+
+@python_2_unicode_compatible
+class CustomIPReadAPI(models.Model):
+
+    output_format = models.CharField(max_length=4,
+                                     choices=OUTPUT_CHOICES,
+                                     default="json")
+    slug = models.SlugField(max_length=100,
+                            help_text="Give your API a unique name")
+    query = models.TextField(max_length=2048, default="{}",
+                             verbose_name="JSON Query")
+    type_mapper = models.TextField(
+        max_length=2048,
+        default="{}",
+        verbose_name=_("Map non-string variables to numbers or Boolean"))
+    sort = models.TextField(
+        max_length=2048,
+        default="",
+        blank=True,
+        verbose_name="Sort Dict",
+        help_text="""e.g. [["somefield", 1], ["someotherfield", -1] ]""")
+
+    return_keys = models.TextField(max_length=2048, default="", blank=True,
+                                   help_text=_("Default is blank which "
+                                               "returns all keys. Separate "
+                                               "keys by white space to limit"
+                                               "the keys that are returned."))
+    default_limit = models.IntegerField(
+        default=getattr(
+            settings,
+            'MONGO_LIMIT',
+            200),
+        help_text="Limit results to this number unless specified otherwise.",
+    )
+    from_ip = models.TextField(max_length=2048, default="127.0.0.1",
+                               verbose_name=_("From IPs"),
+                               help_text=_("Only accept requests from a IP in "
+                                           "this list separated by whitespace "
+                                           ". 0.0.0.0 means all."))
+    database_name = models.CharField(max_length=100)
+    collection_name = models.CharField(max_length=100)
+    readme_md = models.TextField(max_length=4096, default="", blank=True)
+    creation_date = models.DateField(auto_now_add=True)
+
+    class Meta:
+        get_latest_by = "creation_date"
+        ordering = ('-creation_date',)
+
+    def allowable_ips(self):
+        allowable_ips = self.from_ip.split(" ")
+        return allowable_ips
+
+    def __str__(self):
+        return "%s" % (self.slug)
+
+    def url(self):
+        return reverse('djmongo_run_custom_ip_read_api_by_slug', args=(self.slug,))
+
+    def http_methods(self):
+        return ['GET',]
+
+    def auth_method(self):
+        return 'ip'
+
+
+
 
 @python_2_unicode_compatible
 class CustomPublicReadAPI(models.Model):
@@ -115,7 +181,7 @@ class CustomPublicReadAPI(models.Model):
         return ['GET',]
 
     def auth_method(self):
-        return 'Public (NONE)'
+        return 'public'
 
 @python_2_unicode_compatible
 class HTTPAuthReadAPI(models.Model):
@@ -163,7 +229,7 @@ class HTTPAuthReadAPI(models.Model):
         return ['GET',]
 
     def auth_method(self):
-        return 'HTTP'
+        return 'httpauth'
 
 @python_2_unicode_compatible
 class PublicReadAPI(models.Model):
@@ -217,17 +283,17 @@ class IPReadAPI(models.Model):
     collection_name = models.CharField(max_length=256)
     slug = models.SlugField(max_length=100,
                             help_text="Give your API a unique name")
+    from_ip = models.TextField(max_length=2048, default="127.0.0.1",
+                               verbose_name=_("From IPs"),
+                               help_text=_("Only accept requests from a IP in "
+                                           "this list separated by whitespace "
+                                           ". 0.0.0.0 means all."))
     search_keys = models.TextField(max_length=4096, default="", blank=True,
                                    help_text="""The default, blank, returns
                                                 all keys. Providing a list of
                                                 keys, separated by whitespace,
                                                 limits the API search to only
                                                 these keys.""")
-    from_ip = models.TextField(max_length=2048, default="127.0.0.1",
-                               verbose_name=_("From IPs"),
-                               help_text=_("Only accept requests from a IP in "
-                                           "this list separated by whitespace "
-                                           ". 0.0.0.0 means all."))
     readme_md = models.TextField(max_length=4096, default="", blank=True)
     creation_date = models.DateField(auto_now_add=True)
 

@@ -3,21 +3,21 @@
 # vim: ai ts=4 sts=4 et sw=4
 from django.contrib.auth.decorators import login_required
 from ..decorators import httpauth_login_required
-from ..decorators import check_read_httpauth_access, check_public_ok, ip_read_verification_required
+from ..decorators import (check_read_httpauth_access,
+                          check_public_ok,
+                          ip_read_verification_required,
+                          custom_ip_read_verification_required)
 from django.conf.urls import url
+from .views.run import (build_keys, simple_search, run_custom_public_read_api_by_slug,
+                        run_custom_httpauth_read_api_by_slug,
+                        run_custom_ip_read_api_by_slug)
 
-from .views import run_custom_public_read_api_by_slug, run_custom_httpauth_read_api_by_slug
+from .views.ced import create_simple_api, create_custom_api
+from .views.ced import edit_custom_httpauth_read_api, edit_custom_public_read_api
+from .views.ced import edit_simple_httpauth_read_api, edit_simple_public_read_api
 
-from .views import create_simple_api, create_custom_api
-
-from .views import edit_custom_httpauth_read_api, edit_custom_public_read_api
-from .views import edit_simple_httpauth_read_api, edit_simple_public_read_api
-
-from .views import delete_custom_httpauth_read_api, delete_custom_public_read_api
-from .views import delete_simple_httpauth_read_api, delete_simple_public_read_api
-
-from .views import build_keys, simple_search
-
+from .views.ced import delete_custom_httpauth_read_api, delete_custom_public_read_api
+from .views.ced import delete_simple_httpauth_read_api, delete_simple_public_read_api
 
 urlpatterns = [
     # Run Read APIs ------------------------
@@ -42,6 +42,9 @@ urlpatterns = [
         run_custom_public_read_api_by_slug,
         name="djmongo_run_custom_public_read_api_by_slug"),
 
+    url(r'^api/custom/ip/(?P<slug>\S+)$',
+        custom_ip_read_verification_required(run_custom_ip_read_api_by_slug),
+        name="djmongo_run_custom_ip_read_api_by_slug"),
 
     # CRUD for Managing APIs
 

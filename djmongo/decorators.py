@@ -15,7 +15,7 @@ from functools import update_wrapper, wraps
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 from .utils import authorize, unauthorized_json_response, json_response_400, json_response_404
-from .search.models import HTTPAuthReadAPI, PublicReadAPI, IPReadAPI
+from .search.models import HTTPAuthReadAPI, PublicReadAPI, IPReadAPI, CustomIPReadAPI
 from .write.models import WriteAPIIP
 import shlex
 import json
@@ -109,6 +109,34 @@ def ip_read_verification_required(func):
         return func(request, *args, **kwargs)
 
     return update_wrapper(wrapper, func)
+
+def custom_ip_read_verification_required(func):
+    """
+        Put this decorator before your view to check if the function is coming from an IP on file
+    """
+
+    def wrapper(request, *args, **kwargs):
+
+        slug = kwargs.get('slug', "")
+        if not slug:
+            return kickout_404("Not found.", content_type="application/json")
+
+        try:
+            rip = CustomIPReadAPI.objects.get(slug=slug)
+            ip = get_client_ip(request)
+            if ip not in rip.allowable_ips() and "0.0.0.0" not in rip.allowable_ips():
+                msg = "The IP %s is not authorized to make the API call." % (
+                    ip)
+                return kickout_401(msg)
+
+        except CustomIPReadAPI.DoesNotExist:
+            return HttpResponse(unauthorized_json_response(),
+                                content_type="application/json")
+
+        return func(request, *args, **kwargs)
+
+    return update_wrapper(wrapper, func)
+
 
 
 def check_public_ok(func):

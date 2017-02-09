@@ -5,8 +5,7 @@ from django.conf.urls import url
 from .urls import urlpatterns
 from apps.dot_ext.decorators import capability_protected_resource
 from oauth2_provider.decorators import protected_resource
-from .views import simple_search
-from .views import run_custom_public_read_api_by_slug
+from .views.run import simple_search, run_custom_public_read_api_by_slug
 
 urlpatterns += [
            
