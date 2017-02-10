@@ -16,7 +16,7 @@ setup(
               'djmongo.write', 'djmongo.write.migrations',
               'djmongo.management.commands',
               'djmongo.management',
-              'djmongo.search', 'djmongo.search.migrations',
+              'djmongo.search', 'djmongo.search.views', 'djmongo.search.migrations',
               'djmongo.dataimport', 'djmongo.dataimport.migrations', ],
     include_package_data=True,
     license='GPL2',
