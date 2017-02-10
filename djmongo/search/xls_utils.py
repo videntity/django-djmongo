@@ -48,13 +48,6 @@ def flatten_results(keylist, listresults, exclude=()):
                                         "ascii", errors="ignore") if s in string.printable)
                         else:
                             row[j] = str(i[j])
-                            #if isinstance(i[j], (int, float)):
-                            #    row[j] = str(i[j])
-                            # else:
-                            #     row[j] = "".join(
-                            #         s for s in i[j].encode(
-                            #             "ascii", errors="ignore") if s in string.printable)    
-                            
                 else:
                     row[j] = ""
             else:
