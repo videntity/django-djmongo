@@ -20,7 +20,8 @@ from bson.objectid import ObjectId
 from collections import OrderedDict
 from ..write.models import WriteAPIHTTPAuth, WriteAPIIP, WriteAPIOAuth2
 from ..read.models import (CustomHTTPAuthReadAPI, CustomPublicReadAPI,
-                             HTTPAuthReadAPI, PublicReadAPI)
+                           HTTPAuthReadAPI, PublicReadAPI, CustomOAuth2ReadAPI,
+                           OAuth2ReadAPI)
 
 def api_wizard(request, database_name=None, collection_name=None):
     name = 'API Wizard Creation'
@@ -108,8 +109,12 @@ def api_list(request):
     # Get all of the Read APIs
     custom_httpauth_read_apis = CustomHTTPAuthReadAPI.objects.all()
     custom_public_read_apis = CustomPublicReadAPI.objects.all()
+    custom_oauth2_read_apis = CustomOAuth2ReadAPI.objects.all()
     simple_public_read_apis = PublicReadAPI.objects.all()
     simple_httpauth_read_apis = HTTPAuthReadAPI.objects.all()
+    simple_auth2_read_apis = OAuth2ReadAPI.objects.all()
+    
+    
     # Get all of the Write APIs
     ip_write_apis = WriteAPIIP.objects.all()
     httpauth_write_apis = WriteAPIHTTPAuth.objects.all()
@@ -152,10 +157,14 @@ def show_apis(request, database_name, collection_name):
         database_name=database_name, collection_name=collection_name)
     custom_public_read_apis = CustomPublicReadAPI.objects.filter(
         database_name=database_name, collection_name=collection_name)
+    custom_oauth2_read_apis = CustomOAuth2ReadAPI.objects.filter(
+        database_name=database_name, collection_name=collection_name)
 
     simple_public_read_apis = PublicReadAPI.objects.filter(
         database_name=database_name, collection_name=collection_name)
     simple_httpauth_read_apis = HTTPAuthReadAPI.objects.filter(
+        database_name=database_name, collection_name=collection_name)
+    simple_oauth2_read_apis = OAuth2ReadAPI.objects.filter(
         database_name=database_name, collection_name=collection_name)
 
     # Get all of the Write APIs

@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 from django.conf import settings
+import base64
 from collections import OrderedDict
 from functools import update_wrapper, wraps
 from django.http import HttpResponse
@@ -30,15 +31,13 @@ def httpauth_login_required(func):
     def wrapper(request, *args, **kwargs):
         user = None
         # get the Basic username and password from the request.
-        auth_string = request.META.get('HTTP_AUTHORIZATION', None)
-
-        if auth_string:
-            (authmeth, auth) = auth_string.split(" ", 1)
-            auth = auth.strip().decode('base64')
-            (username, password) = auth.split(':', 1)
-
-            # print username, password
-            user = authenticate(username=username, password=password)
+        if 'HTTP_AUTHORIZATION' in request.META:
+            auth = request.META['HTTP_AUTHORIZATION'].split()
+            if len(auth) == 2:
+                if auth[0].lower() == "basic":
+                    username, password = base64.b64decode(auth[1]).decode('utf-8').split(':')
+                    # print(username, password)
+                    user = authenticate(username=username, password=password)
 
         if not user or not user.is_active:
             return HttpResponse(unauthorized_json_response(),
@@ -55,16 +54,13 @@ def ip_write_verification_required(func):
     """
 
     def wrapper(request, *args, **kwargs):
-
-        slug = kwargs.get('slug', "")
-        database_name = kwargs.get('database_name', "")
-        collection_name = kwargs.get('collection_name', "")
+        
+        slug = kwargs.get('slug', "")        
         if not slug:
             return kickout_404("Not found.", content_type="application/json")
 
         try:
-            wip = WriteAPIIP.objects.get(slug=slug, database_name=database_name,
-                                         collection_name=collection_name)
+            wip = WriteAPIIP.objects.get(slug=slug)
             ip = get_client_ip(request)
             if ip not in wip.allowable_ips() and "0.0.0.0" not in wip.allowable_ips():
                 msg = "The IP %s is not authorized to make the API call." % (

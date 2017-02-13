@@ -4,12 +4,13 @@
 from django.contrib.auth.decorators import login_required
 from django.conf.urls import url
 from .views import write_to_collection_httpauth, write_to_collection_ip_auth
-from .oauth_views import (create_oauth2_write_api, edit_oauth2_write_api,
-                          delete_oauth2_write_api)
+from .views import (create_oauth2_write_api, edit_oauth2_write_api,
+                    delete_oauth2_write_api)
 from .views import browse_ip_write_apis, browse_httpauth_write_apis
 from .views import create_httpauth_write_api, create_ip_write_api
 from .views import delete_httpauth_write_api, delete_ip_write_api
 from .views import edit_httpauth_write_api, edit_ip_write_api
+
 urlpatterns = [
 
     # Call / Run the write API

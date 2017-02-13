@@ -10,6 +10,62 @@ OUTPUT_CHOICES = (("json", "JSON"),
                   ("csv", "Comma Separated Value (.csv)"))
 
 
+
+@python_2_unicode_compatible
+class CustomOAuth2ReadAPI(models.Model):
+    output_format = models.CharField(max_length=4,
+                                     choices=OUTPUT_CHOICES,
+                                     default="json")
+    slug = models.SlugField(max_length=100,
+                            help_text="Give your API a unique name")
+    query = models.TextField(max_length=2048, default="{}",
+                             verbose_name="JSON Query")
+    type_mapper = models.TextField(
+        max_length=2048,
+        default="{}",
+        verbose_name=_("Map non-string variables to numbers or Boolean"))
+    sort = models.TextField(
+        max_length=2048,
+        default="",
+        blank=True,
+        verbose_name="Sort Dict",
+        help_text="""e.g. [["somefield", 1], ["someotherfield", -1] ]""")
+
+    return_keys = models.TextField(max_length=2048, default="", blank=True,
+                                   help_text=_("Default is blank which "
+                                               "returns all keys. Separate "
+                                               "keys by white space to limit"
+                                               "the keys that are returned."))
+
+    default_limit = models.IntegerField(
+        default=getattr(
+            settings,
+            'MONGO_LIMIT',
+            200),
+        help_text="Limit results to this number unless specified otherwise.",
+    )
+    database_name = models.CharField(max_length=100)
+    collection_name = models.CharField(max_length=100)
+    creation_date = models.DateField(auto_now_add=True)
+    readme_md = models.TextField(max_length=4096, default="", blank=True)
+
+    class Meta:
+        get_latest_by = "creation_date"
+        ordering = ('-creation_date',)
+        unique_together = (('database_name', 'collection_name', 'slug'), )
+
+    def __str__(self):
+        return "%s/%s/%s" % (self.database_name, self.collection_name, self.slug)
+
+    def auth_method(self):
+        return 'oauth2'
+    
+    def http_methods(self):
+        return ['GET',]
+    
+    def url(self):
+        return ""
+
 @python_2_unicode_compatible
 class CustomHTTPAuthReadAPI(models.Model):
 
@@ -62,6 +118,9 @@ class CustomHTTPAuthReadAPI(models.Model):
 
     def auth_method(self):
         return 'httpauth'
+    
+    def http_methods(self):
+        return ['GET',]
 
 @python_2_unicode_compatible
 class CustomIPReadAPI(models.Model):
@@ -125,8 +184,6 @@ class CustomIPReadAPI(models.Model):
 
     def auth_method(self):
         return 'ip'
-
-
 
 
 @python_2_unicode_compatible

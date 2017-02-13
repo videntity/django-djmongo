@@ -9,11 +9,20 @@ import csv
 from datetime import datetime, date, time
 from bson.code import Code
 from bson.objectid import ObjectId
+from bson.errors import InvalidId
 from bson import json_util
 from pymongo import MongoClient, DESCENDING
 from collections import OrderedDict
 
 
+def checkObjectId(s):
+    try:
+        ObjectId(s)
+    except InvalidId: 
+        return False
+    return True
+
+    
 def run_aggregation_pipeline(database_name, collection_name, pipeline):
     result = False
     mongodb_client_url = getattr(settings, 'MONGODB_CLIENT',
@@ -292,7 +301,6 @@ def write_mongo(document, database_name,
             if existing_mongo_id:
                 document['_id'] = ObjectId(existing_mongo_id['_id'])
                 document['history'] = True
-                document['verified'] = False
                 history_collection_name = "%s_history" % str(collection_name)
                 history_collection = db[str(history_collection_name)]
 
