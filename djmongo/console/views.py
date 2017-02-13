@@ -19,7 +19,7 @@ from .forms import (EnsureIndexForm, DeleteForm, DocumentForm,
 from bson.objectid import ObjectId
 from collections import OrderedDict
 from ..write.models import WriteAPIHTTPAuth, WriteAPIIP, WriteAPIOAuth2
-from ..search.models import (CustomHTTPAuthReadAPI, CustomPublicReadAPI,
+from ..read.models import (CustomHTTPAuthReadAPI, CustomPublicReadAPI,
                              HTTPAuthReadAPI, PublicReadAPI)
 
 def api_wizard(request, database_name=None, collection_name=None):

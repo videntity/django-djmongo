@@ -11,7 +11,7 @@ urlpatterns = [
 
     url(r'^import/', include('djmongo.dataimport.urls')),
     url(r'^console/', include('djmongo.console.urls')),
-    url(r'^search/', include('djmongo.search.urls')),
+    url(r'^read/', include('djmongo.read.urls')),
     url(r'^write/', include('djmongo.write.urls')),
     url(r'^accounts/', include('djmongo.accounts.urls')),
     url(r'^aggregations/', include('djmongo.aggregations.urls')),
