@@ -3,8 +3,9 @@
 # vim: ai ts=4 sts=4 et sw=4
 from django.contrib import admin
 from .models import (PublicReadAPI, HTTPAuthReadAPI,
+                     OAuth2ReadAPI, IPAuthReadAPI,
                      CustomHTTPAuthReadAPI, CustomPublicReadAPI,
-                     OAuth2ReadAPI, IPReadAPI, CustomIPReadAPI, CustomOAuth2ReadAPI)
+                     CustomIPAuthReadAPI, CustomOAuth2ReadAPI)
 
 class CustomOAuth2ReadAPIAdmin(admin.ModelAdmin):
     list_display = ('slug', 'collection_name', 'database_name',
@@ -16,10 +17,10 @@ class CustomHTTPAuthReadAPIAdmin(admin.ModelAdmin):
                      'url')
 admin.site.register(CustomHTTPAuthReadAPI, CustomHTTPAuthReadAPIAdmin)
 
-class CustomIPReadAPIAdmin(admin.ModelAdmin):
+class CustomIPAuthReadAPIAdmin(admin.ModelAdmin):
     list_display = ('slug', 'collection_name', 'database_name',
                      'url')
-admin.site.register(CustomIPReadAPI, CustomIPReadAPIAdmin)
+admin.site.register(CustomIPAuthReadAPI, CustomIPAuthReadAPIAdmin)
 
 class CustomPublicReadAPIAdmin(admin.ModelAdmin):
     list_display = ('slug', 'collection_name', 'database_name',
@@ -31,9 +32,9 @@ class HTTPAuthReadAPIAdmin(admin.ModelAdmin):
     list_display = ('slug', 'collection_name', 'database_name', 'json_url')
 admin.site.register(HTTPAuthReadAPI, HTTPAuthReadAPIAdmin)
 
-class IPReadAPIAdmin(admin.ModelAdmin):
+class IPAuthReadAPIAdmin(admin.ModelAdmin):
     list_display = ('slug', 'collection_name', 'database_name', 'json_url')
-admin.site.register(IPReadAPI, IPReadAPIAdmin)
+admin.site.register(IPAuthReadAPI, IPAuthReadAPIAdmin)
 
 
 class PublicReadAPIAdmin(admin.ModelAdmin):

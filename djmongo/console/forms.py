@@ -8,9 +8,9 @@ import json
 
 
 AUTH_TYPE_CHOICES = (('public', 'Public (NONE)'),
-                           ('httpauth', 'HTTP'),
-                           ('ip', 'IP'),
-                           ('oauth2', 'OAuth2'))
+                           ('httpauth', 'Basic HTTP Authorization'),
+                           ('ipauth', 'IP Based Authorization'),
+                           ('oauth2', 'OAuth2 Authorization'))
 
 HTTP_METHOD_CHOICES = (('write', 'Write(POST/PUT)'),
                            ('read', 'Read(GET)'),

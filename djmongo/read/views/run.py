@@ -6,7 +6,7 @@ from django.conf import settings
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from ..models import (CustomHTTPAuthReadAPI, CustomPublicReadAPI,
-                      CustomIPReadAPI)
+                      CustomIPAuthReadAPI)
 from ...mongoutils import (query_mongo, to_json, normalize_results,
                            build_keys_with_mapreduce)
 from ..xls_utils import convert_to_csv, convert_to_rows
@@ -21,9 +21,8 @@ def build_keys(request, database_name, collection_name):
     """Perform the map/reduce to refresh the keys form.
        The display the custom report screen"""
     build_keys_with_mapreduce(database_name, collection_name)
-    messages.success(request, _(
-        "Successfully completed MapReduce operation. "
-        "Key rebuild for custom report complete."))
+    messages.success(request, _("Successfully completed MapReduce operation. "
+        "Key collection built."))
     return HttpResponseRedirect(reverse("djmongo_show_dbs"))
 
 
@@ -313,7 +312,7 @@ def run_custom_public_read_api_by_slug(
     return HttpResponse(response, content_type="application/json")
 
 
-def run_custom_ip_read_api_by_slug(
+def run_custom_ipauth_read_api_by_slug(
     request,
     slug,
     output_format=None,
@@ -325,7 +324,7 @@ def run_custom_ip_read_api_by_slug(
         200)):
     error = False
     response_dict = {}
-    ss = get_object_or_404(CustomIPReadAPI, slug=slug)
+    ss = get_object_or_404(CustomIPAuthReadAPI, slug=slug)
 
     query = ss.query
     type_mapper = json.loads(ss.type_mapper)

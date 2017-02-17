@@ -16,7 +16,7 @@ from functools import update_wrapper, wraps
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 from .utils import authorize, unauthorized_json_response, json_response_400, json_response_404
-from .read.models import HTTPAuthReadAPI, PublicReadAPI, IPReadAPI, CustomIPReadAPI
+from .read.models import HTTPAuthReadAPI, PublicReadAPI, IPAuthReadAPI, CustomIPAuthReadAPI
 from .write.models import WriteAPIIP
 import shlex
 import json
@@ -76,7 +76,7 @@ def ip_write_verification_required(func):
     return update_wrapper(wrapper, func)
 
 
-def ip_read_verification_required(func):
+def ipauth_read_verification_required(func):
     """
         Put this decorator before your view to check if the function is coming from an IP on file
     """
@@ -90,7 +90,7 @@ def ip_read_verification_required(func):
             return kickout_404("Not found.", content_type="application/json")
 
         try:
-            rip = IPReadAPI.objects.get(slug=slug, database_name=database_name,
+            rip = IPAuthReadAPI.objects.get(slug=slug, database_name=database_name,
                                         collection_name=collection_name)
             ip = get_client_ip(request)
             if ip not in rip.allowable_ips() and "0.0.0.0" not in rip.allowable_ips():
@@ -98,7 +98,7 @@ def ip_read_verification_required(func):
                     ip)
                 return kickout_401(msg)
 
-        except IPReadAPI.DoesNotExist:
+        except IPAuthReadAPI.DoesNotExist:
             return HttpResponse(unauthorized_json_response(),
                                 content_type="application/json")
 
@@ -106,7 +106,10 @@ def ip_read_verification_required(func):
 
     return update_wrapper(wrapper, func)
 
-def custom_ip_read_verification_required(func):
+
+
+
+def custom_ipauth_read_verification_required(func):
     """
         Put this decorator before your view to check if the function is coming from an IP on file
     """
@@ -118,14 +121,14 @@ def custom_ip_read_verification_required(func):
             return kickout_404("Not found.", content_type="application/json")
 
         try:
-            rip = CustomIPReadAPI.objects.get(slug=slug)
+            rip = CustomIPAuthReadAPI.objects.get(slug=slug)
             ip = get_client_ip(request)
             if ip not in rip.allowable_ips() and "0.0.0.0" not in rip.allowable_ips():
                 msg = "The IP %s is not authorized to make the API call." % (
                     ip)
                 return kickout_401(msg)
 
-        except CustomIPReadAPI.DoesNotExist:
+        except CustomIPAuthReadAPI.DoesNotExist:
             return HttpResponse(unauthorized_json_response(),
                                 content_type="application/json")
 

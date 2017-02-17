@@ -18,6 +18,9 @@ class CustomOAuth2ReadAPI(models.Model):
                                      default="json")
     slug = models.SlugField(max_length=100,
                             help_text="Give your API a unique name")
+
+    scopes = models.CharField(max_length=1024, default="*", blank=True,
+                              help_text="Space delimited list of scopes required. * means no scope is required.")
     query = models.TextField(max_length=2048, default="{}",
                              verbose_name="JSON Query")
     type_mapper = models.TextField(
@@ -123,7 +126,7 @@ class CustomHTTPAuthReadAPI(models.Model):
         return ['GET',]
 
 @python_2_unicode_compatible
-class CustomIPReadAPI(models.Model):
+class CustomIPAuthReadAPI(models.Model):
 
     output_format = models.CharField(max_length=4,
                                      choices=OUTPUT_CHOICES,
@@ -177,13 +180,13 @@ class CustomIPReadAPI(models.Model):
         return "%s" % (self.slug)
 
     def url(self):
-        return reverse('djmongo_run_custom_ip_read_api_by_slug', args=(self.slug,))
+        return reverse('djmongo_run_custom_ipauth_read_api_by_slug', args=(self.slug,))
 
     def http_methods(self):
         return ['GET',]
 
     def auth_method(self):
-        return 'ip'
+        return 'ipauth'
 
 
 @python_2_unicode_compatible
@@ -334,7 +337,7 @@ class PublicReadAPI(models.Model):
         return 'public'
 
 @python_2_unicode_compatible
-class IPReadAPI(models.Model):
+class IPAuthReadAPI(models.Model):
 
     database_name = models.CharField(max_length=256)
     collection_name = models.CharField(max_length=256)
@@ -367,25 +370,25 @@ class IPReadAPI(models.Model):
         return "%s/%s/%s" % (self.database_name, self.collection_name, self.slug)
 
     def url(self):
-        return reverse('djmongo_api_ip_simple_search',
+        return reverse('djmongo_api_ipauth_simple_search',
                        args=(self.database_name, self.collection_name, self.slug, 'json'))
     def json_url(self):
-        return reverse('djmongo_api_ip_simple_search',
+        return reverse('djmongo_api_ipauth_simple_search',
                        args=(self.database_name, self.collection_name, self.slug, 'json'))
 
     def csv_url(self):
-        return reverse('djmongo_api_ip_simple_search',
+        return reverse('djmongo_api_ipauth_simple_search',
                        args=(self.database_name, self.collection_name, self.slug,'csv'))
 
     def html_url(self):
-        return reverse('djmongo_api_ip_simple_search',
+        return reverse('djmongo_api_ipauth_simple_search',
                        args=(self.database_name, self.collection_name, self.slug, 'html'))
     
     def http_methods(self):
         return ['GET',]
 
     def auth_method(self):
-        return 'ip'
+        return 'ipauth'
 
 
 
@@ -397,6 +400,8 @@ class OAuth2ReadAPI(models.Model):
     collection_name = models.CharField(max_length=256)
     slug = models.SlugField(max_length=100,
                             help_text="Give your API a unique name")
+    scopes = models.CharField(max_length=1024, default="*", blank=True,
+                              help_text="Space delimited list of scopes required. * means no scope is required.")
     search_keys = models.TextField(max_length=4096, default="", blank=True,
                                    help_text="""The default, blank, returns
                                                 all keys. Providing a list of
