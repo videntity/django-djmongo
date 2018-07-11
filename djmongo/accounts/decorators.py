@@ -29,7 +29,7 @@ def json_login_required(func):
             auth = auth.strip().decode('base64')
             (username, password) = auth.split(':', 1)
 
-            # print username, password
+            # print(username, password)
             user = authenticate(username=username, password=password)
 
         if not user or not user.is_active:

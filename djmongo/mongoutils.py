@@ -23,10 +23,10 @@ def run_aggregation_pipeline(database_name, collection_name, pipeline):
     collection = db[str(collection_name)]
 
     # explain = db.command('aggregate', collection, pipeline=pipeline, explain=True)
-    # print explain
+    # print(explain)
     collection.aggregate(pipeline)
 
-    # print agg_result
+    # print(agg_result)
     result = True
     return result
 
@@ -47,7 +47,7 @@ def normalize_results(results_dict):
                isinstance(r[k], type(myd)) or \
                isinstance(r[k], type(myt)):
                 r[k] = v.__str__()
-                # print r[k]
+                # print(r[k])
     return results_dict
 
 
@@ -93,12 +93,12 @@ def query_mongo(
         if cast_strings_to_integers:
             query = cast_number_strings_to_integers(query)
 
-        # print query
+        # print(query)
         if return_keys:
             return_dict = {}
             for k in return_keys:
                 return_dict[k] = 1
-            # print "returndict=",return_dict
+            # print("returndict=",return_dict)
             mysearchresult = collection.find(
                 query, return_dict).skip(skip).limit(limit)
         else:
@@ -165,7 +165,7 @@ def query_mongo_sort_decend(
             return_dict = {}
             for k in return_keys:
                 return_dict[k] = 1
-            # print "returndict=",return_dict
+            # print("returndict=",return_dict)
             mysearchresult = collection.find(
                 query, return_dict).skip(skip).limit(limit).sort(
                 sortkey, DESCENDING)
@@ -213,8 +213,8 @@ def delete_mongo(database_name, collection_name,
         response_dict['type'] = "remove-confirmation"
 
     except:
-        # print "Error reading from Mongo"
-        # print str(sys.exc_info())
+        # print("Error reading from Mongo")
+        # print(str(sys.exc_info()))
         response_dict['num_results'] = 0
         response_dict['code'] = 500
         response_dict['type'] = "Error"
@@ -296,14 +296,14 @@ def write_mongo(document, database_name,
                 history_collection_name = "%s_history" % str(collection_name)
                 history_collection = db[str(history_collection_name)]
 
-                # print history_collection
-                # print existing_mongo_id
+                # print(history_collection)
+                # print(existing_mongo_id)
 
                 history_object = existing_mongo_id
 
                 history_object['historical_id'] = existing_mongo_id['_id']
                 del history_object['_id']
-                # print history_object
+                # print(history_object)
 
                 # now write the record to the historical collection
                 written_object = history_collection.insert(history_object)
@@ -326,8 +326,8 @@ def write_mongo(document, database_name,
         response_dict['results'] = l
 
     except:
-        # print "Error reading from Mongo"
-        # print str(sys.exc_info())
+        # print("Error reading from Mongo")
+        # print(str(sys.exc_info()))
         response_dict['code'] = 400
         response_dict['type'] = "Error"
         response_dict['results'] = []
@@ -409,8 +409,8 @@ def bulk_csv_import_mongo(csvfile, database_name, collection_name,
         return response_dict
 
     except:
-        # print "Error reading from Mongo"
-        # print str(sys.exc_info())
+        # print("Error reading from Mongo")
+        # print(str(sys.exc_info()))
         response_dict['num_results'] = 0
         response_dict['code'] = 400
         response_dict['type'] = "Error"
@@ -490,7 +490,7 @@ def build_keys_with_mapreduce(database_name, collection_name):
 
 def raw_query_mongo_db(kwargs, database_name, collection_name):
     # for key in kwargs:
-    #    print "arg: %s: %s" % (key, kwargs[key])
+    #    print("arg: %s: %s" % (key, kwargs[key]))
     """return a result list or an empty list"""
     l = []
     response_dict = {}
@@ -509,8 +509,8 @@ def raw_query_mongo_db(kwargs, database_name, collection_name):
                 l.append(d)
             response_dict['results'] = l
     except:
-        # print "Error reading from Mongo"
-        # print str(sys.exc_info())
+        # print("Error reading from Mongo")
+        # print(str(sys.exc_info()))
         response_dict['code'] = 400
 
         response_dict['type'] = "Error"
@@ -521,7 +521,7 @@ def raw_query_mongo_db(kwargs, database_name, collection_name):
 def cast_number_strings_to_integers(d):
     """d is a dict"""
     for k, v in d.items():
-        # print type(v)
+        # print(type(v))
         if determine_if_str_or_unicode(v):
             if v.isdigit():
                 d[k] = int(v)

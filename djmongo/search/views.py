@@ -131,7 +131,7 @@ def search_csv(request, database_name, collection_name,
         return_keys=return_keys,
         query=query)
 
-    # print result.keys()
+    # print(result.keys())
 
     if int(result['code']) == 200:
         listresults = result['results']
@@ -165,7 +165,7 @@ def search_html(request, database_name, collection_name,
         return_keys=return_keys,
         query=query)
 
-    # print result.keys()
+    # print(result.keys())
 
     if int(result['code']) == 200:
         listresults = result['results']
@@ -223,7 +223,7 @@ def run_custom_public_read_api_by_slug(
     try:
         query = json.loads(query)
         if ss.sort:
-                # print ss.sort
+                # print(ss.sort)
             sort = json.loads(ss.sort)
 
     except ValueError:
@@ -267,7 +267,7 @@ def run_custom_public_read_api_by_slug(
     key_list = ()
     if ss.return_keys:
         key_list = shlex.split(ss.return_keys)
-    # print ss.query, ss.database_name, ss.collection_name
+    # print(ss.query, ss.database_name, ss.collection_name)
 
     if ss.output_format == "json":
         return search_json(
@@ -375,7 +375,7 @@ def run_custom_httpauth_read_api_by_slug(
     try:
         query = json.loads(query)
         if ss.sort:
-                # print ss.sort
+                # print(ss.sort)
             sort = json.loads(ss.sort)
 
     except ValueError:
@@ -419,7 +419,7 @@ def run_custom_httpauth_read_api_by_slug(
     key_list = ()
     if ss.return_keys:
         key_list = shlex.split(ss.return_keys)
-    # print ss.query, ss.database_name, ss.collection_name
+    # print(ss.query, ss.database_name, ss.collection_name)
 
     if ss.output_format == "json":
         return search_json(

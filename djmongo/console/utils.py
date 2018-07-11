@@ -139,12 +139,12 @@ def mongodb_ensure_index(database_name, collection_name, key):
         dbc = dbs[collection_name]
 
         dbc.ensure_index(key)
-        # print "success"
+        # print("success")
         return key
 
     except:
         # error connecting to mongodb
-        # print str(sys.exc_info())
+        # print(str(sys.exc_info()))
         return str(sys.exc_info())
 
 
@@ -157,12 +157,12 @@ def mongodb_drop_collection(database_name, collection_name):
         mc = MongoClient(mongodb_client_url,document_class=OrderedDict)
         dbs = mc[database_name]
         dbs.drop_collection(collection_name)
-        # print "success"
+        # print("success")
         return ""
 
     except:
         # error connecting to mongodb
-        # print str(sys.exc_info())
+        # print(str(sys.exc_info()))
         return str(sys.exc_info())
 
 
@@ -174,10 +174,10 @@ def mongodb_drop_database(database_name):
                                  'mongodb://localhost:27017/')
         mc = MongoClient(mongodb_client_url,document_class=OrderedDict)
         mc.drop_database(database_name)
-        # print "success"
+        # print("success")
         return ""
 
     except:
         # error connecting to mongodb
-        # print str(sys.exc_info())
+        # print(str(sys.exc_info()))
         return str(sys.exc_info())

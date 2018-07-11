@@ -29,7 +29,7 @@ class HTTPAuthBackend(object):
 
     def is_authenticated(self, request):
         auth_string = request.META.get('HTTP_AUTHORIZATION', None)
-        print "here"
+        print("here")
 
         if not auth_string:
             return False
@@ -66,7 +66,7 @@ class BasicBackend:
     supports_anonymous_user = False
 
     def authenticate(self, username=None, password=None):
-        # print "Basic backend", username
+        # print("Basic backend", username)
         try:
             user = User.objects.get(username=username)
         except User.DoesNotExist:

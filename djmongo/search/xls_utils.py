@@ -7,7 +7,11 @@ from datetime import datetime
 from collections import OrderedDict
 import csv
 import string
+import sys
 from ..mongoutils import get_collection_keys
+
+if sys.version_info > (3,):
+    long = int
 
 
 def flatten_results(keylist, listresults, exclude=()):
@@ -27,7 +31,7 @@ def flatten_results(keylist, listresults, exclude=()):
         for j in keylist:
             if j in i:
 
-                # print i[j]
+                # print(i[j])
 
                 if i[j]:
                     if isinstance(i[j], type([])) or \
@@ -40,8 +44,9 @@ def flatten_results(keylist, listresults, exclude=()):
                             row[j] = str(i[j])
                         else:
                             row[j] = "".join(
-                                s for s in i[j].encode(
-                                    "ascii", errors="ignore") if s in string.printable)
+                                str(s) for s in i[j].encode(
+                                    "ascii", errors="ignore") if str(s) in string.printable)
+                            # Not sure if this correctly translates to Python3
                 else:
                     row[j] = ""
             else:

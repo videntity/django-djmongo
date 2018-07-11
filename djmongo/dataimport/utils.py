@@ -79,8 +79,8 @@ def bulk_csv_import_mongo(csvfile, database_name, collection_name,
         return response_dict
 
     except:
-        # print "Error reading from Mongo"
-        # print str(sys.exc_info())
+        # print("Error reading from Mongo")
+        # print(str(sys.exc_info()))
         response_dict['num_results'] = 0
         response_dict['code'] = 400
         response_dict['type'] = "Error"
