@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # vim: ai ts=4 sts=4 et sw=4
+from __future__ import absolute_import
+from __future__ import unicode_literals
+import sys
 from django.conf import settings
 from django.http import HttpResponse
 from datetime import datetime
@@ -36,12 +39,15 @@ def flatten_results(keylist, listresults, exclude=()):
                         row[j] = str(i[j])
                     else:
                         # Avoiding int object has no attribute encode
-                        if isinstance(i[j], (int, long, float)):
-                            row[j] = str(i[j])
+                        if sys.version_info[0] == 2:
+                            if isinstance(i[j], (int, long, float)):
+                                row[j] = str(i[j])
+                            else:
+                                row[j] = "".join(
+                                    s for s in i[j].encode(
+                                        "ascii", errors="ignore") if s in string.printable)
                         else:
-                            row[j] = "".join(
-                                s for s in i[j].encode(
-                                    "ascii", errors="ignore") if s in string.printable)
+                            row[j] = str(i[j])
                 else:
                     row[j] = ""
             else:

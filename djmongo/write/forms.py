@@ -7,6 +7,7 @@ from .models import WriteAPIHTTPAuth, WriteAPIIP, WriteAPIOAuth2
 import json
 from collections import OrderedDict
 
+
 class WriteAPIHTTPAuthForm(forms.ModelForm):
 
     class Meta:
@@ -21,7 +22,7 @@ class WriteAPIHTTPAuthForm(forms.ModelForm):
             'groups',
             'json_schema')
     required_css_class = 'required'
-    
+
     def clean_json_schema(self):
         json_schema = self.cleaned_data["json_schema"]
         try:
@@ -83,7 +84,7 @@ class WriteAPIIPDeleteForm(forms.Form):
         except WriteAPIIP.DoesNotExist:
             raise forms.ValidationError(_('There is no API with that slug.'))
         return slug
-        
+
 
 class WriteAPIOAuth2Form(forms.ModelForm):
 
@@ -107,7 +108,7 @@ class WriteAPIOAuth2Form(forms.ModelForm):
                 json_schema, object_pairs_hook=OrderedDict)
         except ValueError:
             raise forms.ValidationError(_('The JSONSchema was invalid JSON'))
-        return json_schema 
+        return json_schema
 
 
 class WriteAPIOAuth2DeleteForm(forms.Form):
@@ -122,6 +123,3 @@ class WriteAPIOAuth2DeleteForm(forms.Form):
         except WriteAPIOAuth2.DoesNotExist:
             raise forms.ValidationError(_('There is no API with that slug.'))
         return slug
-        
-
-

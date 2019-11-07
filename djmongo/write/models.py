@@ -7,13 +7,14 @@ from django.conf import settings
 import json
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
-from django.core.urlresolvers import reverse
-
+from django.urls import reverse
+from collections import OrderedDict
+from django.contrib.auth import get_user_model
 
 @python_2_unicode_compatible
 class WriteAPIHTTPAuth(models.Model):
     created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, blank=True, null=True)
+        get_user_model(), blank=True, null=True, on_delete=models.CASCADE)
     groups = models.ManyToManyField(
         Group,
         blank=True,
@@ -47,7 +48,7 @@ class WriteAPIHTTPAuth(models.Model):
         verbose_name = _("Write API with HTTPAuth")
 
     def url(self):
-        return reverse('write_to_collection_httpauth', args=(self.slug,))
+        return reverse('djmongo_api_write_to_collection_with_httpauth', args=(self.slug,))
 
     def __str__(self):
         return "%s" % (self.slug)
@@ -66,10 +67,24 @@ class WriteAPIHTTPAuth(models.Model):
             l.append("PUT")
         return l
 
+    def auth_method(self):
+        return 'httpauth'
+    
+    def http_get_response(self):
+        od = OrderedDict()
+        od['http_methods'] = self.http_methods()
+        od['auth_method'] = self.auth_method()
+        od['json_schema'] = self.json_schema
+        od['readme'] = self.readme_md
+        return od
+        
+    
+    
+
 @python_2_unicode_compatible
 class WriteAPIIP(models.Model):
     created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, blank=True, null=True)
+        get_user_model(), blank=True, null=True, on_delete=models.CASCADE)
     slug = models.SlugField(max_length=100, unique=True)
     http_post = models.BooleanField(default=True, blank=True)
     http_put = models.BooleanField(default=True, blank=True) 
@@ -101,6 +116,9 @@ class WriteAPIIP(models.Model):
     def __str__(self):
         return "%s" % (self.slug)
 
+    def url(self):
+        return reverse('djmongo_api_write_to_collection_with_ip', args=(self.slug,))
+
     def http_methods(self):
         l = []
         if self.http_post:
@@ -109,12 +127,23 @@ class WriteAPIIP(models.Model):
             l.append("PUT")
         return l
 
+    def auth_method(self):
+        return 'ip'
+
+    def http_get_response(self):
+        od = OrderedDict()
+        od['http_methods'] = self.http_methods()
+        od['auth_method'] = self.auth_method()
+        od['json_schema'] = self.json_schema
+        od['readme'] = self.readme_md
+        return od
+    
 
 @python_2_unicode_compatible
 class WriteAPIOAuth2(models.Model):
 
     created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, blank=True, null=True)    
+        get_user_model(), blank=True, null=True, on_delete=models.CASCADE)
     scopes = models.CharField(max_length=1024, default="*", blank=True,
                               help_text="Space delimited list of scopes required. * means no scope is required.")
     http_post = models.BooleanField(default=True, blank=True)
@@ -138,7 +167,7 @@ class WriteAPIOAuth2(models.Model):
 
     def __str__(self):
         return "%s" % (self.slug)
-    
+ 
     def http_methods(self):
         l = []
         if self.http_post:
@@ -146,3 +175,14 @@ class WriteAPIOAuth2(models.Model):
         if self.http_put:
             l.append("PUT")
         return l
+
+    def auth_method(self):
+        return 'oauth2'
+
+    def http_get_response(self):
+        od = OrderedDict()
+        od['http_methods'] = self.http_methods()
+        od['auth_method'] = self.auth_method()
+        od['json_schema'] = self.json_schema
+        od['readme'] = self.readme_md
+        return od

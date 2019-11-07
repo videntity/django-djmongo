@@ -13,7 +13,7 @@ from django.utils.encoding import python_2_unicode_compatible
 def update_import_filename(instance, filename):
     path = "imports/"
     format = instance.database_name + "-" + \
-             instance.collection_name  + "-" + \
+        instance.collection_name  + "-" + \
         str(uuid.uuid4())[0:5] + "-" + filename
     return os.path.join(path, format)
 

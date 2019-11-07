@@ -7,6 +7,18 @@ from .utils import mongodb_ensure_index, create_mongo_db
 import json
 
 
+AUTH_TYPE_CHOICES = (('public', 'Public (NONE)'),
+                     ('httpauth', 'Basic HTTP Authorization'),
+                     ('ipauth', 'IP Based Authorization'),
+                     ('oauth2', 'OAuth2 Authorization'))
+
+HTTP_METHOD_CHOICES = (('write', 'Write(POST/PUT)'),
+                       ('read', 'Read(GET)'),
+                       ('delete', 'Delete(DELETE)'))
+
+API_TYPE_CHOICES = (('basic', 'Basic'), ('custom', 'Custom'))
+
+
 class ConfirmDropForm(forms.Form):
     name = forms.CharField(max_length=256)
     required_css_class = 'required'
@@ -107,3 +119,15 @@ class DocumentForm(forms.Form):
             raise forms.ValidationError('Invalid JSON.')
 
         return document
+
+
+class APIWizardForm(forms.Form):
+    auth_type = forms.ChoiceField(choices=AUTH_TYPE_CHOICES,
+                                  widget=forms.RadioSelect)
+    http_method = forms.ChoiceField(choices=HTTP_METHOD_CHOICES,
+                                    widget=forms.RadioSelect)
+    api_type = forms.ChoiceField(choices=API_TYPE_CHOICES,
+                                 widget=forms.RadioSelect, help_text='''A simple API that accepts get parameters and no special query (choose this option if you're unsure), Setup a read API with a custom query parameters that feed into a custom MongoDB query that you define.''')
+
+    database_name = forms.CharField()
+    collection_name = forms.CharField()

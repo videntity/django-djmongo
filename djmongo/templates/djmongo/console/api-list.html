@@ -1,0 +1,118 @@
+{% extends "djmongo/console/base.html" %}
+{% load markdown_deux_tags %}
+<script>
+   $('.accordian-body').on('show.bs.collapse', function () {
+       $(this).closest("table")
+           .find(".collapse.in")
+           .not(this)
+           .collapse('toggle')
+   })
+</script>
+{% block Content %}
+{% load i18n %}
+<div class="container">
+   <br><br>
+   <div class="row">
+      <div class="col-lg-12">
+            <h1 class="text-center">APIs</h1>
+      </div>
+   </div>
+   <br><br>
+   {% if not_empty == True %}
+   <div class="col-lg-12">
+      <div class="panel"></div>
+      <div class="panel-body">
+         <div class="table-responsive">
+            <table class="table  table-striped table-bordered">
+               <thead>
+                  <tr>
+                     <th>About</th>
+                     <th>Slug (Name)</th>
+                     <th>HTTP Method</th>
+                     <th>Auth</th>
+                     <th>Endpoint</th>
+                     <th>Actions</th>
+                  </tr>
+               </thead>
+               {% for api in apis %}
+               {% if api %} 
+               {% for a in api %}
+               <tbody>
+                  <tr class="danger">
+                     <td data-toggle="collapse" data-target="#{{a.slug}}" class="accordion-toggle"><button type="button" class="btn btn-primary">README</button></td>
+                     <td>
+                        <pre>{{a.slug}}</pre>
+                     </td>
+                     <td>
+                        <pre>{{a.http_methods}}</pre>
+                     </td>
+                     <td>
+                        <pre>{{a.auth_method}}</pre>
+                     </td>
+                     <td>
+                        <pre>{% url 'djmongo_api_public_simple_search' a.database_name a.collection_name a.slug 'json' %}|csv|html</pre>
+                     </td>
+                     <td>
+                        <div class="btn-group" role="group">
+                           <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                           Options
+                           <span class="caret"></span>
+                           </button>
+                           <ul class="dropdown-menu">
+                              <li><a href="{% url 'djmongo_api_public_simple_search' a.database_name a.collection_name a.slug 'json' %}" >
+                                 <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> JSON</button>
+                                 </a>
+                              </li>
+                              <li><a href="{% url 'djmongo_api_public_simple_search' a.database_name a.collection_name a.slug 'csv' %}" >
+                                 <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> CSV</button>
+                                 </a>
+                              </li>
+                              <li><a href="{% url 'djmongo_api_public_simple_search' a.database_name a.collection_name a.slug 'html' %}" >
+                                 <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> HTML</button>
+                                 </a>
+                              </li>
+                              <li><a href="{% url 'djmongo_edit_simple_public_read_api' a.database_name a.collection_name a.slug %}" >
+                                 <button type="button" class="btn btn-warning btn-xs"> <i class="fa fa-edit"></i> Edit</button>
+                                 </a>
+                              </li>
+                              <li><a href="{% url 'djmongo_delete_simple_public_read_api' a.database_name a.collection_name a.slug %}" >
+                                 <button type="button" class="btn btn-danger btn-xs"> <i class="fa fa-remove"></i> Delete</button>
+                                 </a>
+                              </li>
+                           </ul>
+                        </div>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td colspan="12" class="hiddenRow">
+                        <div class="table-responsive">
+                           <table class="table table-striped table-bordered">
+                              <thead>
+                                 <tr class="accordian-body collapse" id="{{a.slug}}">
+                                    <td>
+                                       <p>{{a.readme_md|markdown}}</p>
+                                    </td>
+                                 </tr>
+                              </thead>
+                           </table>
+                        </div>
+                     </td>
+                  </tr>
+              </tbody>
+              {% endfor %}
+              {% endif %}
+              {% endfor %}
+            </table>
+         </div>
+      </div>
+   </div>
+   <p class="text-center"> <a class="btn btn-primary btn-lg" href="{% url 'djmongo_api_wizard' %}" role="button">
+      Create an API</a>
+   </p>
+   {% else %}
+   <p class="text-center"> <a class="btn btn-primary btn-lg" href="{% url 'djmongo_api_wizard' %}" role="button">
+      Create an API</a>
+   </p>
+   {% endif %}
+</div>
+{% endblock %}

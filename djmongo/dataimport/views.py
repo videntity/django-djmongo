@@ -4,7 +4,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.contrib import messages
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from .forms import DataImportForm
 from .models import DataImport
@@ -37,7 +37,7 @@ def import_data_file(request, database_name=None, collection_name=None):
                           {'form': form, 'name': name})
 
     # this is a GET
-    idata ={}
+    idata = {}
     if database_name:
         idata['database_name'] = database_name
     if collection_name:

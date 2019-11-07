@@ -75,6 +75,9 @@ $('.dropdown-toggle').dropdown();
 	           <li> <a href="{% url 'djmongo_show_apis' d.name c %}">
                      <i class="fa fa-dashboard"></i> {% trans "API Dashboard" %}</a>
                    </li>
+                   <li> <a href="{% url 'djmongo_api_wizard_w_params' d.name c %}">
+                     <i class="fa fa-plus "></i> {% trans "Create API" %}</a>
+             </li>
 	             <li role="presentation" class="divider"></li> 
                         <li><a  href="{% url 'djmongo_create_document_in_collection_w_params' d.name  c %}">
                    <i class="fa fa-plus-circle"></i> {% trans "Create a Document" %}</a></li>

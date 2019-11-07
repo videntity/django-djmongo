@@ -1,3 +1,4 @@
+=======
 
 See https://github.com/videntity/django-djmongo/blob/master/README.md
 
@@ -13,4 +14,3 @@ with Djmongo already configured. https://github.com/videntity/djmsample
 
 See https://github.com/videntity/django-djmongo/wiki/Installation for 
 installation instructions.
-

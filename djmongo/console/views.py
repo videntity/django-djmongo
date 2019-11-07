@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 # vim: ai ts=4 sts=4 et sw=4
 import json
+import pdb
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from .utils import (
     show_dbs,
@@ -14,12 +15,139 @@ from .utils import (
     mongo_delete_json_util,
     mongo_create_json_util)
 from .forms import (EnsureIndexForm, DeleteForm, DocumentForm,
-                    CreateDatabaseForm, ConfirmDropForm)
+                    CreateDatabaseForm, ConfirmDropForm, APIWizardForm)
 from bson.objectid import ObjectId
 from collections import OrderedDict
 from ..write.models import WriteAPIHTTPAuth, WriteAPIIP, WriteAPIOAuth2
-from ..search.models import (CustomHTTPAuthReadAPI, CustomPublicReadAPI,
-                             HTTPAuthReadAPI, PublicReadAPI)
+from ..read.models import (CustomHTTPAuthReadAPI, CustomPublicReadAPI,
+                           CustomOAuth2ReadAPI, CustomIPAuthReadAPI,
+                           HTTPAuthReadAPI, PublicReadAPI,
+                           OAuth2ReadAPI, IPAuthReadAPI)
+
+
+def api_wizard(request, database_name=None, collection_name=None):
+    name = 'API Wizard Creation'
+
+    if request.method == 'POST':
+        form = APIWizardForm(request.POST, database_name, collection_name)
+
+        if form.is_valid():
+            form_data = form.cleaned_data
+
+            # if form_data['auth_type'] == 'public' and form_data['http_method'] == 'write' and form_data['api_type'] == 'basic':
+            #     return HttpResponseRedirect(reverse(''))
+            # elif form_data['auth_type'] == 'public' and form_data['http_method'] == 'write' and form_data['api_type'] == 'custom':
+            #     return HttpResponseRedirect(reverse(''))
+            if form_data['auth_type'] == 'public' and form_data['http_method'] == 'read' and form_data['api_type'] == 'basic':
+                return HttpResponseRedirect(reverse('djmongo_create_simple_api', args=('public', form_data['database_name'], form_data['collection_name'])))
+            elif form_data['auth_type'] == 'public' and form_data['http_method'] == 'read' and form_data['api_type'] == 'custom':
+                return HttpResponseRedirect(reverse('djmongo_create_custom_api', args=('public', form_data['database_name'], form_data['collection_name'])))
+            # elif form_data['auth_type'] == 'public' and form_data['http_method'] == 'delete' and form_data['api_type'] == 'basic':
+            #     return HttpResponseRedirect(reverse(''))
+            # elif form_data['auth_type'] == 'public' and form_data['http_method'] == 'delete' and form_data['api_type'] == 'custom':
+            #     return HttpResponseRedirect(reverse(''))
+            elif form_data['auth_type'] == 'httpauth' and form_data['http_method'] == 'write' and form_data['api_type'] == 'basic':
+                return HttpResponseRedirect(reverse('djmongo_create_httpauth_write_api_w_params', args=(form_data['database_name'], form_data['collection_name'])))
+            elif form_data['auth_type'] == 'httpauth' and form_data['http_method'] == 'write' and form_data['api_type'] == 'custom':
+                return HttpResponseRedirect(reverse('djmongo_create_httpauth_write_api_w_params', args=(form_data['database_name'], form_data['collection_name'])))
+
+            elif form_data['auth_type'] == 'httpauth' and form_data['http_method'] == 'read' and form_data['api_type'] == 'basic':
+                return HttpResponseRedirect(reverse('djmongo_create_simple_api', args=('httpauth', form_data['database_name'], form_data['collection_name'])))
+            elif form_data['auth_type'] == 'httpauth' and form_data['http_method'] == 'read' and form_data['api_type'] == 'custom':
+                return HttpResponseRedirect(reverse('djmongo_create_custom_api', args=('httpauth', form_data['database_name'], form_data['collection_name'])))
+            # elif form_data['auth_type'] == 'httpauth' and form_data['http_method'] == 'delete' and form_data['api_type'] == 'basic':
+            #     return HttpResponseRedirect(reverse(''))
+
+            # elif form_data['auth_type'] == 'httpauth' and form_data['http_method'] == 'delete' and form_data['api_type'] == 'custom':
+            #     return HttpResponseRedirect(reverse(''))
+            elif form_data['auth_type'] == 'ip' and form_data['http_method'] == 'write' and form_data['api_type'] == 'basic':
+                return HttpResponseRedirect(reverse('djmongo_create_ip_write_api_w_params', args=(form_data['database_name'], form_data['collection_name'])))
+
+            elif form_data['auth_type'] == 'ip' and form_data['http_method'] == 'write' and form_data['api_type'] == 'custom':
+                return HttpResponseRedirect(reverse('djmongo_create_ip_write_api_w_params', args=(form_data['database_name'], form_data['collection_name'])))
+            # elif form_data['auth_type'] == 'ip' and form_data['http_method'] == 'read' and form_data['api_type'] == 'basic':
+            #     return HttpResponseRedirect(reverse(''))
+
+            # elif form_data['auth_type'] == 'ip' and form_data['http_method'] == 'read' and form_data['api_type'] == 'custom':
+            #     return HttpResponseRedirect(reverse(''))
+            # elif form_data['auth_type'] == 'ip' and form_data['http_method'] == 'delete' and form_data['api_type'] == 'basic':
+            #     return HttpResponseRedirect(reverse(''))
+            # elif form_data['auth_type'] == 'ip' and form_data['http_method'] == 'delete' and form_data['api_type'] == 'custom':
+            #     return HttpResponseRedirect(reverse(''))
+
+            elif form_data['auth_type'] == 'oauth2' and form_data['http_method'] == 'write' and form_data['api_type'] == 'basic':
+                return HttpResponseRedirect(reverse('djmongo_create_oauth2_write_api_w_params', args=(form_data['database_name'], form_data['collection_name'])))
+
+            elif form_data['auth_type'] == 'oauth2' and form_data['http_method'] == 'write' and form_data['api_type'] == 'custom':
+                return HttpResponseRedirect(reverse('djmongo_create_oauth2_write_api_w_params', args=(form_data['database_name'], form_data['collection_name'])))
+            # elif form_data['auth_type'] == 'oauth2' and form_data['http_method'] == 'read' and form_data['api_type'] == 'basic':
+            #     return HttpResponseRedirect(reverse(''))
+
+            # elif form_data['auth_type'] == 'oauth2' and form_data['http_method'] == 'read' and form_data['api_type'] == 'custom':
+            #     return HttpResponseRedirect(reverse(''))
+            # elif form_data['auth_type'] == 'oauth2' and form_data['http_method'] == 'delete' and form_data['api_type'] == 'basic':
+            #     return HttpResponseRedirect(reverse(''))
+            # elif form_data['auth_type'] == 'oauth2' and form_data['http_method'] == 'delete' and form_data['api_type'] == 'custom':
+            #     return HttpResponseRedirect(reverse(''))
+        else:
+            # The form is invalid
+            messages.error(
+                request, _("Please correct the errors in the form."))
+            return render(request,
+                          'djmongo/console/generic/api-list-bootstrap.html',
+                          {'form': form, 'name': name})
+
+    else:
+        # this is a GET
+        context = {'name': name,
+                   'form': APIWizardForm(
+                       initial={"collection_name": collection_name, "database_name": database_name})
+                   }
+        return render(request, 'djmongo/console/generic/api-list-bootstrap.html',
+                      context)
+
+
+def api_list(request):
+    # Get all of the Read APIs
+    custom_httpauth_read_apis = CustomHTTPAuthReadAPI.objects.all()
+    custom_public_read_apis = CustomPublicReadAPI.objects.all()
+    custom_oauth2_read_apis = CustomOAuth2ReadAPI.objects.all()
+    simple_public_read_apis = PublicReadAPI.objects.all()
+    simple_httpauth_read_apis = HTTPAuthReadAPI.objects.all()
+    simple_auth2_read_apis = OAuth2ReadAPI.objects.all()
+
+    # Get all of the Write APIs
+    ip_write_apis = WriteAPIIP.objects.all()
+    httpauth_write_apis = WriteAPIHTTPAuth.objects.all()
+    oauth2_write_apis = WriteAPIOAuth2.objects.all()
+    if custom_httpauth_read_apis:
+        not_empty = True
+    elif custom_public_read_apis:
+        not_empty = True
+    elif simple_public_read_apis:
+        not_empty = True
+    elif simple_httpauth_read_apis:
+        not_empty = True
+    elif ip_write_apis:
+        not_empty = True
+    elif httpauth_write_apis:
+        not_empty = True
+    elif oauth2_write_apis:
+        not_empty = True
+    else:
+        not_empty = False
+
+    # pdb.set_trace()
+    context = {'apis': [custom_httpauth_read_apis,
+                        custom_public_read_apis,
+                        simple_public_read_apis,
+                        simple_httpauth_read_apis,
+                        httpauth_write_apis,
+                        oauth2_write_apis,
+                        ip_write_apis],
+               "not_empty": not_empty}
+    return render(request, 'djmongo/console/api-list.html',
+                  context)
 
 
 def show_apis(request, database_name, collection_name):
@@ -29,31 +157,46 @@ def show_apis(request, database_name, collection_name):
         database_name=database_name, collection_name=collection_name)
     custom_public_read_apis = CustomPublicReadAPI.objects.filter(
         database_name=database_name, collection_name=collection_name)
-
+    custom_oauth2_read_apis = CustomOAuth2ReadAPI.objects.filter(
+        database_name=database_name, collection_name=collection_name)
+    custom_ipauth_read_apis = CustomIPAuthReadAPI.objects.filter(
+        database_name=database_name, collection_name=collection_name)
     simple_public_read_apis = PublicReadAPI.objects.filter(
         database_name=database_name, collection_name=collection_name)
     simple_httpauth_read_apis = HTTPAuthReadAPI.objects.filter(
         database_name=database_name, collection_name=collection_name)
-
+    simple_oauth2_read_apis = OAuth2ReadAPI.objects.filter(
+        database_name=database_name, collection_name=collection_name)
+    simple_ipauth_read_apis = IPAuthReadAPI.objects.filter(
+        database_name=database_name, collection_name=collection_name)
     # Get all of the Write APIs
-    ip_write_apis = WriteAPIIP.objects.filter(database_name=database_name,
-                                              collection_name=collection_name)
+    ipauth_write_apis = WriteAPIIP.objects.filter(database_name=database_name,
+                                                  collection_name=collection_name)
     httpauth_write_apis = WriteAPIHTTPAuth.objects.filter(
         database_name=database_name, collection_name=collection_name)
 
     oauth2_write_apis = WriteAPIOAuth2.objects.filter(
         database_name=database_name, collection_name=collection_name)
 
+    context = {  # READ - GET
+        "custom_httpauth_read_apis": custom_httpauth_read_apis,
+        "custom_public_read_apis": custom_public_read_apis,
+        "custom_ipauth_read_apis": custom_ipauth_read_apis,
+        "custom_oauth2_read_apis": custom_oauth2_read_apis,
+        "simple_public_read_apis": simple_public_read_apis,
+        "simple_httpauth_read_apis": simple_httpauth_read_apis,
+        "simple_oauth2_read_apis": simple_oauth2_read_apis,
+        "simple_ipauth_read_apis": simple_ipauth_read_apis,
 
-    context = {"custom_httpauth_read_apis": custom_httpauth_read_apis,
-               "custom_public_read_apis": custom_public_read_apis,
-               "simple_public_read_apis": simple_public_read_apis,
-               "simple_httpauth_read_apis": simple_httpauth_read_apis,
-               "httpauth_write_apis": httpauth_write_apis,
-               "oauth2_write_apis": oauth2_write_apis,
-               "ip_write_apis": ip_write_apis,
-               'database_name': database_name,
-               'collection_name': collection_name}
+        # WRITE - POST/PUT
+        "httpauth_write_apis": httpauth_write_apis,
+        "oauth2_write_apis": oauth2_write_apis,
+        "ipauth_write_apis": ipauth_write_apis,
+        'database_name': database_name,
+        'collection_name': collection_name}
+
+    # TODO DELETE - DELETE/GET
+
     return render(request, 'djmongo/console/show-apis.html',
                   context)
 

@@ -6,7 +6,7 @@ from .models import WriteAPIHTTPAuth, WriteAPIIP, WriteAPIOAuth2
 
 
 class WriteAPIHTTPAuthAdmin(admin.ModelAdmin):
-    list_display = ('slug', 'database_name',
+    list_display = ('url', 'slug', 'database_name',
                     'collection_name', 'creation_date')
 
 
@@ -14,7 +14,7 @@ admin.site.register(WriteAPIHTTPAuth, WriteAPIHTTPAuthAdmin)
 
 
 class WriteAPIIPAdmin(admin.ModelAdmin):
-    list_display = ('slug', 'database_name',
+    list_display = ('url', 'slug', 'database_name',
                     'collection_name', 'from_ip', 'creation_date')
 
 
