@@ -9,7 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-djmongo',
-    version='0.7.6.7b',
+    version='0.7.6.8',
     packages=['djmongo', 'djmongo.console', 'djmongo.console.migrations',
               'djmongo.accounts', 'djmongo.accounts.migrations',
               'djmongo.aggregations', 'djmongo.aggregations.migrations',
@@ -17,6 +17,7 @@ setup(
               'djmongo.management.commands',
               'djmongo.management',
               'djmongo.read', 'djmongo.read.views', 'djmongo.read.migrations',
+              'djmongo.delete', 'djmongo.delete.views', 'djmongo.delete.migrations',
               'djmongo.dataimport', 'djmongo.dataimport.migrations', ],
     include_package_data=True,
     license='GPL2',
@@ -26,7 +27,7 @@ setup(
     author='Alan Viars',
     author_email='sales@videntity.com',
     install_requires=[
-        'django==1.9.5', 'pymongo', 'django-widget-tweaks',
+        'django==2.2.4', 'pymongo', 'django-widget-tweaks',
         'django-bootstrap-form',
         'django-cors-headers', 'jdt', 'jsonschema',
         'django-localflavor', 'django-markdown-deux', ],
@@ -36,9 +37,8 @@ setup(
         'Intended Audience :: Developers',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
