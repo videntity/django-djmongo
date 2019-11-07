@@ -18,11 +18,11 @@ from collections import OrderedDict
 def checkObjectId(s):
     try:
         ObjectId(s)
-    except InvalidId: 
+    except InvalidId:
         return False
     return True
 
-    
+
 def run_aggregation_pipeline(database_name, collection_name, pipeline):
     result = False
     mongodb_client_url = getattr(settings, 'MONGODB_CLIENT',
@@ -92,8 +92,8 @@ def query_mongo(
 
     try:
         mongodb_client_url = getattr(settings, 'MONGODB_CLIENT',
-                                 'mongodb://localhost:27017/')
-        mc = MongoClient(mongodb_client_url,document_class=OrderedDict)
+                                     'mongodb://localhost:27017/')
+        mc = MongoClient(mongodb_client_url, document_class=OrderedDict)
 
         db = mc[str(database_name)]
         collection = db[str(collection_name)]
@@ -165,7 +165,7 @@ def query_mongo_sort_decend(
     try:
         mongodb_client_url = getattr(settings, 'MONGODB_CLIENT',
                                      'mongodb://localhost:27017/')
-        mc = MongoClient(mongodb_client_url,document_class=OrderedDict)
+        mc = MongoClient(mongodb_client_url, document_class=OrderedDict)
 
         db = mc[str(database_name)]
         collection = db[str(collection_name)]
@@ -242,8 +242,8 @@ def write_mongo(document, database_name,
     response_dict = {}
     try:
         mongodb_client_url = getattr(settings, 'MONGODB_CLIENT',
-                                 'mongodb://localhost:27017/')
-        mc = MongoClient(mongodb_client_url,document_class=OrderedDict)
+                                     'mongodb://localhost:27017/')
+        mc = MongoClient(mongodb_client_url, document_class=OrderedDict)
         db = mc[str(database_name)]
         collection = db[str(collection_name)]
 
@@ -352,8 +352,8 @@ def bulk_csv_import_mongo(csvfile, database_name, collection_name,
     response_dict = {}
     try:
         mongodb_client_url = getattr(settings, 'MONGODB_CLIENT',
-                                 'mongodb://localhost:27017/')
-        mc = MongoClient(mongodb_client_url,document_class=OrderedDict)
+                                     'mongodb://localhost:27017/')
+        mc = MongoClient(mongodb_client_url, document_class=OrderedDict)
         db = mconnection[database_name]
         collection = db[collection_name]
 
@@ -445,8 +445,8 @@ def get_collection_keys(database_name, collection_name):
     l = []
     try:
         mongodb_client_url = getattr(settings, 'MONGODB_CLIENT',
-                                 'mongodb://localhost:27017/')
-        mc = MongoClient(mongodb_client_url,document_class=OrderedDict)
+                                     'mongodb://localhost:27017/')
+        mc = MongoClient(mongodb_client_url, document_class=OrderedDict)
         db = mconnection[database_name]
         ckey_collection = "%s_keys" % (collection_name)
         collection = db[ckey_collection]
@@ -486,7 +486,7 @@ def build_keys_with_mapreduce(database_name, collection_name):
 
     mongodb_client_url = getattr(settings, 'MONGODB_CLIENT',
                                  'mongodb://localhost:27017/')
-    mc = MongoClient(mongodb_client_url,document_class=OrderedDict)
+    mc = MongoClient(mongodb_client_url, document_class=OrderedDict)
     db = mc[database_name]
 
     collection = db[collection_name]
@@ -505,8 +505,8 @@ def raw_query_mongo_db(kwargs, database_name, collection_name):
 
     try:
         mongodb_client_url = getattr(settings, 'MONGODB_CLIENT',
-                                 'mongodb://localhost:27017/')
-        mc = MongoClient(mongodb_client_url,document_class=OrderedDict)
+                                     'mongodb://localhost:27017/')
+        mc = MongoClient(mongodb_client_url, document_class=OrderedDict)
         db = mc[database_name]
         transactions = db[collection_name]
         mysearchresult = transactions.find(kwargs)

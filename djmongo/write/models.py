@@ -7,14 +7,14 @@ from django.conf import settings
 import json
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from collections import OrderedDict
-
+from django.contrib.auth import get_user_model
 
 @python_2_unicode_compatible
 class WriteAPIHTTPAuth(models.Model):
     created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, blank=True, null=True)
+        get_user_model(), blank=True, null=True, on_delete=models.CASCADE)
     groups = models.ManyToManyField(
         Group,
         blank=True,
@@ -84,7 +84,7 @@ class WriteAPIHTTPAuth(models.Model):
 @python_2_unicode_compatible
 class WriteAPIIP(models.Model):
     created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, blank=True, null=True)
+        get_user_model(), blank=True, null=True, on_delete=models.CASCADE)
     slug = models.SlugField(max_length=100, unique=True)
     http_post = models.BooleanField(default=True, blank=True)
     http_put = models.BooleanField(default=True, blank=True) 
@@ -143,7 +143,7 @@ class WriteAPIIP(models.Model):
 class WriteAPIOAuth2(models.Model):
 
     created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, blank=True, null=True)    
+        get_user_model(), blank=True, null=True, on_delete=models.CASCADE)
     scopes = models.CharField(max_length=1024, default="*", blank=True,
                               help_text="Space delimited list of scopes required. * means no scope is required.")
     http_post = models.BooleanField(default=True, blank=True)

@@ -22,7 +22,7 @@ urlpatterns = [
 
     url(r'^api-list',
         login_required(api_list), name="djmongo_api_list"),
-    
+
     url(r'^api-wizard/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)',
         login_required(api_wizard), name="djmongo_api_wizard_w_params"),
 

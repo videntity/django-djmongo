@@ -6,7 +6,7 @@ import pdb
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from .utils import (
     show_dbs,
@@ -21,8 +21,9 @@ from collections import OrderedDict
 from ..write.models import WriteAPIHTTPAuth, WriteAPIIP, WriteAPIOAuth2
 from ..read.models import (CustomHTTPAuthReadAPI, CustomPublicReadAPI,
                            CustomOAuth2ReadAPI, CustomIPAuthReadAPI,
-                           HTTPAuthReadAPI, PublicReadAPI, 
+                           HTTPAuthReadAPI, PublicReadAPI,
                            OAuth2ReadAPI, IPAuthReadAPI)
+
 
 def api_wizard(request, database_name=None, collection_name=None):
     name = 'API Wizard Creation'
@@ -114,8 +115,7 @@ def api_list(request):
     simple_public_read_apis = PublicReadAPI.objects.all()
     simple_httpauth_read_apis = HTTPAuthReadAPI.objects.all()
     simple_auth2_read_apis = OAuth2ReadAPI.objects.all()
-    
-    
+
     # Get all of the Write APIs
     ip_write_apis = WriteAPIIP.objects.all()
     httpauth_write_apis = WriteAPIHTTPAuth.objects.all()
@@ -125,7 +125,7 @@ def api_list(request):
     elif custom_public_read_apis:
         not_empty = True
     elif simple_public_read_apis:
-        not_empty =  True
+        not_empty = True
     elif simple_httpauth_read_apis:
         not_empty = True
     elif ip_write_apis:
@@ -139,16 +139,15 @@ def api_list(request):
 
     # pdb.set_trace()
     context = {'apis': [custom_httpauth_read_apis,
-               custom_public_read_apis,
-               simple_public_read_apis,
-               simple_httpauth_read_apis,
-               httpauth_write_apis,
-               oauth2_write_apis,
+                        custom_public_read_apis,
+                        simple_public_read_apis,
+                        simple_httpauth_read_apis,
+                        httpauth_write_apis,
+                        oauth2_write_apis,
                         ip_write_apis],
                "not_empty": not_empty}
     return render(request, 'djmongo/console/api-list.html',
                   context)
-
 
 
 def show_apis(request, database_name, collection_name):
@@ -172,34 +171,32 @@ def show_apis(request, database_name, collection_name):
         database_name=database_name, collection_name=collection_name)
     # Get all of the Write APIs
     ipauth_write_apis = WriteAPIIP.objects.filter(database_name=database_name,
-                                              collection_name=collection_name)
+                                                  collection_name=collection_name)
     httpauth_write_apis = WriteAPIHTTPAuth.objects.filter(
         database_name=database_name, collection_name=collection_name)
 
     oauth2_write_apis = WriteAPIOAuth2.objects.filter(
         database_name=database_name, collection_name=collection_name)
 
+    context = {  # READ - GET
+        "custom_httpauth_read_apis": custom_httpauth_read_apis,
+        "custom_public_read_apis": custom_public_read_apis,
+        "custom_ipauth_read_apis": custom_ipauth_read_apis,
+        "custom_oauth2_read_apis": custom_oauth2_read_apis,
+        "simple_public_read_apis": simple_public_read_apis,
+        "simple_httpauth_read_apis": simple_httpauth_read_apis,
+        "simple_oauth2_read_apis": simple_oauth2_read_apis,
+        "simple_ipauth_read_apis": simple_ipauth_read_apis,
 
-    context = {# READ - GET
-               "custom_httpauth_read_apis": custom_httpauth_read_apis,
-               "custom_public_read_apis": custom_public_read_apis,
-               "custom_ipauth_read_apis": custom_ipauth_read_apis,
-               "custom_oauth2_read_apis": custom_oauth2_read_apis,
-               "simple_public_read_apis": simple_public_read_apis,
-               "simple_httpauth_read_apis": simple_httpauth_read_apis,
-               "simple_oauth2_read_apis": simple_oauth2_read_apis,
-               "simple_ipauth_read_apis": simple_ipauth_read_apis,
-               
-               # WRITE - POST/PUT
-               "httpauth_write_apis": httpauth_write_apis,
-               "oauth2_write_apis": oauth2_write_apis,
-               "ipauth_write_apis": ipauth_write_apis,
-               'database_name': database_name,
-               'collection_name': collection_name}
-    
-                # TODO DELETE - DELETE/GET
-    
-    
+        # WRITE - POST/PUT
+        "httpauth_write_apis": httpauth_write_apis,
+        "oauth2_write_apis": oauth2_write_apis,
+        "ipauth_write_apis": ipauth_write_apis,
+        'database_name': database_name,
+        'collection_name': collection_name}
+
+    # TODO DELETE - DELETE/GET
+
     return render(request, 'djmongo/console/show-apis.html',
                   context)
 

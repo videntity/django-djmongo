@@ -13,16 +13,17 @@ from ..xls_utils import convert_to_csv, convert_to_rows
 from django.utils.translation import ugettext_lazy as _
 from django.http import HttpResponse, HttpResponseRedirect
 from datetime import datetime
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 import shlex
 from django.contrib import messages
+
 
 def build_keys(request, database_name, collection_name):
     """Perform the map/reduce to refresh the keys form.
        The display the custom report screen"""
     build_keys_with_mapreduce(database_name, collection_name)
     messages.success(request, _("Successfully completed MapReduce operation. "
-        "Key collection built."))
+                                "Key collection built."))
     return HttpResponseRedirect(reverse("djmongo_show_dbs"))
 
 

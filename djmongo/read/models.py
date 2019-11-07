@@ -3,12 +3,11 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 OUTPUT_CHOICES = (("json", "JSON"),
                   ("html", "HTML"),
                   ("csv", "Comma Separated Value (.csv)"))
-
 
 
 @python_2_unicode_compatible
@@ -62,17 +61,19 @@ class CustomOAuth2ReadAPI(models.Model):
 
     def auth_method(self):
         return 'oauth2'
-    
+
     def http_methods(self):
-        return ['GET',]
-    
+        return ['GET', ]
+
     def url(self):
         return ""
+
 
 @python_2_unicode_compatible
 class CustomHTTPAuthReadAPI(models.Model):
 
-    group = models.ForeignKey(Group, blank=True, null=True)
+    group = models.ForeignKey(
+        Group, blank=True, null=True, on_delete=models.CASCADE)
     output_format = models.CharField(max_length=4,
                                      choices=OUTPUT_CHOICES,
                                      default="json")
@@ -121,9 +122,10 @@ class CustomHTTPAuthReadAPI(models.Model):
 
     def auth_method(self):
         return 'httpauth'
-    
+
     def http_methods(self):
-        return ['GET',]
+        return ['GET', ]
+
 
 @python_2_unicode_compatible
 class CustomIPAuthReadAPI(models.Model):
@@ -183,7 +185,7 @@ class CustomIPAuthReadAPI(models.Model):
         return reverse('djmongo_run_custom_ipauth_read_api_by_slug', args=(self.slug,))
 
     def http_methods(self):
-        return ['GET',]
+        return ['GET', ]
 
     def auth_method(self):
         return 'ipauth'
@@ -238,10 +240,11 @@ class CustomPublicReadAPI(models.Model):
         return reverse('djmongo_run_custom_public_read_api_by_slug', args=(self.slug,))
 
     def http_methods(self):
-        return ['GET',]
+        return ['GET', ]
 
     def auth_method(self):
         return 'public'
+
 
 @python_2_unicode_compatible
 class HTTPAuthReadAPI(models.Model):
@@ -286,10 +289,11 @@ class HTTPAuthReadAPI(models.Model):
                        args=(self.database_name, self.collection_name, self.slug, 'html'))
 
     def http_methods(self):
-        return ['GET',]
+        return ['GET', ]
 
     def auth_method(self):
         return 'httpauth'
+
 
 @python_2_unicode_compatible
 class PublicReadAPI(models.Model):
@@ -318,23 +322,25 @@ class PublicReadAPI(models.Model):
     def url(self):
         return reverse('djmongo_api_public_simple_search',
                        args=(self.database_name, self.collection_name, self.slug, 'json'))
+
     def json_url(self):
         return reverse('djmongo_api_public_simple_search',
                        args=(self.database_name, self.collection_name, self.slug, 'json'))
 
     def csv_url(self):
         return reverse('djmongo_api_public_simple_search',
-                       args=(self.database_name, self.collection_name, self.slug,'csv'))
+                       args=(self.database_name, self.collection_name, self.slug, 'csv'))
 
     def html_url(self):
         return reverse('djmongo_api_public_simple_search',
                        args=(self.database_name, self.collection_name, self.slug, 'html'))
-    
+
     def http_methods(self):
-        return ['GET',]
+        return ['GET', ]
 
     def auth_method(self):
         return 'public'
+
 
 @python_2_unicode_compatible
 class IPAuthReadAPI(models.Model):
@@ -361,7 +367,7 @@ class IPAuthReadAPI(models.Model):
         # get_latest_by = "creation_date"
         # ordering = ('-creation_date',)
         unique_together = (('database_name', 'collection_name', 'slug'), )
-    
+
     def allowable_ips(self):
         allowable_ips = self.from_ip.split(" ")
         return allowable_ips
@@ -372,27 +378,26 @@ class IPAuthReadAPI(models.Model):
     def url(self):
         return reverse('djmongo_api_ipauth_simple_search',
                        args=(self.database_name, self.collection_name, self.slug, 'json'))
+
     def json_url(self):
         return reverse('djmongo_api_ipauth_simple_search',
                        args=(self.database_name, self.collection_name, self.slug, 'json'))
 
     def csv_url(self):
         return reverse('djmongo_api_ipauth_simple_search',
-                       args=(self.database_name, self.collection_name, self.slug,'csv'))
+                       args=(self.database_name, self.collection_name, self.slug, 'csv'))
 
     def html_url(self):
         return reverse('djmongo_api_ipauth_simple_search',
                        args=(self.database_name, self.collection_name, self.slug, 'html'))
-    
+
     def http_methods(self):
-        return ['GET',]
+        return ['GET', ]
 
     def auth_method(self):
         return 'ipauth'
 
 
-
- 
 @python_2_unicode_compatible
 class OAuth2ReadAPI(models.Model):
 
@@ -410,7 +415,7 @@ class OAuth2ReadAPI(models.Model):
                                                 these keys.""")
     readme_md = models.TextField(max_length=4096, default="", blank=True)
     creation_date = models.DateField(auto_now_add=True)
-    
+
     class Meta:
         # get_latest_by = "creation_date"
         # ordering = ('-creation_date',)
@@ -418,7 +423,7 @@ class OAuth2ReadAPI(models.Model):
 
     def __str__(self):
         return "%s/%s/%s" % (self.database_name, self.collection_name, self.slug)
-    
+
     def url(self):
         return reverse('djmongo_api_oauth2_simple_search',
                        args=(self.database_name, self.collection_name, self.slug, 'json'))
@@ -434,8 +439,9 @@ class OAuth2ReadAPI(models.Model):
     def html_url(self):
         return reverse('djmongo_api_oauth2_simple_search',
                        args=(self.database_name, self.collection_name, self.slug, 'html'))
+
     def http_methods(self):
-        return ['GET',]
+        return ['GET', ]
 
     def auth_method(self):
         return 'oauth2'

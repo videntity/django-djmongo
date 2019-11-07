@@ -12,7 +12,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from collections import OrderedDict
 from ..mongoutils import write_mongo, checkObjectId
 from jsonschema import validate
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from jsonschema.exceptions import ValidationError
 from .models import WriteAPIHTTPAuth, WriteAPIIP, WriteAPIOAuth2
 from .forms import (WriteAPIHTTPAuthForm, WriteAPIHTTPAuthDeleteForm,
@@ -20,8 +20,6 @@ from .forms import (WriteAPIHTTPAuthForm, WriteAPIHTTPAuthDeleteForm,
 from .forms import WriteAPIOAuth2Form, WriteAPIOAuth2DeleteForm
 
 from django.utils.translation import ugettext_lazy as _
-
-
 
 
 def write_to_collection(request, slug, model):
@@ -32,19 +30,20 @@ def write_to_collection(request, slug, model):
             "The API was not not found. Perhaps you need to define it?")
     if request.method == 'GET':
         return HttpResponse(
-                json.dumps(wapi.http_get_response(), indent=4),
-                content_type="application/json")
-    
+            json.dumps(wapi.http_get_response(), indent=4),
+            content_type="application/json")
+
     # ----------------------------------------------------
     if request.method not in wapi.http_methods():
         msg = "The HTTP method %s is not allowed." % (request.method)
         return kickout_400(msg)
 
-    if request.method in  ('POST', 'PUT'):
+    if request.method in ('POST', 'PUT'):
 
         # Check if request body is JSON ------------------------
         try:
-            j = json.loads(request.body.decode(), object_pairs_hook=OrderedDict)
+            j = json.loads(request.body.decode(),
+                           object_pairs_hook=OrderedDict)
             if not isinstance(j, type(OrderedDict())):
                 kickout_400(
                     "The request body did not contain a JSON object i.e. {}.")
@@ -54,8 +53,8 @@ def write_to_collection(request, slug, model):
 
         # Make sure that an update (PUT) contains an id or _id
         if request.method == "PUT":
-           if "id" not in j.keys() and "_id" not in j.keys():
-               return kickout_400("The PUT update request did not contain an id or _id.")
+            if "id" not in j.keys() and "_id" not in j.keys():
+                return kickout_400("The PUT update request did not contain an id or _id.")
         # Check that id is valid:
         if j.get("id", ""):
             if not checkObjectId(j.get("id", "")):
@@ -80,17 +79,14 @@ def write_to_collection(request, slug, model):
                     str(sys.exc_info()[1][0]))
                 return kickout_400(msg)
         # write_to_mongo
-        
+
         if request.method == "POST":
             response = write_mongo(j, wapi.database_name, wapi.collection_name)
         if request.method == "PUT":
-            response = write_mongo(j, wapi.database_name, wapi.collection_name, update=True)
+            response = write_mongo(j, wapi.database_name,
+                                   wapi.collection_name, update=True)
         return HttpResponse(json.dumps(response, indent=4),
                             content_type="application/json")
-
-
-    
-    
 
 
 @csrf_exempt
@@ -98,26 +94,26 @@ def write_to_collection(request, slug, model):
 def write_to_collection_httpauth(request, slug):
     print("REFACTOR!!")
     return write_to_collection(request, slug, WriteAPIHTTPAuth)
-    
+
 
 @csrf_exempt
 @ip_write_verification_required
 def write_to_collection_ip_auth(request, slug):
     print("REFACTOR!!")
     return write_to_collection(request, slug, WriteAPIIP)
-    # 
-    # 
+    #
+    #
     # @csrf_exempt
     # @ip_write_verification_required
     # def write_to_collection_ip_auth(request, slug):
-    # 
+    #
     # try:
     #     wapi = WriteAPIIP.objects.get(slug=slug)
     # except WriteAPIIP.DoesNotExist:
     #     return kickout_404(
     #         "The API was not not found. Perhaps you need to define it?")
-    # 
-    # 
+    #
+    #
     # # Check if METHOD ALLOWED
     # if request.method != "GET" and request.method not in wapi.http_methods():
     #     return kickout_404(
@@ -138,10 +134,10 @@ def write_to_collection_ip_auth(request, slug):
     #     except:
     #         print(str(sys.exc_info()))
     #         return kickout_500("The JSON Schema did not contain valid JSON")
-    # 
+    #
     # # ----------------------------------------------------
     # if request.method in ('POST', 'PUT'):
-    # 
+    #
     #     # Check if request body is JSON ------------------------
     #     try:
     #         j = json.loads(request.body.decode(), object_pairs_hook=OrderedDict)
@@ -151,17 +147,17 @@ def write_to_collection_ip_auth(request, slug):
     #     except:
     #         print(str(sys.exc_info()))
     #         return kickout_400("The request body did not contain valid JSON...")
-    # 
+    #
     #     # check json_schema is valid
     #     try:
     #         json_schema = json.loads(
     #             wapi.json_schema, object_pairs_hook=OrderedDict)
-    # 
+    #
     #     except:
     #         print(str(sys.exc_info()))
     #         return kickout_500(
     #             "The JSON Schema on the server did not contain valid JSON")
-    # 
+    #
     #     # Check jsonschema
     #     if json_schema:
     #         try:
@@ -171,12 +167,12 @@ def write_to_collection_ip_auth(request, slug):
     #                 str(sys.exc_info()[1][0]))
     #             return kickout_400(msg)
     #     # write_to_mongo
-    #     
+    #
     #     if request.method =="POST":
     #         response = write_mongo(j, wapi.database_name, wapi.collection_name)
     #     elif request.method =="PUT":
     #         response = write_mongo(j, wapi.database_name, wapi.collection_name, update=True)
-    #     
+    #
     #     return HttpResponse(json.dumps(response, indent=4),
     #                         content_type="application/json")
 
@@ -256,9 +252,6 @@ def create_httpauth_write_api(
         'djmongo/console/generic/bootstrapform.html',
         context,
     )
-
-
-
 
 
 def create_ip_write_api(request, database_name=None, collection_name=None):
@@ -435,7 +428,6 @@ def delete_ip_write_api(request, slug):
     )
 
 
-    
 def create_oauth2_write_api(
         request,
         database_name=None,
@@ -474,7 +466,6 @@ def create_oauth2_write_api(
         'djmongo/console/generic/bootstrapform.html',
         context,
     )
-
 
 
 def edit_oauth2_write_api(request, slug):
@@ -546,4 +537,3 @@ def delete_oauth2_write_api(request, slug):
         'djmongo/console/generic/bootstrapform.html',
         context,
     )
-

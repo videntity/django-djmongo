@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 # vim: ai ts=4 sts=4 et sw=4
 from django.contrib.auth.decorators import login_required
+from django.conf.urls import url
 from ..decorators import httpauth_login_required
 from ..decorators import (check_read_httpauth_access,
                           check_public_ok,
                           ipauth_read_verification_required,
                           custom_ipauth_read_verification_required)
-from django.conf.urls import url
+
 from .views.run import (build_keys, simple_search, run_custom_public_read_api_by_slug,
                         run_custom_httpauth_read_api_by_slug,
                         run_custom_ipauth_read_api_by_slug)
@@ -17,7 +18,7 @@ from .views.ced import (edit_custom_httpauth_read_api, edit_custom_public_read_a
                         edit_custom_ipauth_read_api, edit_custom_oauth2_read_api)
 
 from .views.ced import (edit_simple_httpauth_read_api, edit_simple_public_read_api,
-                       edit_simple_ipauth_read_api,edit_simple_oauth2_read_api)
+                        edit_simple_ipauth_read_api, edit_simple_oauth2_read_api)
 
 from .views.ced import (delete_custom_httpauth_read_api, delete_custom_public_read_api,
                         delete_custom_ipauth_read_api, delete_custom_oauth2_read_api)
@@ -48,7 +49,8 @@ urlpatterns = [
         name="djmongo_run_custom_public_read_api_by_slug"),
 
     url(r'^api/custom/ipauth/(?P<slug>\S+)$',
-        custom_ipauth_read_verification_required(run_custom_ipauth_read_api_by_slug),
+        custom_ipauth_read_verification_required(
+            run_custom_ipauth_read_api_by_slug),
         name="djmongo_run_custom_ipauth_read_api_by_slug"),
 
     # CRUD for Managing APIs
@@ -92,7 +94,7 @@ urlpatterns = [
     url(r'^custom/oauth2/edit-api/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/(?P<slug>\S+)$',
         login_required(edit_custom_oauth2_read_api),
         name="djmongo_edit_custom_oauth2_read_api"),
-    
+
     url(r'^custom/ipauth/edit-api/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/(?P<slug>\S+)$',
         login_required(edit_custom_ipauth_read_api),
         name="djmongo_edit_custom_ipauth_read_api"),
@@ -112,7 +114,7 @@ urlpatterns = [
     url(r'^simple/oauth2/delete-api/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/(?P<slug>[^/]+)$',
         login_required(delete_simple_oauth2_read_api),
         name="djmongo_delete_simple_oauth2_read_api"),
-    
+
     url(r'^simple/ipauth/delete-api/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/(?P<slug>[^/]+)$',
         login_required(delete_simple_ipauth_read_api),
         name="djmongo_delete_simple_ipauth_read_api"),

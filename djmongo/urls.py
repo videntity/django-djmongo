@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'^console/', include('djmongo.console.urls')),
     url(r'^read/', include('djmongo.read.urls')),
     url(r'^write/', include('djmongo.write.urls')),
+    url(r'^delete/', include('djmongo.delete.urls')),
     url(r'^accounts/', include('djmongo.accounts.urls')),
     url(r'^aggregations/', include('djmongo.aggregations.urls')),
     url(r'^$', TemplateView.as_view(template_name='djmongo/console/splash.html'),

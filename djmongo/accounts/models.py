@@ -5,6 +5,7 @@
 from django.db import models
 from django.conf import settings
 import datetime
+from django.contrib.auth import get_user_model
 
 PERMISSION_CHOICES = (('db-all', 'All MongoDB'),
                       ('db-write', 'Write MongoDB'),
@@ -16,7 +17,7 @@ PERMISSION_CHOICES = (('db-all', 'All MongoDB'),
 
 
 class Permission(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     permission_name = models.CharField(max_length=256,
                                        choices=PERMISSION_CHOICES)
 
@@ -32,10 +33,10 @@ class SocialGraph(models.Model):
 
     grantor = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name="grantor")
+        related_name="grantor", on_delete=models.CASCADE)
     grantee = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name="grantee")
+        related_name="grantee", on_delete=models.CASCADE)
     created_on = models.DateField(default=datetime.date.today)
 
     def __unicode__(self):

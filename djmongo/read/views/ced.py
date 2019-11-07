@@ -6,7 +6,7 @@ from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
 from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from ..forms import (HTTPAuthReadAPIForm, PublicReadAPIForm,
                      CustomHTTPAuthReadAPIForm, CustomPublicReadAPIForm,
                      IPAuthReadAPIForm, CustomIPAuthReadAPIForm,
@@ -20,6 +20,7 @@ from ..models import (PublicReadAPI, HTTPAuthReadAPI,
 from django.utils.translation import ugettext_lazy as _
 
 # CREATE API VIEWS -----------------------------
+
 
 def create_simple_httpauth_read_api(request, database_name, collection_name):
     name = _("Create a Read API with Basic Auth")
@@ -52,6 +53,7 @@ def create_simple_httpauth_read_api(request, database_name, collection_name):
                }
     return render(request, 'djmongo/console/generic/bootstrapform.html',
                   context)
+
 
 def create_simple_ipauth_read_api(request, database_name, collection_name):
     name = _("Create a Read API with IP-Based Auth")
@@ -151,8 +153,9 @@ def create_simple_public_read_api(request, database_name, collection_name):
     return render(request, 'djmongo/console/generic/bootstrapform.html',
                   context)
 
+
 def create_simple_api(request, auth_type, database_name, collection_name):
-    
+
     if auth_type == "public":
         return create_simple_public_read_api(
             request, database_name, collection_name)
@@ -160,11 +163,11 @@ def create_simple_api(request, auth_type, database_name, collection_name):
     if auth_type == "httpauth":
         return create_simple_httpauth_read_api(
             request, database_name, collection_name)
-    
+
     if auth_type == "ipauth":
         return create_simple_ipauth_read_api(
             request, database_name, collection_name)
-  
+
     if auth_type == "oauth2":
         return create_simple_oauth2_read_api(
             request, database_name, collection_name)
@@ -294,6 +297,7 @@ def create_custom_ipauth_read_api(
     return render(request, 'djmongo/console/generic/bootstrapform.html',
                   context)
 
+
 def create_custom_oauth2_read_api(
         request,
         database_name=None,
@@ -334,8 +338,6 @@ def create_custom_oauth2_read_api(
                   context)
 
 
-
-
 def create_custom_api(request, auth_type, database_name, collection_name,
                       skip=0, limit=getattr(settings, 'MONGO_LIMIT', 200),
                       return_keys=()):
@@ -356,7 +358,7 @@ def create_custom_api(request, auth_type, database_name, collection_name,
             skip=skip,
             limit=limit,
             return_keys=return_keys)
-    
+
     if auth_type == "ipauth":
         return create_custom_ipauth_read_api(
             request,
@@ -365,7 +367,7 @@ def create_custom_api(request, auth_type, database_name, collection_name,
             skip=skip,
             limit=limit,
             return_keys=return_keys)
-    
+
     if auth_type == "oauth2":
         return create_custom_oauth2_read_api(
             request,
@@ -374,7 +376,7 @@ def create_custom_api(request, auth_type, database_name, collection_name,
             skip=skip,
             limit=limit,
             return_keys=return_keys)
-    
+
     # else
     raise Http404
 
@@ -519,7 +521,6 @@ def edit_simple_oauth2_read_api(
                   context)
 
 
-
 def edit_custom_public_read_api(request, database_name, collection_name, slug):
     name = _("Edit Macro Read API with No Authentication (Public)")
     ss = get_object_or_404(CustomPublicReadAPI, database_name=database_name,
@@ -628,6 +629,7 @@ def edit_custom_ipauth_read_api(
     return render(request, 'djmongo/console/generic/bootstrapform.html',
                   context)
 
+
 def edit_custom_oauth2_read_api(
         request,
         database_name,
@@ -666,7 +668,6 @@ def edit_custom_oauth2_read_api(
                   context)
 
 
-
 def delete_custom_public_read_api(
         request,
         database_name,
@@ -695,6 +696,7 @@ def delete_custom_httpauth_read_api(
     return HttpResponseRedirect(
         reverse('djmongo_show_apis',
                 args=(ss.database_name, ss.collection_name)))
+
 
 def delete_custom_ipauth_read_api(
         request,
@@ -741,10 +743,6 @@ def delete_simple_public_read_api(
                 args=(ss.database_name, ss.collection_name)))
 
 
-
-
-
-
 def delete_simple_httpauth_read_api(
         request,
         database_name,
@@ -773,6 +771,7 @@ def delete_simple_ipauth_read_api(
     return HttpResponseRedirect(
         reverse('djmongo_show_apis',
                 args=(ss.database_name, ss.collection_name)))
+
 
 def delete_simple_oauth2_read_api(
         request,

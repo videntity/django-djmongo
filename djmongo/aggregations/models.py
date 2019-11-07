@@ -2,16 +2,14 @@
 # -*- coding: utf-8 -*-
 # vim: ai ts=4 sts=4 et sw=4
 from django.db import models
-from django.conf import settings
 from ..mongoutils import run_aggregation_pipeline
 import json
-from django.utils.encoding import python_2_unicode_compatible
+from django.contrib.auth import get_user_model
 
 
-@python_2_unicode_compatible
 class Aggregation(models.Model):
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
     slug = models.SlugField(max_length=100, unique=True)
     pipeline = models.TextField(max_length=20480, default="[]",
