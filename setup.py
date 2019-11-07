@@ -27,7 +27,7 @@ setup(
     author='Alan Viars',
     author_email='sales@videntity.com',
     install_requires=[
-        'django==2.2.4', 'pymongo', 'django-widget-tweaks',
+        'django==2.2.7', 'pymongo', 'django-widget-tweaks',
         'django-bootstrap-form',
         'django-cors-headers', 'jdt', 'jsonschema',
         'django-localflavor', 'django-markdown-deux', ],
