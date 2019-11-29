@@ -10,7 +10,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 setup(
     long_description_content_type="text/markdown",
     name='django-djmongo',
-    version='0.7.6.9',
+    version='0.7.7.7',
     packages=['djmongo', 'djmongo.console',
               'djmongo.accounts', 'djmongo.accounts.migrations',
               'djmongo.aggregations', 'djmongo.aggregations.migrations',
