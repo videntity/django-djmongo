@@ -26,7 +26,8 @@ def bulk_csv_import_mongo(csvfile, database_name, collection_name,
             collection.remove({})
 
         # open the csv file.
-        csvhandle = csv.reader(open(csvfile._get_path(), 'rb'),
+        # print(csvfile, dir(csvfile))
+        csvhandle = csv.reader(open(csvfile.path, 'r'),
                                delimiter=',')
 
         rowindex = 0
@@ -41,6 +42,7 @@ def bulk_csv_import_mongo(csvfile, database_name, collection_name,
                     c = c.replace(".", "")
                     c = c.replace("$", "-")
                     c = c.replace(" ", "_")
+                    c = c.replace('"', "")
                     cleaned_headers.append(c)
             else:
 

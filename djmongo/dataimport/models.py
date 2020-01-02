@@ -2,12 +2,10 @@
 # -*- coding: utf-8 -*-
 # vim: ai ts=4 sts=4 et sw=4
 from django.db import models
-from django.conf import settings
 import os
 import uuid
 import json
 from .utils import bulk_csv_import_mongo
-from django.utils.encoding import python_2_unicode_compatible
 
 
 def update_import_filename(instance, filename):
@@ -21,7 +19,6 @@ def update_import_filename(instance, filename):
 INPUT_CHOICES = (("csv", "Comma Separated Value (.csv)"),)
 
 
-@python_2_unicode_compatible
 class DataImport(models.Model):
 
     file1 = models.FileField(upload_to=update_import_filename,
@@ -63,6 +60,7 @@ class DataImport(models.Model):
                                        self.collection_name,
                                        self.delete_collection_before_import)
 
+        print(result)
         # report results
         self.response = json.dumps(result, indent=4)
         self.status = "Complete"
