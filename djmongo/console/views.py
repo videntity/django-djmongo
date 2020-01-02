@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 # vim: ai ts=4 sts=4 et sw=4
 import json
-import pdb
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
@@ -23,6 +22,7 @@ from ..read.models import (CustomHTTPAuthReadAPI, CustomPublicReadAPI,
                            CustomOAuth2ReadAPI, CustomIPAuthReadAPI,
                            HTTPAuthReadAPI, PublicReadAPI,
                            OAuth2ReadAPI, IPAuthReadAPI)
+from django.conf import settings
 
 
 def api_wizard(request, database_name=None, collection_name=None):
@@ -139,11 +139,13 @@ def api_list(request):
 
     # pdb.set_trace()
     context = {'apis': [custom_httpauth_read_apis,
+                        custom_oauth2_read_apis,
                         custom_public_read_apis,
                         simple_public_read_apis,
                         simple_httpauth_read_apis,
                         httpauth_write_apis,
                         oauth2_write_apis,
+                        simple_auth2_read_apis,
                         ip_write_apis],
                "not_empty": not_empty}
     return render(request, 'djmongo/console/api-list.html',
@@ -211,6 +213,11 @@ def showdbs(request):
             request,
             _("""Unable to connect to MongoDB.
               Check that it is running and accessible."""))
+
+        if settings.DEBUG:
+            msg = _("MONGO Connection string is: %s" % (getattr(settings, 'MONGODB_CLIENT',
+                                                                'mongodb://localhost:27017/')))
+            messages.error(request, msg)
     else:
         for i in dbs:
             # only keep non-system DBs.
@@ -221,66 +228,6 @@ def showdbs(request):
         messages.info(
             request,
             _("""You have no databases to work on. Please create one."""))
-
-    #     #We have data so let's grab all APIs
-    #     apis = []
-    #
-    #     # Get all of the APIs.
-    #     for d in cleaned_dbs:
-    #         for c in d['collections']:
-    #             # databse_name, collection_name, APIType, AuthType, HTTP Method, object
-    #             # new row
-    #             api = []
-    #             # database name 0
-    #             database_name = d['name']
-    #             api.append(database_name)
-    #
-    #             # collection name 1
-    #             api.append(c)
-    #
-    #             # API Type 2
-    #             api.append('Basic')
-    #
-    #             # AuthType 3
-    #             api.append("None")
-    #
-    #             # HTTP Method 4
-    #             api.append("GET")
-    #
-    #             # Read Public
-    #             read_public_list = PublicReadAPI.objects.filter(database_name = database_name,
-    #                                                collection_name = c)
-    #
-    #
-    #             database['apis'].append(api)
-    #
-    #             # HTTPAuth Read
-    #             api = {}
-    #             api['read_httpauth'] = HTTPAuthReadAPI.objects.filter(database_name = database_name,
-    #                                                collection_name = c)
-    #             database['apis'].append(api)
-    #
-    #             # Write Httpauth
-    #             api = {}
-    #             api['write_httpauth'] = WriteAPIHTTPAuth.objects.filter(database_name = database_name,
-    #                                                collection_name = c)
-    #             database['apis'].append(api)
-    #
-    #             # Write IP Auth
-    #             api = {}
-    #             api['write_ip_auth'] = WriteAPIIP.objects.filter(database_name = database_name,
-    #                                                collection_name = c)
-    #             database['apis'].append(api)
-    #
-    #             # Custom Read http Auth
-    #             api = {}
-    #             api['custom_read_httpauth'] = SavedSearch.objects.filter(database_name = database_name,
-    #                                                collection_name = c)
-    #             database['apis'].append(api)                #collection[c].append(api)
-    #         apis.append(database)
-    #
-    # pp = pprint.PrettyPrinter(indent=4)
-    # pp.pprint(apis)
 
     context = {"dbs": cleaned_dbs}
     return render(request, 'djmongo/console/showdbs.html', context)
@@ -305,7 +252,7 @@ def drop_collection(request, database_name, collection_name):
 
             response = mongodb_drop_collection(database_name, collection_name)
             if response:
-                errormsg = _("ERROR", response)
+                errormsg = _("ERROR %s" % (response))
                 messages.error(request, errormsg)
                 return HttpResponseRedirect(reverse('djmongo_show_dbs'))
             else:

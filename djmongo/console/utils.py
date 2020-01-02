@@ -9,10 +9,10 @@ from pymongo import MongoClient
 from collections import OrderedDict
 from ..mongoutils import delete_mongo, write_mongo
 import pymongo
-from getenv import env
 
 
-def client_connector(mongodb_client=env('MONGODB_CLIENT', 'mongodb://127.0.0.1:27017')):
+def client_connector(mongodb_client=getattr(settings, 'MONGODB_CLIENT',
+                                            'mongodb://localhost:27017/')):
     client = MongoClient(
         mongodb_client,
         connectTimeoutMS=2000,
@@ -25,6 +25,26 @@ def client_connector(mongodb_client=env('MONGODB_CLIENT', 'mongodb://127.0.0.1:2
     except pymongo.errors.ConnectionFailure:
         client = None
     return client
+
+
+def show_dbs():
+    """return a list of all dbs and related collections.
+    Return an empty list on error.
+    """
+
+    collection_list = []
+    mc = client_connector()
+    if not mc:
+        # The client couldn't connect
+        return ()
+
+    dbs = mc.database_names()
+    for d in dbs:
+        dbc = mc[d]
+        collections = dbc.collection_names()
+        collections = remove_values_from_list(collections, "system.indexes")
+        collection_list.append({"name": d, "collections": collections})
+    return tuple(collection_list)
 
 
 def mongo_delete_json_util(database_name, collection_name, query={},
@@ -79,7 +99,6 @@ def mongo_create_json_util(document, database_name,
         response_dict = write_mongo(document,
                                     database_name=database_name,
                                     collection_name=collection_name)
-
     return response_dict
 
 
@@ -88,18 +107,14 @@ def remove_values_from_list(the_list, val):
 
 
 def create_mongo_db(database_name, collection_name, initial_document):
-    """Create a new database and collection by inserting one document."""
     response_dict = {}
     try:
         mongodb_client_url = getattr(settings, 'MONGODB_CLIENT',
                                      'mongodb://localhost:27017/')
         mc = MongoClient(mongodb_client_url, document_class=OrderedDict)
-
         db = mc[str(database_name)]
         collection = db[str(collection_name)]
-
         d = json.loads(initial_document, object_pairs_hook=OrderedDict)
-
         collection.save(d)
 
     except:
@@ -109,40 +124,17 @@ def create_mongo_db(database_name, collection_name, initial_document):
     return response_dict
 
 
-def show_dbs():
-    """return a list of all dbs and related collections.
-    Return an empty list on error.
-    """
-
-    l = []
-    mc = client_connector()
-    if not mc:
-        # The client couldn't connect
-        return ()
-
-    dbs = mc.database_names()
-    for d in dbs:
-        dbc = mc[d]
-        collections = dbc.collection_names()
-        collections = remove_values_from_list(collections, "system.indexes")
-        l.append({"name": d, "collections": collections})
-    return tuple(l)
-
-
-def mongodb_ensure_index(database_name, collection_name, key):
-    """Ensure Index"""
-
+def mongodb_ensure_index(database_name, collection_name, keys):
+    """ ensure index """
     try:
-        mongodb_client_url = getattr(settings, 'MONGODB_CLIENT',
-                                     'mongodb://localhost:27017/')
-        mc = MongoClient(mongodb_client_url, document_class=OrderedDict)
+        mc = MongoClient(getattr(settings, 'MONGODB_CLIENT',
+                                 'mongodb://localhost:27017/'))
         dbs = mc[database_name]
         dbc = dbs[collection_name]
 
-        dbc.ensure_index(key)
+        dbc.ensure_index(keys)
         # print "success"
-        return key
-
+        return ""
     except:
         # error connecting to mongodb
         # print str(sys.exc_info())
@@ -151,31 +143,24 @@ def mongodb_ensure_index(database_name, collection_name, key):
 
 def mongodb_drop_collection(database_name, collection_name):
     """Drop Collection"""
-
     try:
-        mongodb_client_url = getattr(settings, 'MONGODB_CLIENT',
-                                     'mongodb://localhost:27017/')
-        mc = MongoClient(mongodb_client_url, document_class=OrderedDict)
+        mc = MongoClient(getattr(settings, 'MONGODB_CLIENT',
+                                 'mongodb://localhost:27017/'))
         dbs = mc[database_name]
         dbs.drop_collection(collection_name)
         # print "success"
         return ""
-
     except:
         # error connecting to mongodb
-        # print str(sys.exc_info())
         return str(sys.exc_info())
 
 
 def mongodb_drop_database(database_name):
     """Drop Database"""
-
     try:
-        mongodb_client_url = getattr(settings, 'MONGODB_CLIENT',
-                                     'mongodb://localhost:27017/')
-        mc = MongoClient(mongodb_client_url, document_class=OrderedDict)
+        mc = MongoClient(getattr(settings, 'MONGODB_CLIENT',
+                                 'mongodb://localhost:27017/'))
         mc.drop_database(database_name)
-        # print "success"
         return ""
 
     except:
