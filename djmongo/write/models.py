@@ -6,13 +6,12 @@ from django.contrib.auth.models import Group
 from django.conf import settings
 import json
 from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import python_2_unicode_compatible
 from django.urls import reverse
 from collections import OrderedDict
 from django.contrib.auth import get_user_model
 
 
-@python_2_unicode_compatible
+
 class WriteAPIHTTPAuth(models.Model):
     created_by = models.ForeignKey(
         get_user_model(), blank=True, null=True, on_delete=models.CASCADE)
@@ -78,7 +77,7 @@ class WriteAPIHTTPAuth(models.Model):
         return od
 
 
-@python_2_unicode_compatible
+
 class WriteAPIIP(models.Model):
     created_by = models.ForeignKey(
         get_user_model(), blank=True, null=True, on_delete=models.CASCADE)
@@ -136,7 +135,7 @@ class WriteAPIIP(models.Model):
         return od
 
 
-@python_2_unicode_compatible
+
 class WriteAPIOAuth2(models.Model):
 
     created_by = models.ForeignKey(

@@ -1,7 +1,6 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import Group
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.urls import reverse
 
@@ -10,7 +9,6 @@ OUTPUT_CHOICES = (("json", "JSON"),
                   ("csv", "Comma Separated Value (.csv)"))
 
 
-@python_2_unicode_compatible
 class CustomOAuth2ReadAPI(models.Model):
     output_format = models.CharField(max_length=4,
                                      choices=OUTPUT_CHOICES,
@@ -69,7 +67,7 @@ class CustomOAuth2ReadAPI(models.Model):
         return ""
 
 
-@python_2_unicode_compatible
+
 class CustomHTTPAuthReadAPI(models.Model):
 
     group = models.ForeignKey(
@@ -127,7 +125,6 @@ class CustomHTTPAuthReadAPI(models.Model):
         return ['GET', ]
 
 
-@python_2_unicode_compatible
 class CustomIPAuthReadAPI(models.Model):
 
     output_format = models.CharField(max_length=4,
@@ -191,7 +188,6 @@ class CustomIPAuthReadAPI(models.Model):
         return 'ipauth'
 
 
-@python_2_unicode_compatible
 class CustomPublicReadAPI(models.Model):
 
     output_format = models.CharField(max_length=4,
@@ -246,7 +242,6 @@ class CustomPublicReadAPI(models.Model):
         return 'public'
 
 
-@python_2_unicode_compatible
 class HTTPAuthReadAPI(models.Model):
 
     database_name = models.CharField(max_length=256)
@@ -295,7 +290,6 @@ class HTTPAuthReadAPI(models.Model):
         return 'httpauth'
 
 
-@python_2_unicode_compatible
 class PublicReadAPI(models.Model):
 
     database_name = models.CharField(max_length=256)
@@ -342,7 +336,6 @@ class PublicReadAPI(models.Model):
         return 'public'
 
 
-@python_2_unicode_compatible
 class IPAuthReadAPI(models.Model):
 
     database_name = models.CharField(max_length=256)
@@ -398,7 +391,6 @@ class IPAuthReadAPI(models.Model):
         return 'ipauth'
 
 
-@python_2_unicode_compatible
 class OAuth2ReadAPI(models.Model):
 
     database_name = models.CharField(max_length=256)
