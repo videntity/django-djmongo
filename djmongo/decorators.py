@@ -12,10 +12,10 @@ from __future__ import unicode_literals
 from django.conf import settings
 import base64
 from collections import OrderedDict
-from functools import update_wrapper, wraps
+from functools import update_wrapper
 from django.http import HttpResponse
-from django.contrib.auth import authenticate, login
-from .utils import authorize, unauthorized_json_response, json_response_400, json_response_404
+from django.contrib.auth import login, authenticate
+from .utils import unauthorized_json_response
 from .read.models import HTTPAuthReadAPI, PublicReadAPI, IPAuthReadAPI, CustomIPAuthReadAPI
 from .write.models import WriteAPIIP
 import shlex
@@ -35,7 +35,8 @@ def httpauth_login_required(func):
             auth = request.META['HTTP_AUTHORIZATION'].split()
             if len(auth) == 2:
                 if auth[0].lower() == "basic":
-                    username, password = base64.b64decode(auth[1]).decode('utf-8').split(':')
+                    username, password = base64.b64decode(
+                        auth[1]).decode('utf-8').split(':')
                     # print(username, password)
                     user = authenticate(username=username, password=password)
 
@@ -54,8 +55,8 @@ def ip_write_verification_required(func):
     """
 
     def wrapper(request, *args, **kwargs):
-        
-        slug = kwargs.get('slug', "")        
+
+        slug = kwargs.get('slug', "")
         if not slug:
             return kickout_404("Not found.", content_type="application/json")
 
@@ -91,7 +92,7 @@ def ipauth_read_verification_required(func):
 
         try:
             rip = IPAuthReadAPI.objects.get(slug=slug, database_name=database_name,
-                                        collection_name=collection_name)
+                                            collection_name=collection_name)
             ip = get_client_ip(request)
             if ip not in rip.allowable_ips() and "0.0.0.0" not in rip.allowable_ips():
                 msg = "The IP %s is not authorized to make the API call." % (
@@ -105,8 +106,6 @@ def ipauth_read_verification_required(func):
         return func(request, *args, **kwargs)
 
     return update_wrapper(wrapper, func)
-
-
 
 
 def custom_ipauth_read_verification_required(func):
@@ -137,7 +136,6 @@ def custom_ipauth_read_verification_required(func):
     return update_wrapper(wrapper, func)
 
 
-
 def check_public_ok(func):
     """
         Call after login decorator.
@@ -163,7 +161,6 @@ def check_public_ok(func):
             # If search keys have been limited...
             if pub_read_api.search_keys:
                 search_key_list = shlex.split(pub_read_api.search_keys)
-                keys = []
                 for k in request.GET.keys():
 
                     if k not in search_key_list:
@@ -205,13 +202,11 @@ def check_read_httpauth_access(func):
         dac_groups = dac.groups.all()
         user_groups = request.user.groups.all()
 
-       # allowedgroups
+        # allowed groups
         in_group = False
-        group = None
         for dg in dac_groups:
             if dg in user_groups:
                 in_group = True
-                group = dg
 
         if not in_group:
             message = "NOT-IN-GROUP: You do not have access to this collection. Please see your system administrator."
@@ -222,15 +217,13 @@ def check_read_httpauth_access(func):
             return HttpResponse(json.dumps(body, indent=4, ),
                                 content_type="application/json")
 
-        # If search keys have been limitied...
+        # If search keys have been limited...
         if dac.search_keys:
             search_key_list = shlex.split(dac.search_keys)
-            keys = []
             for k in request.GET.keys():
 
                 if k not in search_key_list:
                     message = "Search key %s  is not allowed." % (k)
-
                     body = {"code": 400,
                             "message": k,
                             "errors": [message, ]}

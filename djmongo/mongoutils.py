@@ -45,7 +45,6 @@ def to_json(results_dict):
 
 
 def normalize_results(results_dict):
-    # Define some dummy/default values
     mydt = datetime.now()
     myd = date.today()
     myt = time(0, 0)
@@ -61,10 +60,7 @@ def normalize_results(results_dict):
 
 
 def normalize_list(results_list):
-    # Define some dummy/default values
     mydt = datetime.now()
-    myd = date.today()
-    myt = time(0, 0)
     for r in results_list:
         for k, v in r.items():
             if isinstance(r[k], type(mydt)):

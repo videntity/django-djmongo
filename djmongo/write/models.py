@@ -11,6 +11,7 @@ from django.urls import reverse
 from collections import OrderedDict
 from django.contrib.auth import get_user_model
 
+
 @python_2_unicode_compatible
 class WriteAPIHTTPAuth(models.Model):
     created_by = models.ForeignKey(
@@ -26,7 +27,7 @@ class WriteAPIHTTPAuth(models.Model):
             "access the API."))
     slug = models.SlugField(max_length=100, unique=True, help_text=_(
         "The slug is the unique part of the URL for your API."))
-    
+
     http_post = models.BooleanField(default=True, blank=True)
     http_put = models.BooleanField(default=True, blank=True)
     database_name = models.CharField(max_length=100)
@@ -38,8 +39,6 @@ class WriteAPIHTTPAuth(models.Model):
         help_text="""Default "{}", means no JSON Schema.""")
     readme_md = models.TextField(max_length=4096, default="", blank=True)
     creation_date = models.DateField(auto_now_add=True)
-
-    
 
     class Meta:
         get_latest_by = "creation_date"
@@ -58,7 +57,7 @@ class WriteAPIHTTPAuth(models.Model):
         for g in self.groups.all():
             groups.append(g.name)
         return json.dumps(groups)
-    
+
     def http_methods(self):
         l = []
         if self.http_post:
@@ -69,7 +68,7 @@ class WriteAPIHTTPAuth(models.Model):
 
     def auth_method(self):
         return 'httpauth'
-    
+
     def http_get_response(self):
         od = OrderedDict()
         od['http_methods'] = self.http_methods()
@@ -77,9 +76,7 @@ class WriteAPIHTTPAuth(models.Model):
         od['json_schema'] = self.json_schema
         od['readme'] = self.readme_md
         return od
-        
-    
-    
+
 
 @python_2_unicode_compatible
 class WriteAPIIP(models.Model):
@@ -87,7 +84,7 @@ class WriteAPIIP(models.Model):
         get_user_model(), blank=True, null=True, on_delete=models.CASCADE)
     slug = models.SlugField(max_length=100, unique=True)
     http_post = models.BooleanField(default=True, blank=True)
-    http_put = models.BooleanField(default=True, blank=True) 
+    http_put = models.BooleanField(default=True, blank=True)
     database_name = models.CharField(max_length=100)
     collection_name = models.CharField(max_length=100)
     json_schema = models.TextField(
@@ -137,7 +134,7 @@ class WriteAPIIP(models.Model):
         od['json_schema'] = self.json_schema
         od['readme'] = self.readme_md
         return od
-    
+
 
 @python_2_unicode_compatible
 class WriteAPIOAuth2(models.Model):
@@ -167,7 +164,7 @@ class WriteAPIOAuth2(models.Model):
 
     def __str__(self):
         return "%s" % (self.slug)
- 
+
     def http_methods(self):
         l = []
         if self.http_post:

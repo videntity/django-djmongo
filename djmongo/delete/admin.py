@@ -9,20 +9,28 @@ from .models import (HTTPAuthDeleteAPI, IPAuthDeleteAPI,
 class HTTPAuthDeleteAPIAdmin(admin.ModelAdmin):
     list_display = ('slug', 'collection_name', 'database_name',
                     'url')
-admin.site.register(HTTPAuthDeleteAPI, CHTTPAuthDeleteAPIAdmin)
+
+
+admin.site.register(HTTPAuthDeleteAPI, HTTPAuthDeleteAPIAdmin)
 
 
 class IPAuthDeleteAPIAdmin(admin.ModelAdmin):
     list_display = ('slug', 'collection_name', 'database_name',
                     'url')
-admin.site.register(CPAuthDeleteAPI, CPAuthDeleteAPIAdmin)
+
+
+admin.site.register(IPAuthDeleteAPI, IPAuthDeleteAPIAdmin)
 
 
 class PublicDeleteAPIAdmin(admin.ModelAdmin):
     list_display = ('slug', 'collection_name', 'database_name', 'url',)
+
+
 admin.site.register(PublicDeleteAPI, PublicDeleteAPIAdmin)
 
 
 class OAuth2DeleteAPIAdmin(admin.ModelAdmin):
     list_display = ('slug', 'collection_name', 'database_name', 'url',)
+
+
 admin.site.register(OAuth2DeleteAPI, OAuth2DeleteAPIAdmin)

@@ -21,7 +21,7 @@ urlpatterns = [
     url(r'^api/ip/(?P<slug>[^/]+)$',
         write_to_collection_ip_auth,
         name="djmongo_api_write_to_collection_with_ip"),
-    
+
     # Browse existing APIS in the UI
     url(r'^ip/browse-write-apis/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)$',
         login_required(browse_ip_write_apis),
@@ -80,11 +80,11 @@ urlpatterns = [
     url(r'^httpauth/delete-write-api/(?P<slug>[^/]+)$',
         login_required(delete_httpauth_write_api),
         name="djmongo_delete_httpauth_write_api"),
-    
-    
+
+
     url(r'^oauth2/delete-write-api/(?P<slug>[^/]+)$',
         login_required(delete_oauth2_write_api),
         name="djmongo_delete_oauth2_write_api"),
-    
-    
+
+
 ]

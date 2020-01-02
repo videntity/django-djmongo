@@ -26,8 +26,7 @@ class WriteAPIHTTPAuthForm(forms.ModelForm):
     def clean_json_schema(self):
         json_schema = self.cleaned_data["json_schema"]
         try:
-            json_schema_load = json.loads(
-                json_schema, object_pairs_hook=OrderedDict)
+            json.loads(json_schema, object_pairs_hook=OrderedDict)
         except ValueError:
             raise forms.ValidationError(_('The JSONSchema was invalid JSON'))
         return json_schema
@@ -104,10 +103,9 @@ class WriteAPIOAuth2Form(forms.ModelForm):
     def clean_json_schema(self):
         json_schema = self.cleaned_data["json_schema"]
         try:
-            json_schema_load = json.loads(
-                json_schema, object_pairs_hook=OrderedDict)
+            json.loads(json_schema, object_pairs_hook=OrderedDict)
         except ValueError:
-            raise forms.ValidationError(_('The JSONSchema was invalid JSON'))
+            raise forms.ValidationError(_('The JSON Schema was invalid JSON.'))
         return json_schema
 
 

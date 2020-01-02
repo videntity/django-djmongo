@@ -18,7 +18,6 @@ from .models import WriteAPIHTTPAuth, WriteAPIIP, WriteAPIOAuth2
 from .forms import (WriteAPIHTTPAuthForm, WriteAPIHTTPAuthDeleteForm,
                     WriteAPIIPDeleteForm, WriteAPIIPForm)
 from .forms import WriteAPIOAuth2Form, WriteAPIOAuth2DeleteForm
-
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -101,80 +100,6 @@ def write_to_collection_httpauth(request, slug):
 def write_to_collection_ip_auth(request, slug):
     print("REFACTOR!!")
     return write_to_collection(request, slug, WriteAPIIP)
-    #
-    #
-    # @csrf_exempt
-    # @ip_write_verification_required
-    # def write_to_collection_ip_auth(request, slug):
-    #
-    # try:
-    #     wapi = WriteAPIIP.objects.get(slug=slug)
-    # except WriteAPIIP.DoesNotExist:
-    #     return kickout_404(
-    #         "The API was not not found. Perhaps you need to define it?")
-    #
-    #
-    # # Check if METHOD ALLOWED
-    # if request.method != "GET" and request.method not in wapi.http_methods():
-    #     return kickout_404(
-    #         "The HTTP method %s is not allowed for this URL." % (request.method))
-    # # ----------------------------------------------------
-    # if request.method == 'GET':
-    #     try:
-    #         od = OrderedDict()
-    #         od["http_methods"] = wapi.http_methods()
-    #         od["slug"] = wapi.slug
-    #         od["auth_method"] = "ip"
-    #         od["json_schema"] = json.loads(wapi.json_schema,
-    #                                        object_pairs_hook=OrderedDict)
-    #         od["readme"] =  wapi.readme_md
-    #         return HttpResponse(
-    #             json.dumps(od, indent=4),
-    #             content_type="application/json")
-    #     except:
-    #         print(str(sys.exc_info()))
-    #         return kickout_500("The JSON Schema did not contain valid JSON")
-    #
-    # # ----------------------------------------------------
-    # if request.method in ('POST', 'PUT'):
-    #
-    #     # Check if request body is JSON ------------------------
-    #     try:
-    #         j = json.loads(request.body.decode(), object_pairs_hook=OrderedDict)
-    #         if not isinstance(j, type(OrderedDict())):
-    #             kickout_400(
-    #                 "The request body did not contain a JSON object i.e. {}.")
-    #     except:
-    #         print(str(sys.exc_info()))
-    #         return kickout_400("The request body did not contain valid JSON...")
-    #
-    #     # check json_schema is valid
-    #     try:
-    #         json_schema = json.loads(
-    #             wapi.json_schema, object_pairs_hook=OrderedDict)
-    #
-    #     except:
-    #         print(str(sys.exc_info()))
-    #         return kickout_500(
-    #             "The JSON Schema on the server did not contain valid JSON")
-    #
-    #     # Check jsonschema
-    #     if json_schema:
-    #         try:
-    #             validate(j, json_schema)
-    #         except ValidationError:
-    #             msg = "JSON Schema Conformance Error. %s" % (
-    #                 str(sys.exc_info()[1][0]))
-    #             return kickout_400(msg)
-    #     # write_to_mongo
-    #
-    #     if request.method =="POST":
-    #         response = write_mongo(j, wapi.database_name, wapi.collection_name)
-    #     elif request.method =="PUT":
-    #         response = write_mongo(j, wapi.database_name, wapi.collection_name, update=True)
-    #
-    #     return HttpResponse(json.dumps(response, indent=4),
-    #                         content_type="application/json")
 
 
 def browse_ip_write_apis(request, database_name=None, collection_name=None):
@@ -362,8 +287,6 @@ def delete_httpauth_write_api(request, slug):
         form = WriteAPIHTTPAuthDeleteForm(request.POST)
         if form.is_valid():
             a = WriteAPIHTTPAuth.objects.get(slug=slug)
-            database_name = a.database_name
-            collection_name = a.collection_name
             a.delete()
             msg = _('The HTTP Auth API for %s was deleted.') % (slug)
             messages.success(request, msg)
@@ -398,8 +321,6 @@ def delete_ip_write_api(request, slug):
         form = WriteAPIIPDeleteForm(request.POST)
         if form.is_valid():
             a = WriteAPIIP.objects.get(slug=slug)
-            database_name = a.database_name
-            collection_name = a.collection_name
             a.delete()
             msg = _('The IP-based API for %s was deleted.') % (slug)
             messages.success(request, msg)
@@ -509,8 +430,6 @@ def delete_oauth2_write_api(request, slug):
         form = WriteAPIOAuth2DeleteForm(request.POST)
         if form.is_valid():
             a = WriteAPIOAuth2.objects.get(slug=slug)
-            database_name = a.database_name
-            collection_name = a.collection_name
             a.delete()
             msg = _('The OAuth2 API for %s was deleted.') % (slug)
             messages.success(request, msg)

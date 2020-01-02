@@ -11,42 +11,58 @@ from .models import (PublicReadAPI, HTTPAuthReadAPI,
 class CustomOAuth2ReadAPIAdmin(admin.ModelAdmin):
     list_display = ('slug', 'collection_name', 'database_name',
                     'url')
+
+
 admin.site.register(CustomOAuth2ReadAPI, CustomOAuth2ReadAPIAdmin)
 
 
 class CustomHTTPAuthReadAPIAdmin(admin.ModelAdmin):
     list_display = ('slug', 'collection_name', 'database_name',
                     'url')
+
+
 admin.site.register(CustomHTTPAuthReadAPI, CustomHTTPAuthReadAPIAdmin)
 
 
 class CustomIPAuthReadAPIAdmin(admin.ModelAdmin):
     list_display = ('slug', 'collection_name', 'database_name',
                     'url')
+
+
 admin.site.register(CustomIPAuthReadAPI, CustomIPAuthReadAPIAdmin)
 
 
 class CustomPublicReadAPIAdmin(admin.ModelAdmin):
     list_display = ('slug', 'collection_name', 'database_name',
                     'url')
+
+
 admin.site.register(CustomPublicReadAPI, CustomPublicReadAPIAdmin)
 
 
 class HTTPAuthReadAPIAdmin(admin.ModelAdmin):
     list_display = ('slug', 'collection_name', 'database_name', 'json_url')
+
+
 admin.site.register(HTTPAuthReadAPI, HTTPAuthReadAPIAdmin)
 
 
 class IPAuthReadAPIAdmin(admin.ModelAdmin):
     list_display = ('slug', 'collection_name', 'database_name', 'json_url')
+
+
 admin.site.register(IPAuthReadAPI, IPAuthReadAPIAdmin)
 
 
 class PublicReadAPIAdmin(admin.ModelAdmin):
     list_display = ('slug', 'collection_name', 'database_name', 'json_url',)
+
+
 admin.site.register(PublicReadAPI, PublicReadAPIAdmin)
 
 
 class OAuth2ReadAPIAdmin(admin.ModelAdmin):
     list_display = ('slug', 'collection_name', 'database_name', 'json_url',)
+
+
 admin.site.register(OAuth2ReadAPI, OAuth2ReadAPIAdmin)
