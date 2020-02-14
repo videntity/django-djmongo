@@ -16,6 +16,7 @@ from datetime import datetime
 from django.urls import reverse
 import shlex
 from django.contrib import messages
+import ndjson
 
 
 def build_keys(request, database_name, collection_name):
@@ -67,6 +68,12 @@ def simple_search(request, database_name, collection_name, slug, output_type,
                   sort=None, return_keys=(),
                   query={}):
 
+    if output_type == "ndjson":
+        return search_ndjson(request, database_name, collection_name,
+                             skip=skip, limit=limit,
+                             sort=sort, return_keys=return_keys,
+                             query=query)
+
     if output_type == "json":
         return search_json(request, database_name, collection_name,
                            skip=skip, limit=limit,
@@ -85,7 +92,39 @@ def simple_search(request, database_name, collection_name, slug, output_type,
                           sort=sort, return_keys=return_keys,
                           query=query)
 
+    if output_type in ("dat", "tsv", "txt"):
+        return search_csv(request, database_name, collection_name,
+                          delimiter="\t",
+                          extension=output_type,
+                          skip=skip, limit=limit,
+                          sort=sort, return_keys=return_keys,
+                          query=query)
+
     raise Http404
+
+
+def search_ndjson(request, database_name, collection_name,
+                  skip=0, limit=getattr(settings, 'MONGO_LIMIT', 200),
+                  sort=None, return_keys=(),
+                  query={}):
+    result = prepare_search_results(
+        request,
+        database_name=database_name,
+        collection_name=collection_name,
+        skip=skip,
+        sort=sort,
+        limit=limit,
+        return_keys=return_keys,
+        query=query)
+
+    if int(result['code']) == 200:
+        return HttpResponse(ndjson.dumps(result["results"]),
+                            status=int(result['code']),
+                            content_type="application/x-ndjson")
+    else:
+        response = json.dumps(result, indent=4)
+        return HttpResponse(response, status=int(result['code']),
+                            content_type="application/json")
 
 
 def search_json(request, database_name, collection_name,
@@ -114,9 +153,10 @@ def search_json(request, database_name, collection_name,
                             content_type="application/json")
 
 
-def search_csv(request, database_name, collection_name,
-               skip=0, sort=None, limit=getattr(settings, 'MONGO_LIMIT', 200),
-               return_keys=(), query={}):
+def search_csv(request, database_name, collection_name, delimiter=",",
+               extension="csv", skip=0,
+               limit=getattr(settings, 'MONGO_LIMIT', 200),
+               sort=None, return_keys=(), query={}):
 
     result = prepare_search_results(
         request,
@@ -138,7 +178,7 @@ def search_csv(request, database_name, collection_name,
                 if not keylist.__contains__(j):
                     keylist.append(j)
 
-        return convert_to_csv(keylist, listresults)
+        return convert_to_csv(keylist, listresults, delimiter, extension=extension)
 
     else:
         jsonresults = to_json(result)
@@ -234,9 +274,9 @@ def run_custom_public_read_api_by_slug(
         return HttpResponse(response, content_type="application/json")
 
     if output_format:
-        if output_format not in ("json", "csv", "html"):
+        if output_format not in ("json", "ndjson", "csv", "txt", "html"):
             response_dict[
-                'message'] = "The output format must be json, csv, or html."
+                'message'] = "The output format must be json, ndjson, csv, txt, or html."
             error = True
         else:
             ss.output_format = output_format
@@ -278,6 +318,18 @@ def run_custom_public_read_api_by_slug(
                 ss.default_limit),
             return_keys=key_list)
 
+    if ss.output_format == "ndjson":
+        return search_ndjson(
+            request,
+            database_name=ss.database_name,
+            collection_name=ss.collection_name,
+            sort=sort,
+            query=query,
+            skip=int(skip),
+            limit=int(
+                ss.default_limit),
+            return_keys=key_list)
+
     if ss.output_format == "html":
         return search_html(
             request,
@@ -299,6 +351,18 @@ def run_custom_public_read_api_by_slug(
             skip=int(skip),
             limit=int(
                 ss.default_limit),
+            return_keys=key_list)
+
+    if ss.output_format == "txt":
+        return search_csv(
+            request,
+            database_name=ss.database_name,
+            collection_name=ss.collection_name,
+            query=query,
+            skip=int(skip),
+            limit=int(
+                ss.default_limit),
+            delimiter="\t",
             return_keys=key_list)
 
     # these next line "should" never execute.
@@ -363,9 +427,9 @@ def run_custom_ipauth_read_api_by_slug(
         return HttpResponse(response, content_type="application/json")
 
     if output_format:
-        if output_format not in ("json", "csv", "html"):
+        if output_format not in ("json", "ndjson", "csv", "txt", "html"):
             response_dict[
-                'message'] = "The output format must be json, csv, or html."
+                'message'] = "The output format must be json, ndjson, csv, txt, or html."
             error = True
         else:
             ss.output_format = output_format
@@ -515,9 +579,9 @@ def run_custom_httpauth_read_api_by_slug(
         return HttpResponse(response, content_type="application/json")
 
     if output_format:
-        if output_format not in ("json", "csv", "html"):
+        if output_format not in ("json", "ndjson", "csv", "txt", "html"):
             response_dict[
-                'message'] = "The output format must be json, csv, or html."
+                'message'] = "The output format must be json, ndjson, csv, txt, or html."
             error = True
         else:
             ss.output_format = output_format

@@ -111,20 +111,21 @@ def sort_by_columns(
     return rows
 
 
-def convert_to_csv(keylist, listresults, exclude=(),
-                   sort_columns=getattr(settings, 'SORTCOLUMNS', False)):
+def convert_to_csv(keylist, listresults, delimiter=',', extension='csv',
+                   exclude=(), sort_columns=getattr(settings, 'SORTCOLUMNS', False)):
     rows = flatten_results(keylist, listresults, exclude=())
     rows = tupleize(rows)
 
     if sort_columns:
-        # sort by our preferred column order, if specificed
+        # sort by our preferred column order, if specified
         rows = sort_by_columns(rows)
 
-    filename = datetime.now().strftime('%m-%d-%Y_%H:%M:%S') + '.csv'
+    filename = datetime.now().strftime('%m-%d-%Y_%H:%M:%S') + "." + extension
+
     response = HttpResponse(content_type="text/csv")
     response['Content-Disposition'] = 'attachment; filename=' + filename
 
-    writer = csv.writer(response, delimiter=',')
+    writer = csv.writer(response, delimiter=delimiter)
     for r in rows:
         # filtered_string = "".join(s for s in c if s in string.printable)
         writer.writerows([r])

@@ -4,13 +4,15 @@ from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _
 from django.urls import reverse
 
-OUTPUT_CHOICES = (("json", "JSON"),
-                  ("html", "HTML"),
-                  ("csv", "Comma Separated Value (.csv)"))
+OUTPUT_CHOICES = (("json", "JSON (.json)"),
+                  ("ndjson", "NDJSON (.ndjson)"),
+                  ("csv", "Comma Separated Value (.csv)"),
+                  ("txt", "Tab-Delimited (.txt)"),
+                  ("html", "HTML (.html)"))
 
 
 class CustomOAuth2ReadAPI(models.Model):
-    output_format = models.CharField(max_length=4,
+    output_format = models.CharField(max_length=6,
                                      choices=OUTPUT_CHOICES,
                                      default="json")
     slug = models.SlugField(max_length=100,
@@ -28,7 +30,7 @@ class CustomOAuth2ReadAPI(models.Model):
         max_length=2048,
         default="",
         blank=True,
-        verbose_name="Sort Dict",
+        verbose_name="Sort Dictionary",
         help_text="""e.g. [["somefield", 1], ["someotherfield", -1] ]""")
 
     return_keys = models.TextField(max_length=2048, default="", blank=True,
@@ -67,12 +69,11 @@ class CustomOAuth2ReadAPI(models.Model):
         return ""
 
 
-
 class CustomHTTPAuthReadAPI(models.Model):
 
     group = models.ForeignKey(
         Group, blank=True, null=True, on_delete=models.CASCADE)
-    output_format = models.CharField(max_length=4,
+    output_format = models.CharField(max_length=6,
                                      choices=OUTPUT_CHOICES,
                                      default="json")
     slug = models.SlugField(max_length=100,
@@ -127,7 +128,7 @@ class CustomHTTPAuthReadAPI(models.Model):
 
 class CustomIPAuthReadAPI(models.Model):
 
-    output_format = models.CharField(max_length=4,
+    output_format = models.CharField(max_length=6,
                                      choices=OUTPUT_CHOICES,
                                      default="json")
     slug = models.SlugField(max_length=100,
@@ -190,7 +191,7 @@ class CustomIPAuthReadAPI(models.Model):
 
 class CustomPublicReadAPI(models.Model):
 
-    output_format = models.CharField(max_length=4,
+    output_format = models.CharField(max_length=6,
                                      choices=OUTPUT_CHOICES,
                                      default="json")
     slug = models.SlugField(max_length=100,
