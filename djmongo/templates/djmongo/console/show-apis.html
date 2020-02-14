@@ -1,18 +1,16 @@
 {% extends "djmongo/console/base.html" %}
 {% block Content %}
-
 {% load i18n %}
 
 
-<div class="container">
-      <br><br>
-      <div class="row">
-              <div class="col-lg-12">
-			<ol class="breadcrumb">
-			  <li><a href="{% url 'djmongo_show_dbs' %}">Home</a></li>
-			  <li><a href="{% url 'djmongo_show_dbs' %}">API</a></li>
-			  <li class="active"><a href="#"> {{collection_name}}</a></li>
-			</ol>
+<div class = "container" >
+      <br > <br >
+      <div class = "row" >
+              <div class = "col-lg-12" >
+			<ol class = "breadcrumb" >
+			  <li > <a href = "{% url 'djmongo_show_dbs' %}" > Home </a> </li>
+			  <li class = "active" > <a href = "#" ></a> {{collection_name}} </a> </li>
+			</ol >
             </div>
       </div>
      
@@ -23,10 +21,7 @@
 				       <h1>Read API with No Authentication (Public)</h1>
 			    </div>
             </div>
-	 
 
-	 
-      
       <div class="row">
               <div class="col-lg-12">
                   <h3>
@@ -55,18 +50,28 @@
 			  <tr class="danger">
 					 <td>{{a.slug}}</td>
 					 <td><pre>GET</pre></td>
-					 <td><pre>{% url 'djmongo_api_public_simple_search' database_name collection_name a.slug 'json' %}|csv|html</pre></td>
+					 <td><pre>{% url 'djmongo_api_public_simple_search' database_name collection_name a.slug 'json' %}|ndjson|csv|txt|html</pre></td>
 							<td>
 						  
 								   <div class="btn-group-justified">
 									  <a href="{% url 'djmongo_api_public_simple_search' database_name collection_name a.slug 'json' %}" >
 									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> JSON</button>
 									  </a>
-									  
+								
+        			<a href="{% url 'djmongo_api_public_simple_search' database_name collection_name a.slug 'ndjson' %}" >
+									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> NDJSON</button>
+									  </a>
+                   
 									  <a href="{% url 'djmongo_api_public_simple_search' database_name collection_name a.slug 'csv' %}" >
 									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> CSV</button>
 									  </a>
-									  
+           
+									  <a href="{% url 'djmongo_api_public_simple_search' database_name collection_name a.slug 'txt' %}" >
+									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> Tab-delimited</button>
+									  </a>
+
+
+
 									  <a href="{% url 'djmongo_api_public_simple_search' database_name collection_name a.slug 'html' %}" >
 									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> HTML</button>
 									  </a>
@@ -138,18 +143,26 @@
 					 {% endif %}
 					
 					 </td>
-					 <td><pre>{% url 'djmongo_api_httpauth_simple_search' database_name collection_name a.slug 'json' %}|csv|html</pre></td>
+					 <td><pre>{% url 'djmongo_api_httpauth_simple_search' database_name collection_name a.slug 'json' %}|ndjson|csv|txt|html</pre></td>
 							<td>
 						  
 								   <div class="btn-group-justified">
 									  <a href="{% url 'djmongo_api_httpauth_simple_search' database_name collection_name a.slug 'json' %}" >
 									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> JSON</button>
 									  </a>
-									  
+			
+   								<a href="{% url 'djmongo_api_httpauth_simple_search' database_name collection_name a.slug 'ndjson' %}" >
+									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> NDJSON</button>
+									  </a>
+   						  
 									  <a href="{% url 'djmongo_api_httpauth_simple_search' database_name collection_name a.slug 'csv' %}" >
 									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> CSV</button>
 									  </a>
-									  
+
+   								<a href="{% url 'djmongo_api_httpauth_simple_search' database_name collection_name a.slug 'txt' %}" >
+									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> Tab-Delimited</button>
+									  </a>
+
 									  <a href="{% url 'djmongo_api_httpauth_simple_search' database_name collection_name a.slug 'html'%}" >
 									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> HTML</button>
 									  </a>
@@ -175,8 +188,6 @@
    </div>    
     
  </div>	  
-
-
 
 
 	       <div class="row">
@@ -218,18 +229,26 @@
 					 <td>{{a.slug}}</td>
 					 <td><pre>GET</pre></td>
 					 <td>{{a.from_ip}}</td>
-					 <td><pre>{% url 'djmongo_api_ipauth_simple_search' database_name collection_name a.slug 'json' %}|csv|html</pre></td>
+					 <td><pre>{% url 'djmongo_api_ipauth_simple_search' database_name collection_name a.slug 'json' %}|ndjson|csv|txt|html</pre></td>
 							<td>
 						  
 								   <div class="btn-group-justified">
 									  <a href="{% url 'djmongo_api_ipauth_simple_search' database_name collection_name a.slug 'json' %}" >
 									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> JSON</button>
 									  </a>
-									  
+											
+           <a href="{% url 'djmongo_api_ipauth_simple_search' database_name collection_name a.slug 'ndjson' %}" >
+									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> NDJSON</button>
+									  </a>
+   
 									  <a href="{% url 'djmongo_api_ipauth_simple_search' database_name collection_name a.slug 'csv' %}" >
 									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> CSV</button>
 									  </a>
 									  
+   								<a href="{% url 'djmongo_api_ipauth_simple_search' database_name collection_name a.slug 'txt' %}" >
+									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> Tab-Delimited</button>
+									  </a>        
+           
 									  <a href="{% url 'djmongo_api_ipauth_simple_search' database_name collection_name a.slug 'html'%}" >
 									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> HTML</button>
 									  </a>
@@ -297,18 +316,26 @@
 					 <td>{{a.slug}}</td>
 					 <td><pre>GET</pre></td>
 					 <td>{{a.scopes}}</td>
-					 <td><pre>{% url 'djmongo_api_oauth2_simple_search' database_name collection_name a.slug 'json' %}|csv|html</pre></td>
+					 <td><pre>{% url 'djmongo_api_oauth2_simple_search' database_name collection_name a.slug 'json' %}|ndjson|csv|txt|htm</pre></td>
 							<td>
 						  
 								   <div class="btn-group-justified">
 									  <a href="{% url 'djmongo_api_oauth2_simple_search' database_name collection_name a.slug 'json' %}" >
 									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> JSON</button>
 									  </a>
+
+									  <a href="{% url 'djmongo_api_oauth2_simple_search' database_name collection_name a.slug 'ndjson' %}" >
+									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> NDJSON</button>
+									  </a>
 									  
 									  <a href="{% url 'djmongo_api_oauth2_simple_search' database_name collection_name a.slug 'csv' %}" >
 									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> CSV</button>
 									  </a>
-									  
+	
+ 									 <a href="{% url 'djmongo_api_oauth2_simple_search' database_name collection_name a.slug 'txt' %}" >
+									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> Tab-delimited</button>
+									  </a>
+            
 									  <a href="{% url 'djmongo_api_oauth2_simple_search' database_name collection_name a.slug 'html'%}" >
 									  <button type="button" class="btn btn-success btn-xs"> <i class="fa fa-search"></i> HTML</button>
 									  </a>
