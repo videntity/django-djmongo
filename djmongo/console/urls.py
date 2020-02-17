@@ -10,7 +10,7 @@ from .views import (showdbs, create_new_database,
                     create_collection, drop_collection,
                     simple_ensure_index, create_document_in_collection,
                     update_document_in_collection, drop_database,
-                    show_apis, api_wizard, api_list)
+                    show_apis, api_wizard)
 
 urlpatterns = [
 
@@ -19,9 +19,6 @@ urlpatterns = [
     url(r'^show-apis/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)',
         login_required(show_apis), name="djmongo_show_apis"),
 
-
-    url(r'^api-list',
-        login_required(api_list), name="djmongo_api_list"),
 
     url(r'^api-wizard/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)',
         login_required(api_wizard), name="djmongo_api_wizard_w_params"),

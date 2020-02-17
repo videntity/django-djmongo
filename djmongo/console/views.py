@@ -7,12 +7,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
-from .utils import (
-    show_dbs,
-    mongodb_drop_collection,
-    mongodb_drop_database,
-    mongo_delete_json_util,
-    mongo_create_json_util)
+from .utils import (show_dbs, mongodb_drop_collection, mongodb_drop_database,
+                    mongo_delete_json_util, mongo_create_json_util)
 from .forms import (EnsureIndexForm, DeleteForm, DocumentForm,
                     CreateDatabaseForm, ConfirmDropForm, APIWizardForm)
 from bson.objectid import ObjectId
@@ -23,7 +19,7 @@ from ..read.models import (CustomHTTPAuthReadAPI, CustomPublicReadAPI,
                            HTTPAuthReadAPI, PublicReadAPI,
                            OAuth2ReadAPI, IPAuthReadAPI)
 from django.conf import settings
-
+from django.contrib.auth.models import Group
 
 def api_wizard(request, database_name=None, collection_name=None):
     name = 'API Wizard Creation'
@@ -107,49 +103,31 @@ def api_wizard(request, database_name=None, collection_name=None):
                       context)
 
 
-def api_list(request):
-    # Get all of the Read APIs
-    custom_httpauth_read_apis = CustomHTTPAuthReadAPI.objects.all()
-    custom_public_read_apis = CustomPublicReadAPI.objects.all()
-    custom_oauth2_read_apis = CustomOAuth2ReadAPI.objects.all()
-    simple_public_read_apis = PublicReadAPI.objects.all()
-    simple_httpauth_read_apis = HTTPAuthReadAPI.objects.all()
-    simple_auth2_read_apis = OAuth2ReadAPI.objects.all()
 
-    # Get all of the Write APIs
-    ip_write_apis = WriteAPIIP.objects.all()
-    httpauth_write_apis = WriteAPIHTTPAuth.objects.all()
-    oauth2_write_apis = WriteAPIOAuth2.objects.all()
-    if custom_httpauth_read_apis:
-        not_empty = True
-    elif custom_public_read_apis:
-        not_empty = True
-    elif simple_public_read_apis:
-        not_empty = True
-    elif simple_httpauth_read_apis:
-        not_empty = True
-    elif ip_write_apis:
-        not_empty = True
-    elif httpauth_write_apis:
-        not_empty = True
-    elif oauth2_write_apis:
-        not_empty = True
-    else:
-        not_empty = False
+def get_all_apis():
+    # Custom Read APIs Get all of the Read APIs
+    
+    all_apis = []
+    all_apis.extend(CustomHTTPAuthReadAPI.objects.all())
+    all_apis.extend(CustomPublicReadAPI.objects.all())
+    all_apis.extend(CustomOAuth2ReadAPI.objects.all())
+    all_apis.extend(CustomIPAuthReadAPI.objects.all())
 
-    # pdb.set_trace()
-    context = {'apis': [custom_httpauth_read_apis,
-                        custom_oauth2_read_apis,
-                        custom_public_read_apis,
-                        simple_public_read_apis,
-                        simple_httpauth_read_apis,
-                        httpauth_write_apis,
-                        oauth2_write_apis,
-                        simple_auth2_read_apis,
-                        ip_write_apis],
-               "not_empty": not_empty}
-    return render(request, 'djmongo/console/api-list.html',
-                  context)
+    # Simple Read APIs 
+    all_apis.extend(PublicReadAPI.objects.all())
+    all_apis.extend(HTTPAuthReadAPI.objects.all())
+    all_apis.extend(OAuth2ReadAPI.objects.all())
+    all_apis.extend(CustomIPAuthReadAPI.objects.all())
+    
+
+    # Write APIs
+    all_apis.extend(WriteAPIIP.objects.all())
+    all_apis.extend(WriteAPIHTTPAuth.objects.all())
+    all_apis.extend(WriteAPIOAuth2.objects.all())
+    
+    return all_apis
+    
+
 
 
 def show_apis(request, database_name, collection_name):
@@ -228,8 +206,22 @@ def showdbs(request):
         messages.info(
             request,
             _("""You have no databases to work on. Please create one."""))
+    
 
-    context = {"dbs": cleaned_dbs}
+    # only show databases if the user is in a group of the same name.
+    grouped_dbs = []
+    user_groups =  request.user.groups.all()
+    group_names = []
+    for g in user_groups:
+        group_names.append(g.name)
+    
+    if getattr(settings, 'DJMONGO_DB_GROUPS', True):
+        for db in cleaned_dbs:
+            if db.get('name', '') in group_names:
+                grouped_dbs.append(db)
+    else:
+        grouped_dbs =cleaned_dbs
+    context = {"dbs": grouped_dbs, "apis": get_all_apis()}
     return render(request, 'djmongo/console/showdbs.html', context)
 
 
@@ -282,7 +274,7 @@ def drop_database(request, database_name):
             if name != database_name:
                 messages.error(request, _('The name did not match. \
                                          Drop operation aborted.'))
-                return HttpResponseRedirect(reverse('show_dbs'))
+                return HttpResponseRedirect(reverse('djmongo_show_dbs'))
 
             response = mongodb_drop_database(database_name)
             if response:
@@ -352,7 +344,16 @@ def create_new_database(request):
                     request, "The database creation operation failed.")
                 messages.error(request, result["error"])
             else:
-                messages.success(request, "Database created.")
+                messages.success(request, "Database %s created." % (form.cleaned_data['database_name']))
+                
+                if getattr(settings, 'DJMONGO_DB_GROUPS', True):
+                    group, created = Group.objects.get_or_create(name=form.cleaned_data['database_name'])
+                    request.user.groups.add(group)
+                    if created:
+                        messages.success(request, "Group %s created." % (form.cleaned_data['database_name']))
+                        messages.success(request, "User %s added to group %s." % (request.user,
+                                                                                 form.cleaned_data['database_name']))
+                
             return HttpResponseRedirect(reverse('djmongo_show_dbs'))
         else:
             # The form is invalid
@@ -368,8 +369,7 @@ def create_new_database(request):
         context = {'name': name,
                    'form': CreateDatabaseForm(
                        initial={"initial_document": '{ "foo" : "bar" }'
-                                })
-                   }
+                                })}
         return render(request, 'djmongo/console/generic/bootstrapform.html',
                       context)
 
