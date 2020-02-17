@@ -25,14 +25,20 @@ $('.dropdown-toggle').dropdown();
       </div>   
       
    <div class="row">
-              
+      <div class="col-lg-12">
+         <h2>MongoDB Management Console</h2>
+      </div>
+   </div>
+
+   <div class="row">
+      <div class="col-lg-12">
 
        <table class="table table-striped table-bordered">
       
        <thead>
        <tr>
-         <th><h2>Database</h2></th>
-         <th><h2>Collections</h2></th>
+         <th><h5>Databases</h5></th>
+         <th><h5>Collections</h5></t3>
        </tr>
        </thead>
         
@@ -75,9 +81,7 @@ $('.dropdown-toggle').dropdown();
 	           <li> <a href="{% url 'djmongo_show_apis' d.name c %}">
                      <i class="fa fa-dashboard"></i> {% trans "API Dashboard" %}</a>
                    </li>
-                   <li> <a href="{% url 'djmongo_api_wizard_w_params' d.name c %}">
-                     <i class="fa fa-plus "></i> {% trans "Create API" %}</a>
-             </li>
+                  
 	             <li role="presentation" class="divider"></li> 
                         <li><a  href="{% url 'djmongo_create_document_in_collection_w_params' d.name  c %}">
                    <i class="fa fa-plus-circle"></i> {% trans "Create a Document" %}</a></li>
@@ -115,7 +119,67 @@ $('.dropdown-toggle').dropdown();
          </div> 
        {% endfor %}
        </table>
-    </div> 
+    </div>
+    </div>
+
+   <div class="row">
+       <div class="col-lg-12">  
+           <h2>API Management Console</h1>
+       </div>
+   </div>
+   
+   <div class="row">
+          <div class="col-lg-12">    
+
+               <table class="table table-striped table-bordered">
+              
+               <thead>
+               <tr>
+                 <th><h3>Endpoints</h3></th>
+                 <th><h3>Details</h3></th>
+                 <th><h3>Authentication</h3></th>
+                 <th><h3>Actions</h3></th>
+               </tr>
+               </thead>
+                
+               <tbody>
+                  {% for a in apis %}
+                  <tr>
+                  <td>JSON: {{ request.scheme }}://{{ request.META.HTTP_HOST }}{{ a.url }}<br>
+                      NDJSON: {{ request.scheme }}://{{ request.META.HTTP_HOST }}{{ a.ndjson_url }}<br>
+                      CSV: {{ request.scheme }}://{{ request.META.HTTP_HOST }}{{ a.csv_url }}<br>
+                      Tab-Delimited: {{ request.scheme }}://{{ request.META.HTTP_HOST }}{{ a.td_url }}<br>
+                      HTML: {{ request.scheme }}://{{ request.META.HTTP_HOST }}{{ a.html_url }}<br>
+                  </td>
+                  <td>Database/Collection/Slug: {{a.database_name}}/{{a.collection_name}}/{{a.slug}}<br>
+                      Query Type: {{a.query_type}}<br>
+                      HTTP Method: {{a.http_method}}<br>
+                  
+                  </td>
+                  <td>{{a.auth_method}}</td>
+                  <td></td>
+                  <td> <a href=""> <button type="button" class="btn btn-default btn-xs"> <i class="fa fa-dashboard"></i> API Dashboard</button></a>
+                  
+                   <a href="{{ a.edit_url }}" >
+									  <button type="button" class="btn btn-default btn-xs"> <i class="fa fa-edit"></i> Edit</button>
+									  </a>
+
+                  				<a href="{{ a.delete_url }}" >
+									  <button type="button" class="btn btn-default btn-xs"> <i class="fa fa-pied-piper-alt"></i> Vanity URL</button>
+									  </a>
+                  			  
+                             <a href="{{ a.delete_url }}" >
+									  <button type="button" class="btn btn-default btn-xs"> <i class="fa fa-trash"></i> Delete</button>
+									  </a>
+         
+                  </td>
+                  </tr>
+                  {% endfor %}
+               </tbody>
+               </table>
+       </div>
+   </div>
+</div>
 </div>
 
 {% endblock %}
