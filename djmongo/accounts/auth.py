@@ -96,5 +96,3 @@ class EmailBackend(BasicBackend):
 
         if user.check_password(password):
             return user
-
-

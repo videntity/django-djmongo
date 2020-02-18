@@ -59,7 +59,7 @@ def create_simple_ipauth_read_api(request, database_name, collection_name):
     name = _("Create a Read API with IP-Based Auth")
 
     if request.method == 'POST':
-        form = IPReadAPIForm(request.POST)
+        form = IPAuthReadAPI(request.POST)
         if form.is_valid():
             form.save()
             messages.success(
@@ -82,7 +82,7 @@ def create_simple_ipauth_read_api(request, database_name, collection_name):
     idata = {'database_name': database_name,
              'collection_name': collection_name}
     context = {'name': name,
-               'form': IPReadAPIForm(initial=idata)
+               'form': IPAuthReadAPI(initial=idata)
                }
     return render(request, 'djmongo/console/generic/bootstrapform.html',
                   context)

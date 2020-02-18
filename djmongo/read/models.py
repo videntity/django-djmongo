@@ -11,7 +11,6 @@ OUTPUT_CHOICES = (("json", "JSON (.json)"),
                   ("html", "HTML (.html)"))
 
 
-
 class CustomPublicReadAPI(models.Model):
 
     output_format = models.CharField(max_length=6,
@@ -54,8 +53,9 @@ class CustomPublicReadAPI(models.Model):
         ordering = ('-creation_date',)
 
     def __str__(self):
-        return "%s/%s/%s" % (self.database_name, self.collection_name,self.slug)
+        return "%s/%s/%s" % (self.database_name, self.collection_name, self.slug)
 
+    @property
     def url(self):
         return reverse('djmongo_run_custom_public_read_api_by_slug', args=(self.slug,))
 
@@ -64,9 +64,18 @@ class CustomPublicReadAPI(models.Model):
 
     def auth_method(self):
         return 'public'
-    
+
     def query_type(self):
         return 'macro'
+
+    def edit_url(self):
+        return reverse('djmongo_edit_custom_public_read_api',
+                       args=(self.database_name, self.collection_name, self.slug))
+
+    def delete_url(self):
+        return reverse('djmongo_delete_custom_public_read_api',
+                       args=(self.database_name, self.collection_name, self.slug))
+
 
 class PublicReadAPI(models.Model):
 
@@ -102,7 +111,7 @@ class PublicReadAPI(models.Model):
     def td_url(self):
         return reverse('djmongo_api_public_simple_search',
                        args=(self.database_name, self.collection_name, self.slug, 'txt'))
-    
+
     def ndjson_url(self):
         return reverse('djmongo_api_public_simple_search',
                        args=(self.database_name, self.collection_name, self.slug, 'ndjson'))
@@ -117,26 +126,21 @@ class PublicReadAPI(models.Model):
 
     def edit_url(self):
         return reverse('djmongo_edit_simple_public_read_api',
-                       args=(self.database_name, self.collection_name, self.slug, 'json'))
-
-
-    def edit_url(self):
-        return reverse('djmongo_edit_simple_public_read_api',
                        args=(self.database_name, self.collection_name, self.slug))
 
     def delete_url(self):
         return reverse('djmongo_delete_simple_public_read_api',
                        args=(self.database_name, self.collection_name, self.slug))
 
-
-    def http_methods(self):
-        return ['GET', ]
+    def http_method(self):
+        return 'GET'
 
     def auth_method(self):
         return 'public'
 
     def query_type(self):
         return 'simple'
+
 
 class IPAuthReadAPI(models.Model):
 
@@ -177,10 +181,11 @@ class IPAuthReadAPI(models.Model):
     def json_url(self):
         return reverse('djmongo_api_ipauth_simple_search',
                        args=(self.database_name, self.collection_name, self.slug, 'json'))
+
     def td_url(self):
         return reverse('djmongo_api_ipauth_simple_search',
                        args=(self.database_name, self.collection_name, self.slug, 'txt'))
-    
+
     def ndjson_url(self):
         return reverse('djmongo_api_ipauth_simple_search',
                        args=(self.database_name, self.collection_name, self.slug, 'ndjson'))
@@ -193,14 +198,23 @@ class IPAuthReadAPI(models.Model):
         return reverse('djmongo_api_ipauth_simple_search',
                        args=(self.database_name, self.collection_name, self.slug, 'html'))
 
-    def http_methods(self):
-        return ['GET', ]
+    def http_method(self):
+        return 'GET'
 
     def auth_method(self):
         return 'ipauth'
 
     def query_type(self):
         return 'simple'
+
+    def edit_url(self):
+        return reverse('djmongo_edit_simple_ipauth_read_api',
+                       args=(self.database_name, self.collection_name, self.slug))
+
+    def delete_url(self):
+        return reverse('djmongo_delete_simple_ipauth_read_api',
+                       args=(self.database_name, self.collection_name, self.slug))
+
 
 class OAuth2ReadAPI(models.Model):
 
@@ -243,14 +257,23 @@ class OAuth2ReadAPI(models.Model):
         return reverse('djmongo_api_oauth2_simple_search',
                        args=(self.database_name, self.collection_name, self.slug, 'html'))
 
-    def http_methods(self):
-        return ['GET', ]
+    def http_method(self):
+        return 'GET'
 
     def auth_method(self):
         return 'oauth2'
 
     def query_type(self):
         return 'simple'
+
+    def edit_url(self):
+        return reverse('djmongo_edit_simple_oauth2_read_api',
+                       args=(self.database_name, self.collection_name, self.slug))
+
+    def delete_url(self):
+        return reverse('djmongo_delete_simple_oauth2_read_api',
+                       args=(self.database_name, self.collection_name, self.slug))
+
 
 class HTTPAuthReadAPI(models.Model):
 
@@ -293,14 +316,23 @@ class HTTPAuthReadAPI(models.Model):
         return reverse('djmongo_api_httpauth_simple_search',
                        args=(self.database_name, self.collection_name, self.slug, 'html'))
 
-    def http_methods(self):
-        return ['GET', ]
+    def http_method(self):
+        return 'GET'
 
     def auth_method(self):
         return 'httpauth'
 
     def query_type(self):
         return 'simple'
+
+    def edit_url(self):
+        return reverse('djmongo_edit_simple_httpauth_read_api',
+                       args=(self.database_name, self.collection_name, self.slug))
+
+    def delete_url(self):
+        return reverse('djmongo_delete_simple_httpauth_read_api',
+                       args=(self.database_name, self.collection_name, self.slug))
+
 
 class CustomOAuth2ReadAPI(models.Model):
     output_format = models.CharField(max_length=6,
@@ -353,11 +385,20 @@ class CustomOAuth2ReadAPI(models.Model):
     def auth_method(self):
         return 'oauth2'
 
-    def http_methods(self):
-        return ['GET', ]
+    def http_method(self):
+        return 'GET'
 
+    @property
     def url(self):
-        return ""
+        return reverse('run_custom_public_read_api_by_slug', args=(self.slug, ))
+
+    def edit_url(self):
+        return reverse('djmongo_edit_simple_oauth2_read_api',
+                       args=(self.database_name, self.collection_name, self.slug))
+
+    def delete_url(self):
+        return reverse('djmongo_delete_simple_oauth2_read_api',
+                       args=(self.database_name, self.collection_name, self.slug))
 
 
 class CustomHTTPAuthReadAPI(models.Model):
@@ -478,4 +519,3 @@ class CustomIPAuthReadAPI(models.Model):
 
     def auth_method(self):
         return 'ipauth'
-

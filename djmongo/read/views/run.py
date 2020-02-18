@@ -244,6 +244,13 @@ def run_custom_public_read_api_by_slug(
     # if a GET param matches, then replace it
 
     for k, v in request.GET.items():
+        print(k, v)
+        if "---" in k:
+            query = query.replace(k, v)
+        else:
+            print("fail")
+        print("QUERY", query)
+
         if k in query:
             if k not in type_mapper_keys:
                 quoted_value = '"%s"' % (v)
