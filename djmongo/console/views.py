@@ -21,6 +21,7 @@ from ..read.models import (CustomHTTPAuthReadAPI, CustomPublicReadAPI,
 from django.conf import settings
 from django.contrib.auth.models import Group
 
+
 def api_wizard(request, database_name=None, collection_name=None):
     name = 'API Wizard Creation'
 
@@ -103,31 +104,27 @@ def api_wizard(request, database_name=None, collection_name=None):
                       context)
 
 
-
 def get_all_apis():
     # Custom Read APIs Get all of the Read APIs
-    
+
     all_apis = []
     all_apis.extend(CustomHTTPAuthReadAPI.objects.all())
     all_apis.extend(CustomPublicReadAPI.objects.all())
     all_apis.extend(CustomOAuth2ReadAPI.objects.all())
     all_apis.extend(CustomIPAuthReadAPI.objects.all())
 
-    # Simple Read APIs 
+    # Simple Read APIs
     all_apis.extend(PublicReadAPI.objects.all())
     all_apis.extend(HTTPAuthReadAPI.objects.all())
     all_apis.extend(OAuth2ReadAPI.objects.all())
     all_apis.extend(CustomIPAuthReadAPI.objects.all())
-    
 
     # Write APIs
     all_apis.extend(WriteAPIIP.objects.all())
     all_apis.extend(WriteAPIHTTPAuth.objects.all())
     all_apis.extend(WriteAPIOAuth2.objects.all())
-    
-    return all_apis
-    
 
+    return all_apis
 
 
 def show_apis(request, database_name, collection_name):
@@ -206,21 +203,20 @@ def showdbs(request):
         messages.info(
             request,
             _("""You have no databases to work on. Please create one."""))
-    
 
     # only show databases if the user is in a group of the same name.
     grouped_dbs = []
-    user_groups =  request.user.groups.all()
+    user_groups = request.user.groups.all()
     group_names = []
     for g in user_groups:
         group_names.append(g.name)
-    
+
     if getattr(settings, 'DJMONGO_DB_GROUPS', True):
         for db in cleaned_dbs:
             if db.get('name', '') in group_names:
                 grouped_dbs.append(db)
     else:
-        grouped_dbs =cleaned_dbs
+        grouped_dbs = cleaned_dbs
     context = {"dbs": grouped_dbs, "apis": get_all_apis()}
     return render(request, 'djmongo/console/showdbs.html', context)
 
@@ -345,15 +341,15 @@ def create_new_database(request):
                 messages.error(request, result["error"])
             else:
                 messages.success(request, "Database %s created." % (form.cleaned_data['database_name']))
-                
+
                 if getattr(settings, 'DJMONGO_DB_GROUPS', True):
                     group, created = Group.objects.get_or_create(name=form.cleaned_data['database_name'])
                     request.user.groups.add(group)
                     if created:
                         messages.success(request, "Group %s created." % (form.cleaned_data['database_name']))
                         messages.success(request, "User %s added to group %s." % (request.user,
-                                                                                 form.cleaned_data['database_name']))
-                
+                                                                                  form.cleaned_data['database_name']))
+
             return HttpResponseRedirect(reverse('djmongo_show_dbs'))
         else:
             # The form is invalid

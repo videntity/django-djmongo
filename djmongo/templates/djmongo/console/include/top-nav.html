@@ -8,7 +8,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="{% url 'djmongo_show_dbs' %}">djmongo - spin APIs in seconds</a>
+          <a class="navbar-brand" href="{% url 'djmongo_show_dbs' %}">djmongo</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -17,42 +17,38 @@
             {% if user.is_authenticated %}
 
 
+           <li><a href="{% url 'djmongo_show_dbs' %}#Databases">Databases</a></li>
+           <li><a href="{% url 'djmongo_show_dbs' %}#APIS">APIs</a></li>
+
             <li class="dropdown">
-             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Global Actions <b class="caret"></b></a>
+             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tools <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li><a href="{% url 'djmongo_create_new_database' %}">
                     <i class="fa fa-database"></i> Create Database</a>
                 </li>
                 
                <li><a href="{% url 'djmongo_import_csv' %}">
-                    <i class="fa fa-arrow-right"></i> Import Data into a New Database</a>
+                    <i class="fa fa-arrow-right"></i> Create Database from a CSV</a>
+                </li>
+                 <li role="presentation" class="divider"></li>  
+                <li><a href="{% url 'oauth2_provider:list' %}">  <i class="fa fa-legal"></i> OAuth2: Register Applications</a>
                 </li>
                 
-       
-                </li>                                                         
+               <li><a href="{% url 'oauth2_provider:authorized-token-list' %}"> <i class="fa fa-key"></i> OAuth2: Application Access Tokens</a>
+                </li>
+               <li role="presentation" class="divider"></li> 
                 <li><a href="{% url 'admin:auth_user_changelist' %}">
                         <i class="fa fa-user"></i> Users</a>
                 </li>
                 
                 <li><a href="{% url 'admin:auth_group_changelist' %}">
-                        <i class="fa fa-users"></i> </i> Groups</a>
+                        <i class="fa fa-users"></i> Groups</a>
                 </li>
-                
-        
+               
               </ul>
             </li>
             
-            
-             <li class="dropdown">
-             <a href="#" class="dropdown-toggle" data-toggle="dropdown">OAuth2 <b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                <li><a href="{% url 'oauth2_provider:list' %}">  <i class="fa fa-legal"></i> Register Applications</a>
-                </li>
-                
-               <li><a href="{% url 'oauth2_provider:authorized-token-list' %}"> <i class="fa fa-key"></i> Application Access Tokens</a>
-                </li>
-              </ul>
-            </li>
+           
             
             
             {% endif %} 
