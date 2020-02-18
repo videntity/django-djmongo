@@ -149,7 +149,7 @@ $('.dropdown-toggle').dropdown();
                   </td>
 
                   <td>
-                   <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#myModal{{ forloop.counter0 }}"> <i class="fa fa-eye"></i> View Details</button>  
+                   <button type="button" class="btn btn-default btn-large" data-toggle="modal" data-target="#myModal{{ forloop.counter0 }}"> <i class="fa fa-eye"></i> View Details</button>  
                      <!-- Modal -->
                      <div class="modal fade" id="myModal{{ forloop.counter0 }}" role="dialog">
                        <div class="modal-dialog modal-sm">
@@ -172,21 +172,20 @@ $('.dropdown-toggle').dropdown();
                              </p>
                            </div>
                            <div class="modal-footer">
-                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                             <button type="button" class="btn btn-default btn-large" data-dismiss="modal">Close</button>
                            </div>
                          </div>
                        </div>
                      </div>
                    
-                   <a href=""> <button type="button" class="btn btn-default btn-xs"> <i class="fa fa-dashboard"></i> API Dashboard</button></a>
                   
                    <a href="{{ a.edit_url }}" >
-									  <button type="button" class="btn btn-default btn-xs"> <i class="fa fa-edit"></i> Edit</button>
+									  <button type="button" class="btn btn-default  btn-large"> <i class="fa fa-edit"></i> Edit</button>
 									  </a>
 
                   			  
                              <a href="{{ a.delete_url }}" >
-									  <button type="button" class="btn btn-default btn-xs"> <i class="fa fa-trash"></i> Delete</button>
+									  <button type="button" class="btn btn-default  btn-large"> <i class="fa fa-trash"></i> Delete</button>
 									  </a>
          
                   </td>
