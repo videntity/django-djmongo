@@ -128,7 +128,7 @@ def query_mongo(
             l.append(d)
         response_dict['results'] = l
 
-    except:
+    except Exception:
         print("Error reading from Mongo")
         print(str(sys.exc_info()))
         response_dict['num_results'] = 0
@@ -187,7 +187,7 @@ def query_mongo_sort_decend(
             l.append(d)
         response_dict['results'] = l
 
-    except:
+    except Exception:
         print("Error reading from Mongo")
         print(str(sys.exc_info()))
         response_dict['num_results'] = 0
@@ -217,7 +217,7 @@ def delete_mongo(database_name, collection_name,
         response_dict['code'] = 200
         response_dict['type'] = "remove-confirmation"
 
-    except:
+    except Exception:
         # print "Error reading from Mongo"
         # print str(sys.exc_info())
         response_dict['num_results'] = 0
@@ -329,7 +329,7 @@ def write_mongo(document, database_name,
         l.append(myobject)
         response_dict['results'] = l
 
-    except:
+    except Exception:
         # print "Error reading from Mongo"
         # print str(sys.exc_info())
         response_dict['code'] = 400
@@ -349,7 +349,8 @@ def bulk_csv_import_mongo(csvfile, database_name, collection_name,
     try:
         mongodb_client_url = getattr(settings, 'MONGODB_CLIENT',
                                      'mongodb://localhost:27017/')
-        mc = MongoClient(mongodb_client_url, document_class=OrderedDict)
+        mconnection = MongoClient(
+            mongodb_client_url, document_class=OrderedDict)
         db = mconnection[database_name]
         collection = db[collection_name]
 
@@ -390,7 +391,7 @@ def bulk_csv_import_mongo(csvfile, database_name, collection_name,
 
                     myobjectid = collection.insert(kwargs)
                     success += 1
-                except:
+                except Exception:
                     error_message = "Error on row " + \
                         rowindex + ". " + str(sys.exc_info())
                     error_list.append(str(sys.exc_info()))
@@ -412,7 +413,7 @@ def bulk_csv_import_mongo(csvfile, database_name, collection_name,
             response_dict['message'] = "Completed."
         return response_dict
 
-    except:
+    except Exception:
         # print "Error reading from Mongo"
         # print str(sys.exc_info())
         response_dict['num_results'] = 0
@@ -442,7 +443,8 @@ def get_collection_keys(database_name, collection_name):
     try:
         mongodb_client_url = getattr(settings, 'MONGODB_CLIENT',
                                      'mongodb://localhost:27017/')
-        mc = MongoClient(mongodb_client_url, document_class=OrderedDict)
+        mconnection = MongoClient(
+            mongodb_client_url, document_class=OrderedDict)
         db = mconnection[database_name]
         ckey_collection = "%s_keys" % (collection_name)
         collection = db[ckey_collection]
@@ -466,7 +468,7 @@ def get_collection_keys(database_name, collection_name):
 
         else:
             return sorted(l)
-    except:
+    except Exception:
         print("Error.", str(sys.exc_info()))
         return []
 
@@ -512,7 +514,7 @@ def raw_query_mongo_db(kwargs, database_name, collection_name):
             for d in mysearchresult:
                 l.append(d)
             response_dict['results'] = l
-    except:
+    except Exception:
         # print "Error reading from Mongo"
         # print str(sys.exc_info())
         response_dict['code'] = 400

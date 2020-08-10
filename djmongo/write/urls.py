@@ -64,7 +64,7 @@ urlpatterns = [
         login_required(edit_ip_write_api),
         name="djmongo_edit_ip_write_api"),
 
-    url(r'^httpauth/edit-write-api/(?P<slug>[^/]+)$',
+    url(r'^httpauth/edit-write-api/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/(?P<slug>[^/]+)$',
         login_required(edit_httpauth_write_api),
         name="djmongo_edit_httpauth_write_api"),
 
@@ -77,7 +77,7 @@ urlpatterns = [
         login_required(delete_ip_write_api),
         name="djmongo_delete_ip_write_api"),
 
-    url(r'^httpauth/delete-write-api/(?P<slug>[^/]+)$',
+    url(r'^httpauth/delete-write-api/(?P<database_name>[^/]+)/(?P<collection_name>[^/]+)/(?P<slug>[^/]+)$',
         login_required(delete_httpauth_write_api),
         name="djmongo_delete_httpauth_write_api"),
 

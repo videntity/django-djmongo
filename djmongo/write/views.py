@@ -91,7 +91,6 @@ def write_to_collection(request, slug, model):
 @csrf_exempt
 @httpauth_login_required
 def write_to_collection_httpauth(request, slug):
-    print("REFACTOR!!")
     return write_to_collection(request, slug, WriteAPIHTTPAuth)
 
 
@@ -214,8 +213,9 @@ def create_ip_write_api(request, database_name=None, collection_name=None):
     )
 
 
-def edit_httpauth_write_api(request, slug):
-    a = get_object_or_404(WriteAPIHTTPAuth, slug=slug)
+def edit_httpauth_write_api(request, database_name, collection_name, slug):
+    a = get_object_or_404(WriteAPIHTTPAuth, database_name=database_name,
+                          collection_name=collection_name, slug=slug)
     name = _("Edit HTTP Auth Write API")
     if request.method == 'POST':
         form = WriteAPIHTTPAuthForm(request.POST, instance=a)
@@ -281,12 +281,13 @@ def edit_ip_write_api(request, slug):
     )
 
 
-def delete_httpauth_write_api(request, slug):
+def delete_httpauth_write_api(request, database_name, collection_name, slug):
     name = _("Delete HTTP Auth Write API")
     if request.method == 'POST':
         form = WriteAPIHTTPAuthDeleteForm(request.POST)
         if form.is_valid():
-            a = WriteAPIHTTPAuth.objects.get(slug=slug)
+            a = WriteAPIHTTPAuth.objects.get(database_name=database_name,
+                          collection_name=collection_name, slug=slug)
             a.delete()
             msg = _('The HTTP Auth API for %s was deleted.') % (slug)
             messages.success(request, msg)

@@ -3,13 +3,11 @@
 # vim: ai ts=4 sts=4 et sw=4
 from django.db import models
 from django.contrib.auth.models import Group
-from django.conf import settings
 import json
 from django.utils.translation import ugettext_lazy as _
 from django.urls import reverse
 from collections import OrderedDict
 from django.contrib.auth import get_user_model
-
 
 
 class WriteAPIHTTPAuth(models.Model):

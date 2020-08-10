@@ -58,7 +58,7 @@ def bulk_csv_import_mongo(csvfile, database_name, collection_name,
 
                     collection.insert(kwargs)
                     success += 1
-                except:
+                except Exception:
                     error_message = "Error on row " + \
                         rowindex + ". " + str(sys.exc_info())
                     error_list.append(error_message)
@@ -80,7 +80,7 @@ def bulk_csv_import_mongo(csvfile, database_name, collection_name,
             response_dict['message'] = "Completed."
         return response_dict
 
-    except:
+    except Exception:
         # print "Error reading from Mongo"
         # print str(sys.exc_info())
         response_dict['num_results'] = 0

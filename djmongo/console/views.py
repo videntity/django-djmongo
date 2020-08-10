@@ -104,7 +104,7 @@ def api_wizard(request, database_name=None, collection_name=None):
                       context)
 
 
-def get_all_apis():
+def get_all_apis(user=None):
     # Custom Read APIs Get all of the Read APIs
 
     all_apis = []
@@ -123,7 +123,16 @@ def get_all_apis():
     all_apis.extend(WriteAPIIP.objects.all())
     all_apis.extend(WriteAPIHTTPAuth.objects.all())
     all_apis.extend(WriteAPIOAuth2.objects.all())
-
+    if user:
+        user_apis = []
+        user_groups = user.groups.all()
+        group_names = []
+        for g in user_groups:
+            group_names.append(g.name)
+        for a in all_apis:
+            if a.database_name in group_names:
+                user_apis.append(a)
+        return user_apis
     return all_apis
 
 
@@ -215,9 +224,12 @@ def showdbs(request):
         for db in cleaned_dbs:
             if db.get('name', '') in group_names:
                 grouped_dbs.append(db)
+        apis = get_all_apis(request.user)
     else:
         grouped_dbs = cleaned_dbs
-    context = {"dbs": grouped_dbs, "apis": get_all_apis()}
+        apis = get_all_apis()
+
+    context = {"dbs": grouped_dbs, "apis": apis}
     return render(request, 'djmongo/console/showdbs.html', context)
 
 
@@ -340,13 +352,16 @@ def create_new_database(request):
                     request, "The database creation operation failed.")
                 messages.error(request, result["error"])
             else:
-                messages.success(request, "Database %s created." % (form.cleaned_data['database_name']))
+                messages.success(request, "Database %s created." %
+                                 (form.cleaned_data['database_name']))
 
                 if getattr(settings, 'DJMONGO_DB_GROUPS', True):
-                    group, created = Group.objects.get_or_create(name=form.cleaned_data['database_name'])
+                    group, created = Group.objects.get_or_create(
+                        name=form.cleaned_data['database_name'])
                     request.user.groups.add(group)
                     if created:
-                        messages.success(request, "Group %s created." % (form.cleaned_data['database_name']))
+                        messages.success(request, "Group %s created." % (
+                            form.cleaned_data['database_name']))
                         messages.success(request, "User %s added to group %s." % (request.user,
                                                                                   form.cleaned_data['database_name']))
 

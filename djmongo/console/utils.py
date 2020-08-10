@@ -117,7 +117,7 @@ def create_mongo_db(database_name, collection_name, initial_document):
         d = json.loads(initial_document, object_pairs_hook=OrderedDict)
         collection.save(d)
 
-    except:
+    except Exception:
         # error connecting to mongodb
         response_dict['error'] = str(sys.exc_info())
 
@@ -135,7 +135,7 @@ def mongodb_ensure_index(database_name, collection_name, keys):
         dbc.ensure_index(keys)
         # print "success"
         return ""
-    except:
+    except Exception:
         # error connecting to mongodb
         # print str(sys.exc_info())
         return str(sys.exc_info())
@@ -150,7 +150,7 @@ def mongodb_drop_collection(database_name, collection_name):
         dbs.drop_collection(collection_name)
         # print "success"
         return ""
-    except:
+    except Exception:
         # error connecting to mongodb
         return str(sys.exc_info())
 
@@ -163,7 +163,7 @@ def mongodb_drop_database(database_name):
         mc.drop_database(database_name)
         return ""
 
-    except:
+    except Exception:
         # error connecting to mongodb
         # print str(sys.exc_info())
         return str(sys.exc_info())
